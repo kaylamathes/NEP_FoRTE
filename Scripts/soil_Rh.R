@@ -314,33 +314,34 @@ Rs_tower_temp_2022 <- Tower_temp_2022 %>%
 
 Rs_tower_temp_2019_year <- Rs_tower_temp_2019%>%
   mutate(modeled_efflux_umol_m2_day = modeled_efflux_umol_m2_s*86400)%>%
-  group_by(subplot_id, Severity, Treatment, Rep_ID)%>%
+  group_by(Severity, Treatment, subplot_id, Rep_ID)%>%
   summarise(modeled_efflux_umol_m2_yr = sum(modeled_efflux_umol_m2_day))%>%
   mutate(modeled_efflux_g_m2_y = modeled_efflux_umol_m2_yr/1000000*12.0107)%>%
   mutate(year = "2019")
 
 Rs_tower_temp_2020_year <- Rs_tower_temp_2020%>%
   mutate(modeled_efflux_umol_m2_day = modeled_efflux_umol_m2_s*86400)%>%
-  group_by(subplot_id, Severity, Treatment, Rep_ID)%>%
+  group_by(Severity,subplot_id, Treatment,  Rep_ID)%>%
   summarise(modeled_efflux_umol_m2_yr = sum(modeled_efflux_umol_m2_day))%>%
   mutate(modeled_efflux_g_m2_y = modeled_efflux_umol_m2_yr/1000000*12.0107)%>%
   mutate(year = "2020")
 
 Rs_tower_temp_2021_year <- Rs_tower_temp_2021%>%
   mutate(modeled_efflux_umol_m2_day = modeled_efflux_umol_m2_s*86400)%>%
-  group_by(subplot_id, Severity, Treatment, Rep_ID)%>%
+  group_by(Severity, subplot_id, Treatment, Rep_ID)%>%
   summarise(modeled_efflux_umol_m2_yr = sum(modeled_efflux_umol_m2_day))%>%
   mutate(modeled_efflux_g_m2_y = modeled_efflux_umol_m2_yr/1000000*12.0107)%>%
   mutate(year = "2021")
 
-Rs_tower_temp_2022_year <- Rs_tower_temp_2021%>%
+Rs_tower_temp_2022_year <- Rs_tower_temp_2022%>%
   mutate(modeled_efflux_umol_m2_day = modeled_efflux_umol_m2_s*86400)%>%
-  group_by(subplot_id, Severity, Treatment, Rep_ID)%>%
+  group_by(Severity, Rep_ID, Treatment, subplot_id)%>%
   summarise(modeled_efflux_umol_m2_yr = sum(modeled_efflux_umol_m2_day))%>%
   mutate(modeled_efflux_g_m2_y = modeled_efflux_umol_m2_yr/1000000*12.0107)%>%
   mutate(year = "2022")
 
-Rs_tower_temp_year_all <- rbind(Rs_tower_temp_2019_year, Rs_tower_temp_2020_year,Rs_tower_temp_2021_year,Rs_tower_temp_2022_year)
+Rs_tower_temp_year_all <- rbind(Rs_tower_temp_2019_year, Rs_tower_temp_2020_year,Rs_tower_temp_2021_year,Rs_tower_temp_2022_year)%>%
+  ungroup()
 
 
 
@@ -351,14 +352,179 @@ Rs_tower_temp_year_all_0 <- Rs_tower_temp_year_all%>%
   mutate(log_modeled_Rh_g_m2_y_BBL = (1.22 + 0.73* log(modeled_efflux_g_m2_y)))%>%
   mutate(modeled_Rh_g_m2_y_BBL = exp(log_modeled_Rh_g_m2_y_BBL))%>%
   mutate(modeled_Rh_Mg_ha_y_BBL = modeled_Rh_g_m2_y_BBL/0.0001/1000000)%>%
-  mutate(modeled_Rs_Mg_ha_y = modeled_efflux_g_m2_y/0.0001/1000000)
+  mutate(modeled_Rs_Mg_ha_y = modeled_efflux_g_m2_y/0.0001/1000000)%>%
+  mutate(modeled_Ra_Mg_ha_y_BBL = modeled_Rs_Mg_ha_y - modeled_Rh_Mg_ha_y_BBL)
   
 ################Calculate control Rh from Subke 2006 relationship 
 
 Rs_tower_temp_year_all_0 <- Rs_tower_temp_year_all_0%>%
   mutate(Rh_Rs_ratio_gC_m2_y_subke = -0.138*log(modeled_efflux_g_m2_y) + 1.482)%>%
   mutate(modeled_Rh_gC_m2_y_subke = Rh_Rs_ratio_gC_m2_y_subke*modeled_efflux_g_m2_y)%>%
-  mutate(modeled_Rh_Mg_ha_y_subke = modeled_Rh_gC_m2_y_subke/0.0001/1000000)
+  mutate(modeled_Rh_Mg_ha_y_subke = modeled_Rh_gC_m2_y_subke/0.0001/1000000)%>%
+  mutate(modeled_Ra_Mg_ha_y_subke = modeled_Rs_Mg_ha_y - modeled_Rh_Mg_ha_y_subke)
+
+######Calculate the slope for 0 severity to 100 severity Ra = 0
+
+####BBL method
+modeled_Ra_relationship_BBL <- Rs_tower_temp_year_all_0%>%
+  ungroup()%>%
+  select(!Severity)%>%
+  mutate(slope_BBL = modeled_Ra_Mg_ha_y_BBL/-100)%>%
+  mutate("45" = slope_BBL*45 + modeled_Ra_Mg_ha_y_BBL)%>%
+  mutate("65" = slope_BBL*65 + modeled_Ra_Mg_ha_y_BBL)%>%
+  mutate("85" = slope_BBL*85 + modeled_Ra_Mg_ha_y_BBL)
+
+modeled_Ra_relationship_BBL_severity <-modeled_Ra_relationship_BBL%>%
+  select(Rep_ID, Treatment, subplot_id, year,  modeled_Ra_Mg_ha_y_BBL, "45", "65", "85")
+  
+modeled_Ra_relationship_BBL_severity <-  melt(modeled_Ra_relationship_BBL_severity, id.vars=c("Rep_ID", "Treatment", "subplot_id", "year"))
+
+modeled_Ra_relationship_BBL_severity <- modeled_Ra_relationship_BBL_severity%>%
+  mutate(Severity = case_when(variable == "modeled_Ra_Mg_ha_y_BBL" ~ "0", 
+                              variable == "45" ~ "45",
+                              variable == "65" ~ "65",
+                              variable == "85" ~ "85"))%>%
+  rename(Ra_MgChayr = value)%>%
+  select(!variable)
+
+modeled_Ra_relationship_BBL_severity$Severity <- as.factor(modeled_Ra_relationship_BBL_severity$Severity)
+
+Rs_tower_temp_year_all$Severity <- as.factor(Rs_tower_temp_year_all$Severity )
+
+####Merge the Rs with the modeled Ra values 
+
+
+
+modeled_Ra_Rs_relationship_BBL_severity <- merge(modeled_Ra_relationship_BBL_severity,Rs_tower_temp_year_all, by = c("Severity", "year","Treatment","Rep_ID"))%>%
+  select(!subplot_id.x)%>%
+  rename(subplot_id = subplot_id.y)%>%
+  mutate(Rs_MgChayr = modeled_efflux_g_m2_y/0.0001/1000000)%>%
+  mutate(Rh_MgChayr =Rs_MgChayr - Ra_MgChayr)
+
+
+modeled_Ra_Rs_relationship_BBL_severity_summary <- modeled_Ra_Rs_relationship_BBL_severity%>%
+  group_by(Severity, year)%>%
+  summarize(Rh_MgChayr_ave = mean(Rh_MgChayr), std_error = std.error(Rh_MgChayr))
+
+modeled_Ra_Rs_relationship_BBL_Treatment_summary <- modeled_Ra_Rs_relationship_BBL_severity%>%
+  group_by(year, Treatment)%>%
+  summarize(Rh_MgChayr_ave = mean(Rh_MgChayr), std_error = std.error(Rh_MgChayr))
+
+
+####subke method
+modeled_Ra_relationship_subke <- Rs_tower_temp_year_all_0%>%
+  ungroup()%>%
+  select(!Severity)%>%
+  mutate(slope_subke = modeled_Ra_Mg_ha_y_subke/-100)%>%
+  mutate("45" = slope_subke*45 + modeled_Ra_Mg_ha_y_subke)%>%
+  mutate("65" = slope_subke*65 + modeled_Ra_Mg_ha_y_subke)%>%
+  mutate("85" = slope_subke*85 + modeled_Ra_Mg_ha_y_subke)
+
+modeled_Ra_relationship_subke_severity <-modeled_Ra_relationship_subke%>%
+  select(Rep_ID, Treatment, subplot_id, year,  modeled_Ra_Mg_ha_y_subke, "45", "65", "85")
+
+modeled_Ra_relationship_subke_severity <-  melt(modeled_Ra_relationship_subke_severity, id.vars=c("Rep_ID", "Treatment", "subplot_id", "year"))
+
+modeled_Ra_relationship_subke_severity <- modeled_Ra_relationship_subke_severity%>%
+  mutate(Severity = case_when(variable == "modeled_Ra_Mg_ha_y_subke" ~ "0", 
+                              variable == "45" ~ "45",
+                              variable == "65" ~ "65",
+                              variable == "85" ~ "85"))%>%
+  rename(Ra_MgChayr = value)%>%
+  select(!variable)
+
+modeled_Ra_relationship_subke_severity$Severity <- as.factor(modeled_Ra_relationship_subke_severity$Severity)
+
+Rs_tower_temp_year_all$Severity <- as.factor(Rs_tower_temp_year_all$Severity )
+
+####Merge the Rs with the modeled Ra values 
+
+
+modeled_Ra_Rs_relationship_subke_severity <- merge(modeled_Ra_relationship_subke_severity,Rs_tower_temp_year_all, by = c("Severity", "year","Treatment","Rep_ID"))%>%
+  select(!subplot_id.x)%>%
+  rename(subplot_id = subplot_id.y)%>%
+  mutate(Rs_MgChayr = modeled_efflux_g_m2_y/0.0001/1000000)%>%
+  mutate(Rh_MgChayr =Rs_MgChayr - Ra_MgChayr)
+
+
+modeled_Ra_Rs_relationship_subke_severity_summary <- modeled_Ra_Rs_relationship_subke_severity%>%
+  group_by(Severity, year)%>%
+  summarize(Rh_MgChayr_ave = mean(Rh_MgChayr), std_error = std.error(Rh_MgChayr))
+
+modeled_Ra_Rs_relationship_subke_Treatment_summary <- modeled_Ra_Rs_relationship_subke_severity%>%
+  group_by(year, Treatment)%>%
+  summarize(Rh_MgChayr_ave = mean(Rh_MgChayr), std_error = std.error(Rh_MgChayr))
+
+####################Bring in Rh jar values 
+
+jar_Rh <- read.csv("jar_Rh.csv")
+
+########Find the ratio between control and severity level Rh levels
+
+jar_Rh <- jar_Rh%>%
+  rename(Subplot_ID = Subplot_code)%>%
+  mutate(subplot_id = case_when(Subplot_ID == "A1e" ~ "A01E", 
+                                Subplot_ID == "A1w" ~ "A01W", 
+                                Subplot_ID == "A2e" ~ "A02E", 
+                                Subplot_ID == "A2w" ~ "A02W", 
+                                Subplot_ID == "A3e" ~ "A03E", 
+                                Subplot_ID == "A3w" ~ "A03W", 
+                                Subplot_ID == "A4e" ~ "A04E", 
+                                Subplot_ID == "A4w" ~ "A04W", 
+                                Subplot_ID == "B1e" ~ "B01E", 
+                                Subplot_ID == "B1w" ~ "B01W", 
+                                Subplot_ID == "B2e" ~ "B02E", 
+                                Subplot_ID == "B2w" ~ "B02W", 
+                                Subplot_ID == "B3e" ~ "B03E", 
+                                Subplot_ID == "B3w" ~ "B03W", 
+                                Subplot_ID == "B4e" ~ "B04E", 
+                                Subplot_ID == "B4w" ~ "B04W", 
+                                Subplot_ID == "C1e" ~ "C01E", 
+                                Subplot_ID == "C1w" ~ "C01W", 
+                                Subplot_ID == "C2e" ~ "C02E", 
+                                Subplot_ID == "C2w" ~ "C02W", 
+                                Subplot_ID == "C3e" ~ "C03E", 
+                                Subplot_ID == "C3w" ~ "C03W", 
+                                Subplot_ID == "C4e" ~ "C04E", 
+                                Subplot_ID == "C4w" ~ "C04W", 
+                                Subplot_ID == "D1e" ~ "D01E", 
+                                Subplot_ID == "D1w" ~ "D01W", 
+                                Subplot_ID == "D2e" ~ "D02E", 
+                                Subplot_ID == "D2w" ~ "D02W", 
+                                Subplot_ID == "D3e" ~ "D03E", 
+                                Subplot_ID == "D3w" ~ "D03W", 
+                                Subplot_ID == "D4e" ~ "D04E", 
+                                Subplot_ID == "D4w" ~ "D04W"))
+  
+  jar_Rh <- jar_Rh%>%
+    select(subplot_id, Rep_ID, Treatment, Severity, soilCO2Efflux_umolg)
+  
+jar_Rh <- spread(jar_Rh, Severity, soilCO2Efflux_umolg)
+
+jar_Rh <- dcast(jar_Rh, subplot_id + Rep_ID + Treatment ~ Severity, value.var="soilCO2Efflux_umolg")
+    
+    
+  mutate(control_severity_ratio = case_when(year == "2019" & subplot_id == "A01E" ~ /resistance_rh$ave_soilCO2Efflux_umolg[1]),
+                                  year == "2019" & Rep_ID == "B" ~ log(ave_soilCO2Efflux_umolg/resistance_rh$ave_soilCO2Efflux_umolg[13]),
+                                  year == "2019" & Rep_ID == "C" ~ log(ave_soilCO2Efflux_umolg/resistance_rh$ave_soilCO2Efflux_umolg[25]),
+                                  year == "2019" & Rep_ID == "D" ~ log(ave_soilCO2Efflux_umolg/resistance_rh$ave_soilCO2Efflux_umolg[37]),
+                                  year =="2020" & Rep_ID == "A" ~ log(ave_soilCO2Efflux_umolg/resistance_rh$ave_soilCO2Efflux_umolg[5]),
+                                  year =="2020" & Rep_ID == "B" ~ log(ave_soilCO2Efflux_umolg/resistance_rh$ave_soilCO2Efflux_umolg[17]),
+                                  year =="2020" & Rep_ID == "C" ~ log(ave_soilCO2Efflux_umolg/resistance_rh$ave_soilCO2Efflux_umolg[29]),
+                                  year =="2020" & Rep_ID == "D" ~ log(ave_soilCO2Efflux_umolg/resistance_rh$ave_soilCO2Efflux_umolg[41]),
+                                  year =="2021" & Rep_ID == "A" ~ log(ave_soilCO2Efflux_umolg/resistance_rh$ave_soilCO2Efflux_umolg[9]),
+                                  year =="2021" & Rep_ID == "B" ~ log(ave_soilCO2Efflux_umolg/resistance_rh$ave_soilCO2Efflux_umolg[21]),
+                                  year =="2021" & Rep_ID == "C" ~ log(ave_soilCO2Efflux_umolg/resistance_rh$ave_soilCO2Efflux_umolg[33]),
+                                  year =="2021" & Rep_ID == "D" ~ log(ave_soilCO2Efflux_umolg/resistance_rh$ave_soilCO2Efflux_umolg[45])))
+
+
+
+
+
+
+
+
+
 
 
 
@@ -375,15 +541,21 @@ Rs_model <- lm(modeled_Rs_Mg_ha_y ~ Severity*year + Rep_ID*Severity, data =Rs_to
 summary(Rs_model)  
 
 Rs_tower_temp_year_all_regression <- Rs_tower_temp_year_all%>%
-group_by(Rep_ID,year)%>%
-  do(model = lm(modeled_Rs_Mg_ha_y ~ Severity,data = .))%>%
+group_by(year, Rep_ID)%>%
+  do(model = lm(modeled_Rs_Mg_ha_y ~ Severity, data = .))%>%
   ungroup()
 
 Rs_regression_param <-  Rs_tower_temp_year_all_regression %>%
   mutate(param_efflux = lapply(model, broom::tidy)) %>%
-  unnest(param_efflux) %>%
+  unnest(param_efflux)%>%
   select(Rep_ID, year, term, estimate) %>%
-  pivot_wider(names_from = term, values_from = estimate) 
+  pivot_wider(names_from = term, values_from = estimate)%>%
+  rename(Intercept = "(Intercept)")
+
+Rs_regression_100_severity <- Rs_regression_param%>%
+  mutate(Rh_100 = Severity*100 + Intercept)
+
+
 
 
 
