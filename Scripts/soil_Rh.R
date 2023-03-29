@@ -344,6 +344,48 @@ Rs_tower_temp_year_all <- rbind(Rs_tower_temp_2019_year, Rs_tower_temp_2020_year
 
 
 
+################Calculate control Rh from Bond-Lamberty 2004 relationship 
+
+Rs_tower_temp_year_all_0 <- Rs_tower_temp_year_all%>%
+  filter(Severity == "0")%>%
+  mutate(log_modeled_Rh_g_m2_y_BBL = (1.22 + 0.73* log(modeled_efflux_g_m2_y)))%>%
+  mutate(modeled_Rh_g_m2_y_BBL = exp(log_modeled_Rh_g_m2_y_BBL))%>%
+  mutate(modeled_Rh_Mg_ha_y_BBL = modeled_Rh_g_m2_y_BBL/0.0001/1000000)%>%
+  mutate(modeled_Rs_Mg_ha_y = modeled_efflux_g_m2_y/0.0001/1000000)
+  
+################Calculate control Rh from Subke 2006 relationship 
+
+Rs_tower_temp_year_all_0 <- Rs_tower_temp_year_all_0%>%
+  mutate(Rh_Rs_ratio_gC_m2_y_subke = -0.138*log(modeled_efflux_g_m2_y) + 1.482)%>%
+  mutate(modeled_Rh_gC_m2_y_subke = Rh_Rs_ratio_gC_m2_y_subke*modeled_efflux_g_m2_y)%>%
+  mutate(modeled_Rh_Mg_ha_y_subke = modeled_Rh_gC_m2_y_subke/0.0001/1000000)
+
+
+
+
+############# 100% Severity method ######################
+
+Rs_tower_temp_year_all <- Rs_tower_temp_year_all%>%
+  mutate(modeled_Rs_Mg_ha_y = modeled_efflux_g_m2_y/0.0001/1000000)
+
+Rs_tower_temp_year_all$Severity <- as.character(Rs_tower_temp_year_all$Severity)
+Rs_tower_temp_year_all$Severity <- as.numeric(Rs_tower_temp_year_all$Severity)
+  
+Rs_model <- lm(modeled_Rs_Mg_ha_y ~ Severity*year + Rep_ID*Severity, data =Rs_tower_temp_year_all )
+summary(Rs_model)  
+
+Rs_tower_temp_year_all_regression <- Rs_tower_temp_year_all%>%
+group_by(Rep_ID,year)%>%
+  do(model = lm(modeled_Rs_Mg_ha_y ~ Severity,data = .))%>%
+  ungroup()
+
+Rs_regression_param <-  Rs_tower_temp_year_all_regression %>%
+  mutate(param_efflux = lapply(model, broom::tidy)) %>%
+  unnest(param_efflux) %>%
+  select(Rep_ID, year, term, estimate) %>%
+  pivot_wider(names_from = term, values_from = estimate) 
+
+
 
 
 
