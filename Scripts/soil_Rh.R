@@ -463,7 +463,7 @@ modeled_Ra_Rs_relationship_subke_Treatment_summary <- modeled_Ra_Rs_relationship
   group_by(year, Treatment)%>%
   summarize(Rh_MgChayr_ave = mean(Rh_MgChayr), std_error = std.error(Rh_MgChayr))
 
-####################Bring in Rh jar values 
+#################### Bring in Rh jar values ############################################
 
 jar_Rh <- read.csv("jar_Rh.csv")
 
@@ -503,73 +503,161 @@ jar_Rh <- jar_Rh%>%
                                 Subplot_ID == "D3w" ~ "D03W", 
                                 Subplot_ID == "D4e" ~ "D04E", 
                                 Subplot_ID == "D4w" ~ "D04W"))
-  
+
+######### select only the columns we need   
   jar_Rh_wide <- jar_Rh%>%
     select( Rep_ID, year, Treatment, Severity, ave_soilCO2Efflux_umolg)%>%
     ungroup()
-
-jar_Rh$year <- as.factor(jar_Rh$year)
-jar_Rh$subplot_id <- as.factor(jar_Rh$subplot_id)
-jar_Rh$Treatment <- as.factor(jar_Rh$Treatment)
-jar_Rh$Rep_ID <- as.factor(jar_Rh$Rep_ID)
-  
+ 
+########## Make dataframe wide  
 jar_Rh_wide <- pivot_wider(data = jar_Rh_wide, 
                                  names_from = Severity, values_from = ave_soilCO2Efflux_umolg)
 
 
 
-######Creating a control to disturbance ratio across all severities 
+######Creating a control to disturbance ratio across all severities for jar estimates 
 
 jar_Rh_wide <- jar_Rh_wide%>%
   rename(severity_0 = "0", severity_45 = "45", severity_65 = "65", severity_85 = "85")%>%
-  mutate(Rh_jar_45_ratio = severity_0/severity_45)%>%
-  mutate(Rh_jar_65_ratio = severity_0/severity_65)%>%
-  mutate(Rh_jar_85_ratio = severity_0/severity_85)
+  mutate(Rh_jar_45_ratio = severity_45/severity_0)%>%
+  mutate(Rh_jar_65_ratio = severity_65/severity_0)%>%
+  mutate(Rh_jar_85_ratio = severity_85/severity_0)
    
 
 ########Take the control Rh estimates from Ben and Subke and create Rh for severities levels based off of ratio from the incutations jar estimates 
 
+jar_estimates <- merge(Rs_tower_temp_year_all_0, jar_Rh_wide, by = c("year", "Treatment", "Rep_ID"))%>%
+  select(year, Treatment, Rep_ID, Rh_jar_45_ratio, Rh_jar_65_ratio,Rh_jar_85_ratio, modeled_Rh_Mg_ha_y_BBL,modeled_Rh_Mg_ha_y_subke)%>%
+  mutate(Modeled_Rh_Mg_ha_y_BBL_45 = modeled_Rh_Mg_ha_y_BBL*Rh_jar_45_ratio)%>%
+  mutate(Modeled_Rh_Mg_ha_y_BBL_65 = modeled_Rh_Mg_ha_y_BBL*Rh_jar_65_ratio)%>%
+  mutate(Modeled_Rh_Mg_ha_y_BBL_85 = modeled_Rh_Mg_ha_y_BBL*Rh_jar_85_ratio)%>%
+mutate(Modeled_Rh_Mg_ha_y_subke_45 = modeled_Rh_Mg_ha_y_subke*Rh_jar_45_ratio)%>%
+  mutate(Modeled_Rh_Mg_ha_y_subke_65 = modeled_Rh_Mg_ha_y_subke*Rh_jar_65_ratio)%>%
+  mutate(Modeled_Rh_Mg_ha_y_subke_85 = modeled_Rh_Mg_ha_y_subke*Rh_jar_85_ratio)
 
- 
- 
+####Select only neessary columns and make a BBL method dataframe 
+jar_estimates_summary_BBL <- jar_estimates%>%
+  select(year, Rep_ID, Treatment,modeled_Rh_Mg_ha_y_BBL, Modeled_Rh_Mg_ha_y_BBL_45,Modeled_Rh_Mg_ha_y_BBL_65,Modeled_Rh_Mg_ha_y_BBL_85)%>%
+  rename("0"= modeled_Rh_Mg_ha_y_BBL, "45"= Modeled_Rh_Mg_ha_y_BBL_45, "65"= Modeled_Rh_Mg_ha_y_BBL_65, "85"= Modeled_Rh_Mg_ha_y_BBL_85)
+
+######Transition from long to wide  
+jar_estimates_summary_BBL <- jar_estimates_summary_BBL%>%
+                pivot_longer(cols=c("0", "45", "65", "85"),
+                    names_to='Severity',
+                    values_to='Modeled_Rh_Mg_ha_y_BBL')
+
+####Select only neessary columns and make a subke method dataframe 
+jar_estimates_summary_subke <- jar_estimates%>%
+  select(year, Rep_ID, Treatment,modeled_Rh_Mg_ha_y_subke, Modeled_Rh_Mg_ha_y_subke_45,Modeled_Rh_Mg_ha_y_subke_65,Modeled_Rh_Mg_ha_y_subke_85)%>%
+  rename("0"= modeled_Rh_Mg_ha_y_subke, "45"= Modeled_Rh_Mg_ha_y_subke_45, "65"= Modeled_Rh_Mg_ha_y_subke_65, "85"= Modeled_Rh_Mg_ha_y_subke_85)
+
+
+######Transition from long to wide  
+jar_estimates_summary_subke <- jar_estimates_summary_subke%>%
+  pivot_longer(cols=c("0", "45", "65", "85"),
+               names_to='Severity',
+               values_to='Modeled_Rh_Mg_ha_y_subke')
+
+#####Merge methods again 
+Jar_estimate_Rh_summary <- merge(jar_estimates_summary_subke, jar_estimates_summary_BBL, by =c ("year", "Rep_ID", "Treatment", "Severity"))
+
+
+#####Create a severity summary dataframe 
+Jar_estimate_Rh_summary_severity <- Jar_estimate_Rh_summary%>%
+   group_by(year, Severity)%>%
+     summarize(ave_Modeled_Rh_Mg_ha_y_BBL = mean(Modeled_Rh_Mg_ha_y_BBL), se_Modeled_Rh_Mg_ha_y_BBL = std.error(Modeled_Rh_Mg_ha_y_BBL),ave_Modeled_Rh_Mg_ha_y_subke = mean(Modeled_Rh_Mg_ha_y_subke), se_Modeled_Rh_Mg_ha_y_subke = std.error(Modeled_Rh_Mg_ha_y_subke))
+
+write.csv(Jar_estimate_Rh_summary_severity, "Jar_Rh_estimate.csv", row.names = FALSE)
+
+#####Create a Treatment summary dataframe 
+Jar_estimate_Rh_summary_treatment <- Jar_estimate_Rh_summary%>%
+  group_by(year, Treatment)%>%
+  summarize(ave_Modeled_Rh_Mg_ha_y_BBL = mean(Modeled_Rh_Mg_ha_y_BBL), se_Modeled_Rh_Mg_ha_y_BBL = std.error(Modeled_Rh_Mg_ha_y_BBL),ave_Modeled_Rh_Mg_ha_y_subke = mean(Modeled_Rh_Mg_ha_y_subke), se_Modeled_Rh_Mg_ha_y_subke = std.error(Modeled_Rh_Mg_ha_y_subke))
 
 
 
+######################method using the ratio of control to severity levels for ED output #########
 
+ED_Rh_summary_wide <- ED_Rh_summary%>%
+  select(scn, ave_Rh, year)
 
+ED_Rh_summary_wide <- pivot_wider(data = ED_Rh_summary_wide,
+                                  names_from = scn, values_from = ave_Rh)
 
-
-
-
-
-
-
-
-############# 100% Severity method ######################
-
-Rs_tower_temp_year_all <- Rs_tower_temp_year_all%>%
-  mutate(modeled_Rs_Mg_ha_y = modeled_efflux_g_m2_y/0.0001/1000000)
-
-Rs_tower_temp_year_all$Severity <- as.character(Rs_tower_temp_year_all$Severity)
-Rs_tower_temp_year_all$Severity <- as.numeric(Rs_tower_temp_year_all$Severity)
   
-Rs_model <- lm(modeled_Rs_Mg_ha_y ~ Severity*year + Rep_ID*Severity, data =Rs_tower_temp_year_all )
-summary(Rs_model)  
+######Creating a control to disturbance ratio across all severities for jar estimates 
+  
+ED_Rh_summary_wide <- ED_Rh_summary_wide%>%
+    mutate(Rh_ED_45_ratio = harvest_45/harvest_0)%>%
+    mutate(Rh_ED_65_ratio = harvest_65/harvest_0)%>%
+    mutate(Rh_ED_85_ratio = harvest_85/harvest_0)
+  
+  
+########Take the control Rh estimates from Ben and Subke and create Rh for severities levels based off of ratio from the incutations jar estimates 
+Rs_tower_temp_year_all_0_ED <- Rs_tower_temp_year_all_0%>%
+  select(year, Rep_ID, Treatment, subplot_id, modeled_Rh_Mg_ha_y_BBL, modeled_Rh_Mg_ha_y_subke)
 
-Rs_tower_temp_year_all_regression <- Rs_tower_temp_year_all%>%
-group_by(year, Rep_ID)%>%
-  do(model = lm(modeled_Rs_Mg_ha_y ~ Severity, data = .))%>%
-  ungroup()
+Rs_tower_temp_year_all_0_ED$year <- as.factor(Rs_tower_temp_year_all_0_ED$year)
+ED_Rh_summary_wide$year <- as.factor(ED_Rh_summary_wide$year)
 
-Rs_regression_param <-  Rs_tower_temp_year_all_regression %>%
-  mutate(param_efflux = lapply(model, broom::tidy)) %>%
-  unnest(param_efflux)%>%
-  select(Rep_ID, year, term, estimate) %>%
-  pivot_wider(names_from = term, values_from = estimate)%>%
-  rename(Intercept = "(Intercept)")
+ED_Rh_estimates <- Rs_tower_temp_year_all_0_ED%>% 
+  left_join(ED_Rh_summary_wide, by = "year")
 
-Rs_regression_100_severity <- Rs_regression_param%>%
-  mutate(Rh_100 = Severity*100 + Intercept)
+  
+  ED_Rh_estimates <- ED_Rh_estimates%>%
+    select(year,Rep_ID, Treatment, subplot_id, Rh_ED_45_ratio, Rh_ED_65_ratio,Rh_ED_85_ratio, modeled_Rh_Mg_ha_y_BBL, modeled_Rh_Mg_ha_y_subke)%>%
+    mutate(Modeled_Rh_Mg_ha_y_BBL_45 = modeled_Rh_Mg_ha_y_BBL*Rh_ED_45_ratio)%>%
+    mutate(Modeled_Rh_Mg_ha_y_BBL_65 = modeled_Rh_Mg_ha_y_BBL*Rh_ED_65_ratio)%>%
+    mutate(Modeled_Rh_Mg_ha_y_BBL_85 = modeled_Rh_Mg_ha_y_BBL*Rh_ED_85_ratio)%>%
+    mutate(Modeled_Rh_Mg_ha_y_subke_45 = modeled_Rh_Mg_ha_y_subke*Rh_ED_45_ratio)%>%
+    mutate(Modeled_Rh_Mg_ha_y_subke_65 = modeled_Rh_Mg_ha_y_subke*Rh_ED_65_ratio)%>%
+    mutate(Modeled_Rh_Mg_ha_y_subke_85 = modeled_Rh_Mg_ha_y_subke*Rh_ED_85_ratio)
+  
+  
+    
+  ED_estimates_BBL<-   ED_Rh_estimates%>%
+    select(year, subplot_id, Rep_ID, Treatment,modeled_Rh_Mg_ha_y_BBL, Modeled_Rh_Mg_ha_y_BBL_45,Modeled_Rh_Mg_ha_y_BBL_65,Modeled_Rh_Mg_ha_y_BBL_85)%>%
+    rename("0"= modeled_Rh_Mg_ha_y_BBL, "45"= Modeled_Rh_Mg_ha_y_BBL_45, "65"= Modeled_Rh_Mg_ha_y_BBL_65, "85"= Modeled_Rh_Mg_ha_y_BBL_85)
+  
+ED_estimates_BBL <- ED_estimates_BBL%>%
+    pivot_longer(cols=c("0", "45", "65", "85"),
+                 names_to='Severity',
+                 values_to='Modeled_Rh_Mg_ha_y_BBL')
+  
+ED_estimates_subke<-    ED_Rh_estimates%>%
+  select(year, subplot_id, Rep_ID, Treatment, modeled_Rh_Mg_ha_y_BBL, Modeled_Rh_Mg_ha_y_subke_45,Modeled_Rh_Mg_ha_y_subke_65,Modeled_Rh_Mg_ha_y_subke_85)%>%
+  rename("0"= modeled_Rh_Mg_ha_y_BBL, "45"= Modeled_Rh_Mg_ha_y_subke_45, "65"= Modeled_Rh_Mg_ha_y_subke_65, "85"= Modeled_Rh_Mg_ha_y_subke_85)
+
+ED_estimates_subke <- ED_estimates_subke%>%
+  pivot_longer(cols=c("0", "45", "65", "85"),
+               names_to='Severity',
+               values_to='Modeled_Rh_Mg_ha_y_subke')
+  
+  
+ED_Rh_estimates <- merge(ED_estimates_BBL, ED_estimates_subke, by = c("Rep_ID","Treatment", "subplot_id", "year", "Severity"))
+
+#####Create a severity summary dataframe 
+ED_Rh_estimates_severity <- ED_Rh_estimates%>%
+  group_by(year, Severity)%>%
+  summarize(ave_Modeled_Rh_Mg_ha_y_BBL = mean(Modeled_Rh_Mg_ha_y_BBL), se_Modeled_Rh_Mg_ha_y_BBL = std.error(Modeled_Rh_Mg_ha_y_BBL),ave_Modeled_Rh_Mg_ha_y_subke = mean(Modeled_Rh_Mg_ha_y_subke), se_Modeled_Rh_Mg_ha_y_subke = std.error(Modeled_Rh_Mg_ha_y_subke))
+
+write.csv(ED_Rh_estimates_severity, "ED_Rh_estimate.csv", row.names = FALSE)
+
+#####Create a Treatment summary dataframe 
+ED_Rh_estimates_treatment <- ED_Rh_estimates%>%
+  group_by(year, Treatment)%>%
+  summarize(ave_Modeled_Rh_Mg_ha_y_BBL = mean(Modeled_Rh_Mg_ha_y_BBL), se_Modeled_Rh_Mg_ha_y_BBL = std.error(Modeled_Rh_Mg_ha_y_BBL),ave_Modeled_Rh_Mg_ha_y_subke = mean(Modeled_Rh_Mg_ha_y_subke), se_Modeled_Rh_Mg_ha_y_subke = std.error(Modeled_Rh_Mg_ha_y_subke))
+
+
+write.csv(ED_Rh_estimates, "ED_Rh_estimate.csv", row.names = FALSE)
+
+
+
+
+
+
+
+
 
 
 
