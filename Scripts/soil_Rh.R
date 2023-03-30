@@ -267,29 +267,38 @@ Tower_temp_2019$date <- format(as.POSIXct(Tower_temp_2019$Timestamp_6), format =
 Tower_temp_2019 <- Tower_temp_2019%>%
   group_by(Subplot_ID,date)%>%
   summarize(modeled_temp_day = mean(modeled_temp))%>%
-  rename(subplot_id = Subplot_ID)
+  rename(subplot_id = Subplot_ID)%>%
+  na.omit()
+
+
 
 Tower_temp_2020$date <- format(as.POSIXct(Tower_temp_2020$Timestamp_6), format = "%Y-%m-%d")
 
 Tower_temp_2020<- Tower_temp_2020%>%
-  group_by(Subplot_ID,date)%>%
+  group_by(Subplot_ID, date)%>%
   summarize(modeled_temp_day = mean(modeled_temp))%>%
-  rename(subplot_id = Subplot_ID)
+ rename(subplot_id = Subplot_ID)%>%
+  na.omit()
 
 
 Tower_temp_2021$date <- format(as.POSIXct(Tower_temp_2021$Timestamp_6), format = "%Y-%m-%d")
 
 Tower_temp_2021<- Tower_temp_2021%>%
-  group_by(Subplot_ID,date)%>%
+  group_by(date, Subplot_ID)%>%
   summarize(modeled_temp_day = mean(modeled_temp))%>%
-  rename(subplot_id = Subplot_ID)
+  rename(subplot_id = Subplot_ID)%>%
+  na.omit()%>%
+  filter(date != "2021-12-31")
 
 Tower_temp_2022$date <- format(as.POSIXct(Tower_temp_2022$Timestamp_6), format = "%Y-%m-%d")
 
 Tower_temp_2022 <- Tower_temp_2022%>%
-  group_by(Subplot_ID,date)%>%
+  group_by(date, Subplot_ID)%>%
   summarize(modeled_temp_day = mean(modeled_temp))%>%
-  rename(subplot_id = Subplot_ID)
+  rename(subplot_id = Subplot_ID)%>%
+  na.omit()%>%
+  filter(date != "2022-01-01")%>%
+  filter(date != "2022-12-31")
 
 ###Join Tower and point data 
 
@@ -394,7 +403,6 @@ Rs_tower_temp_year_all$Severity <- as.factor(Rs_tower_temp_year_all$Severity )
 ####Merge the Rs with the modeled Ra values 
 
 
-
 modeled_Ra_Rs_relationship_BBL_severity <- merge(modeled_Ra_relationship_BBL_severity,Rs_tower_temp_year_all, by = c("Severity", "year","Treatment","Rep_ID"))%>%
   select(!subplot_id.x)%>%
   rename(subplot_id = subplot_id.y)%>%
@@ -496,26 +504,34 @@ jar_Rh <- jar_Rh%>%
                                 Subplot_ID == "D4e" ~ "D04E", 
                                 Subplot_ID == "D4w" ~ "D04W"))
   
-  jar_Rh <- jar_Rh%>%
-    select(subplot_id, Rep_ID, Treatment, Severity, soilCO2Efflux_umolg)
-  
-jar_Rh <- spread(jar_Rh, Severity, soilCO2Efflux_umolg)
+  jar_Rh_wide <- jar_Rh%>%
+    select( Rep_ID, year, Treatment, Severity, ave_soilCO2Efflux_umolg)%>%
+    ungroup()
 
-jar_Rh <- dcast(jar_Rh, subplot_id + Rep_ID + Treatment ~ Severity, value.var="soilCO2Efflux_umolg")
-    
-    
-  mutate(control_severity_ratio = case_when(year == "2019" & subplot_id == "A01E" ~ /resistance_rh$ave_soilCO2Efflux_umolg[1]),
-                                  year == "2019" & Rep_ID == "B" ~ log(ave_soilCO2Efflux_umolg/resistance_rh$ave_soilCO2Efflux_umolg[13]),
-                                  year == "2019" & Rep_ID == "C" ~ log(ave_soilCO2Efflux_umolg/resistance_rh$ave_soilCO2Efflux_umolg[25]),
-                                  year == "2019" & Rep_ID == "D" ~ log(ave_soilCO2Efflux_umolg/resistance_rh$ave_soilCO2Efflux_umolg[37]),
-                                  year =="2020" & Rep_ID == "A" ~ log(ave_soilCO2Efflux_umolg/resistance_rh$ave_soilCO2Efflux_umolg[5]),
-                                  year =="2020" & Rep_ID == "B" ~ log(ave_soilCO2Efflux_umolg/resistance_rh$ave_soilCO2Efflux_umolg[17]),
-                                  year =="2020" & Rep_ID == "C" ~ log(ave_soilCO2Efflux_umolg/resistance_rh$ave_soilCO2Efflux_umolg[29]),
-                                  year =="2020" & Rep_ID == "D" ~ log(ave_soilCO2Efflux_umolg/resistance_rh$ave_soilCO2Efflux_umolg[41]),
-                                  year =="2021" & Rep_ID == "A" ~ log(ave_soilCO2Efflux_umolg/resistance_rh$ave_soilCO2Efflux_umolg[9]),
-                                  year =="2021" & Rep_ID == "B" ~ log(ave_soilCO2Efflux_umolg/resistance_rh$ave_soilCO2Efflux_umolg[21]),
-                                  year =="2021" & Rep_ID == "C" ~ log(ave_soilCO2Efflux_umolg/resistance_rh$ave_soilCO2Efflux_umolg[33]),
-                                  year =="2021" & Rep_ID == "D" ~ log(ave_soilCO2Efflux_umolg/resistance_rh$ave_soilCO2Efflux_umolg[45])))
+jar_Rh$year <- as.factor(jar_Rh$year)
+jar_Rh$subplot_id <- as.factor(jar_Rh$subplot_id)
+jar_Rh$Treatment <- as.factor(jar_Rh$Treatment)
+jar_Rh$Rep_ID <- as.factor(jar_Rh$Rep_ID)
+  
+jar_Rh_wide <- pivot_wider(data = jar_Rh_wide, 
+                                 names_from = Severity, values_from = ave_soilCO2Efflux_umolg)
+
+
+
+######Creating a control to disturbance ratio across all severities 
+
+jar_Rh_wide <- jar_Rh_wide%>%
+  rename(severity_0 = "0", severity_45 = "45", severity_65 = "65", severity_85 = "85")%>%
+  mutate(Rh_jar_45_ratio = severity_0/severity_45)%>%
+  mutate(Rh_jar_65_ratio = severity_0/severity_65)%>%
+  mutate(Rh_jar_85_ratio = severity_0/severity_85)
+   
+
+########Take the control Rh estimates from Ben and Subke and create Rh for severities levels based off of ratio from the incutations jar estimates 
+
+
+ 
+ 
 
 
 
