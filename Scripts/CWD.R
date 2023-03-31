@@ -1760,6 +1760,8 @@ tower_raw_2022$Day.of.Year <- format(tower_raw_2022$Day.of.Year, "%m-%d")
   
   Tower_T_6hour_2022_modeled <- gather(Tower_T_6hour_2022_modeled, Subplot_ID, modeled_temp, C01E:B04W, factor_key = TRUE)
   
+  write.csv(Tower_T_6hour_2022_modeled, "modeled_6hr_Ts_2022.csv", row.names=FALSE)
+  
   ##plot modeled temperature data
   
   ##Create a dataframe with average modeled temp per day 
