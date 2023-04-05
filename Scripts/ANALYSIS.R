@@ -207,39 +207,57 @@ Rh_severity <- grid.arrange(R_CWD_severity_grob, R_sh_severity_grob, layout_matr
 
 ggsave(path = "Figures_Output", filename = "Rh_combined_severity.png", height = 20, width =15, units = "in", Rh_severity)
 
- #################################### Replicate ##########################
-ggplot(NPPw_3yr, aes(x = rep, y = NPP_can, fill = rep, group = rep)) +
+#################################### Replicate ##########################
+library(viridis) 
+
+NPPw_rep <- ggplot(NPPw_3yr, aes(x = rep, y = NPP_can, fill = rep, group = rep)) +
   geom_boxplot() +
-  facet_grid(~year) +
   theme_classic() +
-  theme(axis.text = element_text(size = 25), axis.title = element_text(size = 30), strip.text = element_text(size = 30), legend.text = element_text(size = 25), legend.title = element_text(size = 30)) +
-  ylab("R CWD (Mg C ha yr)") 
+  scale_fill_viridis(discrete = TRUE, option = "D")+
+  theme(axis.text.y = element_text(size = 35), axis.title.y = element_text(size = 40), strip.text = element_text(size = 30),axis.text.x = element_blank(), axis.title.x = element_blank(), legend.position = "none",panel.border = element_rect(colour = "black", fill=NA, size=0.5)) +
+  scale_y_continuous(sec.axis = dup_axis(name = NULL, labels = NULL),labels = scales::number_format(accuracy = 0.1)) +
+  labs(x = "replicate", y=expression(paste("",Canopy," ",ANPP[w],"")))
 
-ggplot(NPP_ll, aes(x = rep, y = NPP_ll, fill = rep, group = rep)) +
+NPPll_rep <- ggplot(NPP_ll, aes(x = rep, y = NPP_ll, fill = rep, group = rep)) +
   geom_boxplot() +
-  facet_grid(~year) +
   theme_classic() +
-  theme(axis.text = element_text(size = 25), axis.title = element_text(size = 30), strip.text = element_text(size = 30), legend.text = element_text(size = 25), legend.title = element_text(size = 30)) +
-  ylab("R CWD (Mg C ha yr)") 
+  scale_fill_viridis(discrete = TRUE, option = "D")+
+  theme(axis.text = element_text(size = 35), axis.title = element_text(size = 40), strip.text = element_blank(), legend.position = "none",panel.border = element_rect(colour = "black", fill=NA, size=0.5)) +
+  scale_y_continuous(sec.axis = dup_axis(name = NULL, labels = NULL)) +
+  labs(x = "replicate", y=expression(paste(" ",NPP[ll],"")))
 
 
-
-ggplot(R_CWD, aes(x = rep, y = R_CWD_Mghayr_ave, fill = rep, group = rep)) +
+RCWD_rep <- ggplot(R_CWD, aes(x = rep, y = R_CWD_Mghayr_ave, fill = rep, group = rep)) +
   geom_boxplot() +
-  facet_grid(~year) +
   theme_classic() +
-  theme(axis.text = element_text(size = 25), axis.title = element_text(size = 30), strip.text = element_text(size = 30), legend.text = element_text(size = 25), legend.title = element_text(size = 30)) +
-  ylab("R CWD (Mg C ha yr)") 
+  scale_fill_viridis(discrete = TRUE, option = "D")+
+  theme(axis.text = element_text(size = 35), axis.title = element_text(size = 40), strip.text = element_blank(), legend.position = "none",panel.border = element_rect(colour = "black", fill=NA, size=0.5)) +
+  scale_y_continuous(position = "right",sec.axis = dup_axis(name = NULL, labels = NULL)) +
+  labs(x = "replicate", y=expression(paste(" ",R[cwd],"")))
 
-ggplot(R_sh, aes(x = rep, y = Modeled_Rh_Mg_ha_y_mean, fill = rep, group = rep)) +
+Rsh_rep <- ggplot(R_sh, aes(x = rep, y = Modeled_Rh_Mg_ha_y_mean, fill = rep, group = rep)) +
   geom_boxplot() +
-  facet_grid(~year) +
   theme_classic() +
-  theme(axis.text = element_text(size = 25), axis.title = element_text(size = 30), strip.text = element_text(size = 30), legend.text = element_text(size = 25), legend.title = element_text(size = 30)) +
-  ylab("R sh (Mg C ha yr)") 
+  scale_fill_viridis(discrete = TRUE, option = "D")+
+  theme(axis.text.y = element_text(size = 35), axis.title.y = element_text(size = 40), strip.text = element_text(size = 40), legend.position = "none", axis.text.x = element_blank(), axis.title.x = element_blank(), plot.margin = margin(0,-0.8,0,0),panel.border = element_rect(colour = "black", fill=NA, size=0.5)) +
+    scale_y_continuous(position = "right",sec.axis = dup_axis(name = NULL, labels = NULL)) +
+  labs(x = "replicate", y=expression(paste(" ",R[sh],"")))
+
+
+NPPw_rep_grob <- ggplotGrob(NPPw_rep)
+NPPll_rep_grob <- ggplotGrob(NPPll_rep)
+RCWD_rep_grob <- ggplotGrob(RCWD_rep)
+Rsh_rep_grob <- ggplotGrob(Rsh_rep)
 
 
 
+layout_replicate     <- rbind(c(1,3),
+                             c(2,4))
+                            
+
+replicate <- grid.arrange(NPPw_rep_grob, NPPll_rep_grob,Rsh_rep_grob,RCWD_rep_grob, layout_matrix=layout_replicate )
+
+ggsave(path = "Figures_Output", filename = "replicate_combined.png", height = 20, width =25, units = "in", replicate )
 
 
 
@@ -264,7 +282,7 @@ shapiro_test(residuals(normality_test))
 NPP_can_model <- aov(NPP_can ~ severity*year +rep + Error(rep:severity/year), data = NPPw_3yr)
 summary(NPP_can_model)
 
-out_year_severity_NPP_can<- with(NPPw_3yr, LSD.test(NPP_can, severity:year,24, 0.264, console = TRUE))
+out_year_severity_NPP_can<- with(NPPw_3yr, LSD.test(NPP_can, rep,9, 1.168, console = TRUE))
 
 #######################NPP subcanopy ###################################
 ##Equality of variance test for severity, type and year: Equal 
@@ -383,6 +401,8 @@ summary(NPP_ll_model)
 
 out_year_severity_ll<- with(NPP_ll, LSD.test(NPP_ll, severity:year,24, 0.0157, console = TRUE))
 
+out_year_rep_ll<- with(NPP_ll, LSD.test(NPP_ll, rep,9, 0.0679, console = TRUE))
+
 
 #######################NPP_fwd total ###################################
 ##Equality of variance test for severity, type and year: Equal 
@@ -442,7 +462,7 @@ shapiro_test(residuals(normality_test))
 R_CWD_model <- aov(R_CWD_Mghayr_ave_log ~ severity*year +rep + Error(rep:severity/year), data = R_CWD_3yr)
 summary(R_CWD_model)
 
-out_year_severity_R_CWD<- with(R_CWD_3yr, LSD.test(R_CWD_Mghayr_ave_log, year,24, 0.03084, console = TRUE))
+out_year_rep_R_CWD<- with(R_CWD_3yr, LSD.test(R_CWD_Mghayr_ave_log, rep,9, 0.765, console = TRUE))
 
 
 ############################### Rsh ##########################
@@ -468,7 +488,7 @@ R_sh_model <- aov(Rh_Mghayr_ave ~ severity*year +rep + Error(rep:severity/year),
 summary(R_sh_model)
 
 
-out_year_severity_rsh<- with(R_sh_3yr, LSD.test(Rh_Mghayr_ave, severity:year,24, 0.533, console = TRUE))
+out_year_srep_rsh<- with(R_sh_3yr, LSD.test(Rh_Mghayr_ave, rep,9, 0.644, console = TRUE))
 
 
 ####################################NEP Calculations ##############################
@@ -621,10 +641,24 @@ NEP_dataframe_biomass <- NEP_dataframe_biomass%>%
   
 NEP_dataframe_biomass$severity <- as.numeric(NEP_dataframe_biomass$severity)
 
-NEP_biomass_model <- lm(NEP_MgChayr_grandmean ~ severity*biomass_kg_ha + year, data = NEP_dataframe_biomass)
+NEP_dataframe_biomass <- NEP_dataframe_biomass%>%
+  mutate(biomass_Mg_ha = biomass_kg_ha/1000)
 
+NEP_biomass_model <- lm(NEP_MgChayr_grandmean ~ severity*biomass_Mg_ha + year, data = NEP_dataframe_biomass)
 summary(NEP_biomass_model)
 
-ggplot(NEP_dataframe_biomass, aes(x = biomass_kg_ha, y = NEP_MgChayr_grandmean, group = severity)) +
-  geom_point() +
-  geom_smooth(method = "lm")
+
+
+##################### NEP biomass Figure ##########################
+NEP_dataframe_biomass$severity <- as.factor(NEP_dataframe_biomass$severity)
+
+ggplot(NEP_dataframe_biomass, aes(x = biomass_Mg_ha, y = NEP_MgChayr_grandmean, group = severity, color = severity)) +
+  geom_point(size = 3) +
+  scale_color_manual(values =forte_pal) +
+  theme_classic() +
+  theme(axis.text = element_text(size = 30), axis.title = element_text(size = 35), legend.title = element_text(size = 35), legend.text = element_text(size = 30)) +
+  geom_smooth(method = "lm", se = FALSE, size = 2) +
+  labs(x = expression(paste(" ",Biomass," ",Mg," ",ha^-1," ")), y=expression(paste(" ",NEP," ",Mg," ",ha^-1," ",yr^-1,"")))
+
+ggsave(path = "Figures_Output", filename = "NEP_biomass.png", height = 10, width =15, units = "in")
+
