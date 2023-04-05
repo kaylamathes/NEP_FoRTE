@@ -641,11 +641,17 @@ NEP_dataframe_biomass <- NEP_dataframe_biomass%>%
   
 NEP_dataframe_biomass$severity <- as.numeric(NEP_dataframe_biomass$severity)
 
+
 NEP_dataframe_biomass <- NEP_dataframe_biomass%>%
   mutate(biomass_Mg_ha = biomass_kg_ha/1000)
 
-NEP_biomass_model <- lm(NEP_MgChayr_grandmean ~ severity*biomass_Mg_ha + year, data = NEP_dataframe_biomass)
+NEP_biomass_model <- lm(NEP_MgChayr_grandmean ~ severity*biomass_Mg_ha +year, data = NEP_dataframe_biomass)
 summary(NEP_biomass_model)
+
+##graph model diagnostics
+par(mfrow = c(2, 2))
+plot(NEP_biomass_model)
+gvlma::gvlma(NEP_biomass_model)
 
 
 
@@ -655,7 +661,7 @@ NEP_dataframe_biomass$severity <- as.factor(NEP_dataframe_biomass$severity)
 ggplot(NEP_dataframe_biomass, aes(x = biomass_Mg_ha, y = NEP_MgChayr_grandmean, group = severity, color = severity)) +
   geom_point(size = 3) +
   scale_color_manual(values =forte_pal) +
-  theme_classic() +
+  facet_grid(~year) +
   theme(axis.text = element_text(size = 30), axis.title = element_text(size = 35), legend.title = element_text(size = 35), legend.text = element_text(size = 30)) +
   geom_smooth(method = "lm", se = FALSE, size = 2) +
   labs(x = expression(paste(" ",Biomass," ",Mg," ",ha^-1," ")), y=expression(paste(" ",NEP," ",Mg," ",ha^-1," ",yr^-1,"")))
