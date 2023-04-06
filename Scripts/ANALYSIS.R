@@ -178,7 +178,7 @@ ggsave(path = "Figures_Output", filename = "NPP_combined_severity.png", height =
 ########################### Rh Combined Figure Severity ####################################
 
 
-R_sh_severity <- ggplot(R_sh, aes(x = severity, y = Modeled_Rh_Mg_ha_y_mean, fill = severity, group = severity)) +
+R_sh_severity <- ggplot(R_sh_3yr, aes(x = severity, y = Rh_Mghayr_ave, fill = severity, group = severity)) +
   geom_boxplot() +
   facet_grid(~year) +
   scale_fill_manual(values =forte_pal) +
@@ -466,9 +466,7 @@ out_year_rep_R_CWD<- with(R_CWD_3yr, LSD.test(R_CWD_Mghayr_ave_log, rep,9, 0.765
 
 
 ############################### Rsh ##########################
-R_sh_3yr <-  R_sh%>%
-  group_by(severity, rep, year)%>%
-  summarize(Rh_Mghayr_ave = mean(Modeled_Rh_Mg_ha_y_mean))
+
 
 ##Equality of variance test for severity, type and year: Equal 
 leveneTest(Rh_Mghayr_ave ~ year*severity, data = R_sh_3yr )
@@ -523,7 +521,31 @@ NEP_dataframe <- NEP_dataframe%>%
   mutate(NEP_MgChayr_12 = (ANPP + BNPP + NPP_ll + NPP_fwd + NPP_fr) - (Modeled_Rh_Mg_ha_y_subke_Jar + R_CWD_Mghayr_3))%>%
   mutate(NEP_MgChayr_grandmean = (NEP_MgChayr_1 +NEP_MgChayr_2 +NEP_MgChayr_3 +NEP_MgChayr_4 +NEP_MgChayr_5 + NEP_MgChayr_6 +NEP_MgChayr_7 +NEP_MgChayr_8 +NEP_MgChayr_9 +NEP_MgChayr_10 +NEP_MgChayr_11 + NEP_MgChayr_12)/12)
   
+library(tidyr)
+library(plotrix)
+
+NEP_dataframe_uncertainty_summary_1 <- NEP_dataframe%>%
+  select(rep, severity, year, NEP_MgChayr_1, NEP_MgChayr_2, NEP_MgChayr_3, NEP_MgChayr_4, NEP_MgChayr_5, NEP_MgChayr_6, NEP_MgChayr_7, NEP_MgChayr_8, NEP_MgChayr_9, NEP_MgChayr_10, NEP_MgChayr_11, NEP_MgChayr_12)%>%
+   pivot_longer(cols=c("NEP_MgChayr_1", "NEP_MgChayr_2", "NEP_MgChayr_3", "NEP_MgChayr_4", "NEP_MgChayr_5","NEP_MgChayr_6", "NEP_MgChayr_7", "NEP_MgChayr_8", "NEP_MgChayr_9", "NEP_MgChayr_10", "NEP_MgChayr_11", "NEP_MgChayr_12"),
+                      names_to='method',
+                      values_to='NEP')%>%
+  group_by(year,severity, method)%>%
+    summarize(NEP = mean(NEP))%>%
+  group_by(year,severity)%>%
+  summarize(NEP_mean = mean(NEP), NEP_se_Model = std.error(NEP))%>%
+  ungroup()
   
+
+
+NEP_data_uncertainty_sumary_2 <- NEP_dataframe%>%
+  group_by(year, severity)%>%
+  summarize(NEP_MgChayr_grandmean_mean = mean(NEP_MgChayr_grandmean), NEP_se_rep = std.error(NEP_MgChayr_grandmean))
+
+NEP_uncertainty_summary <- merge(NEP_data_uncertainty_sumary_2, NEP_dataframe_uncertainty_summary_1, by = c("severity", "year"))%>%
+  mutate(NEP_uncertainty = sqrt(NEP_se_Model + NEP_se_rep ))
+
+
+
 
 
 ggplot(NEP_dataframe, aes(x = severity, y = NEP_MgChayr_grandmean, fill = severity, group = severity)) +
@@ -562,6 +584,30 @@ NEP_model <- aov(NEP_MgChayr_grandmean ~ severity*year +rep + Error(rep:severity
 summary(NEP_model)
 
 out_year_severity_NEP<- with(NEP_dataframe, LSD.test(NEP_MgChayr_grandmean, severity:year,24, 1.110, console = TRUE))
+
+
+NEP_dataframe <- NEP_dataframe%>%
+  mutate(NPP_total = ANPP + BNPP + NPP_ll + NPP_fwd + NPP_fr)
+
+
+####NNPP total   
+##Equality of variance test for severity, type and year: Equal 
+leveneTest(NPP_total ~ year*severity, data = NEP_dataframe)
+
+##Normality 
+# Build the linear model
+normality_test  <- lm(NPP_total ~ severity*year,
+                      data = NEP_dataframe)
+
+# Shapiro test of normality: Normal 
+shapiro_test(residuals(normality_test))
+
+
+####SPLIT-SPLIT MODEL: Using aov() ######
+
+NPP_total_model <- aov(NPP_total ~ severity*year +rep + Error(rep:severity/year), data = NEP_dataframe)
+summary(NPP_total_model)
+
 
 
 ###########################Assess differences in pre-disturbance biomass to NEP 
@@ -668,3 +714,48 @@ ggplot(NEP_dataframe_biomass, aes(x = biomass_Mg_ha, y = NEP_MgChayr_grandmean, 
 
 ggsave(path = "Figures_Output", filename = "NEP_biomass.png", height = 10, width =15, units = "in")
 
+
+
+
+##########
+options(scipen=999)
+resistance_NEP_biomass <- NEP_dataframe_biomass%>%
+  mutate(NEP_adjusted = (NEP_MgChayr_grandmean - NEP_MgChayr_grandmean[15]) + 0.5) %>%
+  mutate(NEP_resistance = case_when(year == "2019" & rep == "A" ~ log(NEP_adjusted/NEP_adjusted[1]),
+                                  year == "2020" & rep == "A" ~ log(NEP_adjusted/NEP_adjusted[2]),
+                                  year == "2021" & rep == "A" ~ log(NEP_adjusted/NEP_adjusted[3]),
+                                  year == "2019" & rep == "B" ~ log(NEP_adjusted/NEP_adjusted[4]),
+                                  year == "2020" & rep == "B" ~ log(NEP_adjusted/NEP_adjusted[5]),
+                                  year == "2021" & rep == "B" ~ log(NEP_adjusted/NEP_adjusted[6]),
+                                  year == "2019" & rep == "C" ~ log(NEP_adjusted/NEP_adjusted[7]),
+                                  year == "2020" & rep == "C" ~ log(NEP_adjusted/NEP_adjusted[8]),
+                                  year =="2021" & rep == "C" ~ log(NEP_adjusted/NEP_adjusted[9]),
+                                  year =="2019" & rep == "D" ~ log(NEP_adjusted/NEP_adjusted[10]),
+                                  year =="2020" & rep == "D" ~ log(NEP_adjusted/NEP_adjusted[11]),
+                                  year =="2021" & rep == "D" ~ log(NEP_adjusted/NEP_adjusted[12])))
+
+resistance_NEP_biomass <- resistance_NEP_biomass%>%
+  filter(severity != "0")
+
+ggplot(resistance_NEP_biomass, aes(x = biomass_Mg_ha, y = NEP_resistance, group = severity, color = severity)) +
+  geom_point(size = 3) +
+  theme_classic() +
+  scale_color_manual(values =forte_pal) +
+  theme(axis.text = element_text(size = 30), axis.title = element_text(size = 35), legend.title = element_text(size = 35), legend.text = element_text(size = 30)) +
+  geom_smooth(method = "lm", se = FALSE, size = 2) +
+  labs(x = expression(paste(" ",Biomass," ",Mg," ",ha^-1," ")), y= "NEP Resistance")
+                                 
+resistance_NEP_biomass$severity <- as.character(resistance_NEP_biomass$severity)
+resistance_NEP_biomass$severity <- as.numeric(resistance_NEP_biomass$severity)
+
+resistance_NEP_biomass_model <- resistance_NEP_biomass%>%
+  filter(severity != "0")
+
+NEP_biomass_model <- lm(NEP_resistance ~ severity*biomass_Mg_ha +year, data = resistance_NEP_biomass_model)
+summary(NEP_biomass_model)
+
+
+
+
+NEP_dataframe_test <- NEP_dataframe%>%
+  filter(severity == "0")
