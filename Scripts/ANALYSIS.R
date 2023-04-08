@@ -210,36 +210,48 @@ ggsave(path = "Figures_Output", filename = "Rh_combined_severity.png", height = 
 #################################### Replicate ##########################
 library(viridis) 
 
-NPPw_rep <- ggplot(NPPw_3yr, aes(x = rep, y = NPP_can, fill = rep, group = rep)) +
+NPPw_1yr <-  NPPw_3yr%>%
+  filter(year == "2021")
+
+NPP11_1yr <-  NPP_ll%>%
+  filter(year == "2021")
+
+R_CWD_1yr <- R_CWD%>%
+  filter(year == "2021")
+
+R_sh_1yr <- R_sh%>%
+  filter(year == "2021")
+
+NPPw_rep <- ggplot(NPPw_1yr, aes(x = rep, y = NPP_can, fill = rep, group = rep)) +
   geom_boxplot() +
   theme_classic() +
   scale_fill_viridis(discrete = TRUE, option = "D")+
-  theme(axis.text.y = element_text(size = 35), axis.title.y = element_text(size = 40), strip.text = element_text(size = 30),axis.text.x = element_blank(), axis.title.x = element_blank(), legend.position = "none",panel.border = element_rect(colour = "black", fill=NA, size=0.5)) +
+  theme(axis.text.y = element_text(size = 35), axis.title.y = element_text(size = 40), strip.text = element_text(size = 30),axis.text.x = element_blank(), axis.title.x = element_blank(), legend.position = "none",panel.border = element_rect(colour = "black", fill=NA, size=0.5),plot.margin = margin(0,0,0,0.5)) +
   scale_y_continuous(sec.axis = dup_axis(name = NULL, labels = NULL),labels = scales::number_format(accuracy = 0.1)) +
   labs(x = "replicate", y=expression(paste("",Canopy," ",ANPP[w],"")))
 
-NPPll_rep <- ggplot(NPP_ll, aes(x = rep, y = NPP_ll, fill = rep, group = rep)) +
+NPPll_rep <- ggplot(NPP11_1yr, aes(x = rep, y = NPP_ll, fill = rep, group = rep)) +
   geom_boxplot() +
   theme_classic() +
   scale_fill_viridis(discrete = TRUE, option = "D")+
-  theme(axis.text = element_text(size = 35), axis.title = element_text(size = 40), strip.text = element_blank(), legend.position = "none",panel.border = element_rect(colour = "black", fill=NA, size=0.5)) +
+  theme(axis.text = element_text(size = 35), axis.title = element_text(size = 40), strip.text = element_blank(), legend.position = "none",panel.border = element_rect(colour = "black", fill=NA, size=0.5),plot.margin = margin(0,0,0,0)) +
   scale_y_continuous(sec.axis = dup_axis(name = NULL, labels = NULL)) +
   labs(x = "replicate", y=expression(paste(" ",NPP[ll],"")))
 
 
-RCWD_rep <- ggplot(R_CWD, aes(x = rep, y = R_CWD_Mghayr_ave, fill = rep, group = rep)) +
+RCWD_rep <- ggplot(R_CWD_1yr, aes(x = rep, y = R_CWD_Mghayr_ave, fill = rep, group = rep)) +
   geom_boxplot() +
   theme_classic() +
   scale_fill_viridis(discrete = TRUE, option = "D")+
-  theme(axis.text = element_text(size = 35), axis.title = element_text(size = 40), strip.text = element_blank(), legend.position = "none",panel.border = element_rect(colour = "black", fill=NA, size=0.5)) +
+  theme(axis.text = element_text(size = 35), axis.title = element_text(size = 40), strip.text = element_blank(), legend.position = "none",panel.border = element_rect(colour = "black", fill=NA, size=0.5),plot.margin = margin(0,0,0,0)) +
   scale_y_continuous(position = "right",sec.axis = dup_axis(name = NULL, labels = NULL)) +
   labs(x = "replicate", y=expression(paste(" ",R[cwd],"")))
 
-Rsh_rep <- ggplot(R_sh, aes(x = rep, y = Modeled_Rh_Mg_ha_y_mean, fill = rep, group = rep)) +
+Rsh_rep <- ggplot(R_sh_1yr, aes(x = rep, y = Modeled_Rh_Mg_ha_y_mean, fill = rep, group = rep)) +
   geom_boxplot() +
   theme_classic() +
   scale_fill_viridis(discrete = TRUE, option = "D")+
-  theme(axis.text.y = element_text(size = 35), axis.title.y = element_text(size = 40), strip.text = element_text(size = 40), legend.position = "none", axis.text.x = element_blank(), axis.title.x = element_blank(), plot.margin = margin(0,-0.8,0,0),panel.border = element_rect(colour = "black", fill=NA, size=0.5)) +
+  theme(axis.text.y = element_text(size = 35), axis.title.y = element_text(size = 40), strip.text = element_text(size = 40), legend.position = "none", axis.text.x = element_blank(), axis.title.x = element_blank(), plot.margin = margin(0,0,0,0),panel.border = element_rect(colour = "black", fill=NA, size=0.5)) +
     scale_y_continuous(position = "right",sec.axis = dup_axis(name = NULL, labels = NULL)) +
   labs(x = "replicate", y=expression(paste(" ",R[sh],"")))
 
@@ -524,6 +536,7 @@ NEP_dataframe <- NEP_dataframe%>%
 library(tidyr)
 library(plotrix)
 
+######NEP Uncertainty 
 NEP_dataframe_uncertainty_summary_1 <- NEP_dataframe%>%
   select(rep, severity, year, NEP_MgChayr_1, NEP_MgChayr_2, NEP_MgChayr_3, NEP_MgChayr_4, NEP_MgChayr_5, NEP_MgChayr_6, NEP_MgChayr_7, NEP_MgChayr_8, NEP_MgChayr_9, NEP_MgChayr_10, NEP_MgChayr_11, NEP_MgChayr_12)%>%
    pivot_longer(cols=c("NEP_MgChayr_1", "NEP_MgChayr_2", "NEP_MgChayr_3", "NEP_MgChayr_4", "NEP_MgChayr_5","NEP_MgChayr_6", "NEP_MgChayr_7", "NEP_MgChayr_8", "NEP_MgChayr_9", "NEP_MgChayr_10", "NEP_MgChayr_11", "NEP_MgChayr_12"),
@@ -542,12 +555,64 @@ NEP_data_uncertainty_sumary_2 <- NEP_dataframe%>%
   summarize(NEP_MgChayr_grandmean_mean = mean(NEP_MgChayr_grandmean), NEP_se_rep = std.error(NEP_MgChayr_grandmean))
 
 NEP_uncertainty_summary <- merge(NEP_data_uncertainty_sumary_2, NEP_dataframe_uncertainty_summary_1, by = c("severity", "year"))%>%
-  mutate(NEP_uncertainty = sqrt(NEP_se_Model + NEP_se_rep ))
+  mutate(NEP_uncertainty = sqrt(NEP_se_Model + NEP_se_rep ))%>%
+  filter(year == "2021")
+
+
+######Rh uncertainty 
+Rh_dataframe_uncertainty_summary_1 <- NEP_dataframe%>%
+  select(rep, severity, year, Modeled_Rh_Mg_ha_y_BBL_ED, Modeled_Rh_Mg_ha_y_BBL_Jar, Modeled_Rh_Mg_ha_y_subke_ED, Modeled_Rh_Mg_ha_y_subke_Jar)%>%
+  pivot_longer(cols=c("Modeled_Rh_Mg_ha_y_BBL_ED", "Modeled_Rh_Mg_ha_y_BBL_Jar","Modeled_Rh_Mg_ha_y_subke_ED", "Modeled_Rh_Mg_ha_y_subke_Jar"),
+               names_to='method',
+               values_to='Rh')%>%
+  group_by(year,severity, method)%>%
+  summarize(Rh = mean(Rh))%>%
+  group_by(severity, year)%>%
+  summarize(Rh_mean = mean(Rh), Rh_se_Model = std.error(Rh))%>%
+  ungroup()
 
 
 
+Rh_data_uncertainty_sumary_2 <- NEP_dataframe%>%
+  group_by(severity, year)%>%
+  summarize(Rh_Mghayr_ave_mean = mean(Rh_Mghayr_ave), Rh_se_rep = std.error(Rh_Mghayr_ave))
+
+Rh_uncertainty_summary <- merge(Rh_data_uncertainty_sumary_2, Rh_dataframe_uncertainty_summary_1, by = c("severity", "year"))%>%
+  mutate(Rh_uncertainty = sqrt(Rh_se_Model + Rh_se_rep ))
+
+Rh_total_average <- Rh_uncertainty_summary%>%
+  summarize(Rh = mean(Rh_mean), Rh_uncertainty_mean = mean(Rh_uncertainty))
 
 
+
+####CWD uncertainty 
+CWD_dataframe_uncertainty_summary_1 <- NEP_dataframe%>%
+  select(rep, severity, year, R_CWD_Mghayr_1, R_CWD_Mghayr_2, R_CWD_Mghayr_3)%>%
+  pivot_longer(cols=c("R_CWD_Mghayr_1", "R_CWD_Mghayr_2", "R_CWD_Mghayr_3"),
+               names_to='method',
+               values_to='CWD')%>%
+  group_by(year,severity, method)%>%
+  summarize(CWD = mean(CWD))%>%
+  group_by(year,severity)%>%
+  summarize(CWD_mean = mean(CWD), CWD_se_Model = std.error(CWD))%>%
+  ungroup()
+
+
+
+CWD_data_uncertainty_sumary_2 <- NEP_dataframe%>%
+  group_by(year, severity)%>%
+  summarize(R_CWD_Mghayr_ave_mean = mean(R_CWD_Mghayr_ave), CWD_se_rep = std.error(R_CWD_Mghayr_ave))
+
+CWD_uncertainty_summary <- merge(CWD_data_uncertainty_sumary_2 , CWD_dataframe_uncertainty_summary_1, by = c("severity", "year"))%>%
+  mutate(CWD_uncertainty = sqrt(CWD_se_Model + CWD_se_rep ))
+
+
+
+Rh_total_average <- Rh_uncertainty_summary%>%
+  summarize(Rh = mean(Rh_mean), Rh_uncertainty_mean = mean(Rh_uncertainty))
+
+
+##########Plot and Analysis NEP #############
 ggplot(NEP_dataframe, aes(x = severity, y = NEP_MgChayr_grandmean, fill = severity, group = severity)) +
   geom_boxplot() +
   facet_grid(~year) +
@@ -607,6 +672,32 @@ shapiro_test(residuals(normality_test))
 
 NPP_total_model <- aov(NPP_total ~ severity*year +rep + Error(rep:severity/year), data = NEP_dataframe)
 summary(NPP_total_model)
+
+
+####Rh Total 
+
+NEP_dataframe <- NEP_dataframe%>%
+  mutate(Rh_total = Rh_Mghayr_ave + R_CWD_Mghayr_ave)
+
+##Equality of variance test for severity, type and year: Equal 
+leveneTest(Rh_total ~ year*severity, data = NEP_dataframe)
+
+##Normality 
+# Build the linear model
+normality_test  <- lm(Rh_total ~ severity*year,
+                      data = NEP_dataframe)
+
+# Shapiro test of normality: Normal 
+shapiro_test(residuals(normality_test))
+
+
+####SPLIT-SPLIT MODEL: Using aov() ######
+
+Rh_total_model <- aov(Rh_total ~ severity*year +rep + Error(rep:severity/year), data = NEP_dataframe)
+summary(Rh_total_model)
+
+
+
 
 
 
@@ -744,6 +835,8 @@ ggplot(resistance_NEP_biomass, aes(x = biomass_Mg_ha, y = NEP_resistance, group 
   theme(axis.text = element_text(size = 30), axis.title = element_text(size = 35), legend.title = element_text(size = 35), legend.text = element_text(size = 30)) +
   geom_smooth(method = "lm", se = FALSE, size = 2) +
   labs(x = expression(paste(" ",Biomass," ",Mg," ",ha^-1," ")), y= "NEP Resistance")
+
+ggsave(path = "Figures_Output", filename = "NEP_biomass_resistance.png", height = 10, width =15, units = "in")
                                  
 resistance_NEP_biomass$severity <- as.character(resistance_NEP_biomass$severity)
 resistance_NEP_biomass$severity <- as.numeric(resistance_NEP_biomass$severity)
@@ -757,5 +850,38 @@ summary(NEP_biomass_model)
 
 
 
-NEP_dataframe_test <- NEP_dataframe%>%
-  filter(severity == "0")
+NEP_dataframe_summary <- NEP_dataframe%>%
+  group_by(severity, year)%>%
+  summarize(NPP_can_mean = mean(NPP_can), NPP_can_se = std.error(NPP_can), NPP_sc_mean = mean(NPP_sc), NPP_sc_se = std.error(NPP_sc),NPP_fr_mean = mean(NPP_fr), NPP_fr_se = std.error(NPP_fr),NPP_ll_mean = mean(NPP_ll), NPP_ll_se = std.error(NPP_ll), NPP_fwd_mean = mean(NPP_fwd), NPP_fwd_se = std.error(NPP_fwd),BNPP_mean = mean(BNPP), BNPP_se = std.error(BNPP), NPP_total_mean = mean(NPP_total), NPP_se_total = std.error(NPP_total))
+
+NEP_dataframe_summary_Rh <- NEP_dataframe%>%
+  group_by(severity, year)%>%
+  summarize(R_CWD_Mghayr_1_mean = mean(R_CWD_Mghayr_1), R_CWD_Mghayr_1_se = std.error(R_CWD_Mghayr_1), R_CWD_Mghayr_2_mean = mean(R_CWD_Mghayr_2), R_CWD_Mghayr_2_se = std.error(R_CWD_Mghayr_2), R_CWD_Mghayr_3_mean = mean(R_CWD_Mghayr_3), R_CWD_Mghayr_3_se = std.error(R_CWD_Mghayr_3), 
+            Modeled_Rh_Mg_ha_y_BBL_ED_mean = mean(Modeled_Rh_Mg_ha_y_BBL_ED), Modeled_Rh_Mg_ha_y_BBL_ED_se = std.error(Modeled_Rh_Mg_ha_y_BBL_ED), Modeled_Rh_Mg_ha_y_subke_ED_mean = mean(Modeled_Rh_Mg_ha_y_subke_ED), Modeled_Rh_Mg_ha_y_subke_ED_se = std.error(Modeled_Rh_Mg_ha_y_subke_ED),
+            Modeled_Rh_Mg_ha_y_subke_Jar_mean = mean(Modeled_Rh_Mg_ha_y_subke_Jar), Modeled_Rh_Mg_ha_y_subke_Jar_se = std.error(Modeled_Rh_Mg_ha_y_subke_Jar), 
+            Modeled_Rh_Mg_ha_y_BBL_Jar_mean = mean(Modeled_Rh_Mg_ha_y_BBL_Jar), Modeled_Rh_Mg_ha_y_BBL_Jar_se = std.error(Modeled_Rh_Mg_ha_y_BBL_Jar))%>%
+  filter(year == "2020")
+    
+NEP_dataframe_summary_NEP <- NEP_dataframe%>%
+  group_by(severity, year)%>%
+  summarize(NEP_1_mean = mean(NEP_MgChayr_1), NEP_1_se = std.error(NEP_MgChayr_1),
+            NEP_2_mean = mean(NEP_MgChayr_2), NEP_2_se = std.error(NEP_MgChayr_2),
+            NEP_3_mean = mean(NEP_MgChayr_3), NEP_3_se = std.error(NEP_MgChayr_3),
+            NEP_4_mean = mean(NEP_MgChayr_4), NEP_4_se = std.error(NEP_MgChayr_4),
+            NEP_5_mean = mean(NEP_MgChayr_5), NEP_5_se = std.error(NEP_MgChayr_5),
+            NEP_6_mean = mean(NEP_MgChayr_6), NEP_6_se = std.error(NEP_MgChayr_6),
+            NEP_7_mean = mean(NEP_MgChayr_7), NEP_7_se = std.error(NEP_MgChayr_7),
+            NEP_8_mean = mean(NEP_MgChayr_8), NEP_8_se = std.error(NEP_MgChayr_8),
+            NEP_9_mean = mean(NEP_MgChayr_9), NEP_9_se = std.error(NEP_MgChayr_9),
+            NEP_10_mean = mean(NEP_MgChayr_10), NEP_10_se = std.error(NEP_MgChayr_10),
+            NEP_11_mean = mean(NEP_MgChayr_11), NEP_11_se = std.error(NEP_MgChayr_11),
+            NEP_12_mean = mean(NEP_MgChayr_12), NEP_12_se = std.error(NEP_MgChayr_12))%>%
+  filter(year == "2019")
+
+########Make NEP Table 
+library(gt)
+
+NEP_table <- NEP_dataframe%>%
+gt()
+
+NEP_table 
