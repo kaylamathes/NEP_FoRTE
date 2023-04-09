@@ -909,17 +909,17 @@ NEP_table <- NEP_dataframe_summary%>%
   group_by( year)%>%
   gt()%>%
   fmt_number(decimals = 2)%>%
-  cols_merge_uncert(col_val = NPP_can_mean, col_uncert = NPP_can_se, sep = "")%>%
-  cols_merge_uncert(col_val = NPP_sc_mean, col_uncert = NPP_sc_se,sep = "")%>%
-  cols_merge_uncert(col_val = BNPP_mean, col_uncert = BNPP_se,sep = "")%>%
-  cols_merge_uncert(col_val = NPP_ll_mean, col_uncert = NPP_ll_se,sep = "")%>%
-  cols_merge_uncert(col_val = NPP_fwd_mean, col_uncert = NPP_fwd_se,sep = "")%>%
-  cols_merge_uncert(col_val = NPP_fr_mean, col_uncert = NPP_fr_se,sep = "")%>%
-  cols_merge_uncert(col_val = CWD_mean, col_uncert = CWD_uncertainty,sep = "")%>%
-  cols_merge_uncert(col_val = Rh_mean, col_uncert = Rh_uncertainty,sep = "")%>%
-  cols_merge_uncert(col_val = NEP_mean, col_uncert = NEP_uncertainty,sep = "")%>%
-  cols_label(severity = "Severity (%)", NPP_can_mean = html("Canopy ANPP<sub>w<sub>"),
-             NPP_sc_mean = html("Subcanopy ANPP<sub>w<sub>"), 
+  cols_merge_uncert(col_val = NPP_can_mean, col_uncert = NPP_can_se, sep = "\n")%>%
+  cols_merge_uncert(col_val = NPP_sc_mean, col_uncert = NPP_sc_se,sep = "\n")%>%
+  cols_merge_uncert(col_val = BNPP_mean, col_uncert = BNPP_se,sep = "\n")%>%
+  cols_merge_uncert(col_val = NPP_ll_mean, col_uncert = NPP_ll_se,sep = "\n")%>%
+  cols_merge_uncert(col_val = NPP_fwd_mean, col_uncert = NPP_fwd_se,sep = "\n")%>%
+  cols_merge_uncert(col_val = NPP_fr_mean, col_uncert = NPP_fr_se,sep = "\n")%>%
+  cols_merge_uncert(col_val = CWD_mean, col_uncert = CWD_uncertainty,sep = "\n")%>%
+  cols_merge_uncert(col_val = Rh_mean, col_uncert = Rh_uncertainty,sep = "\n")%>%
+  cols_merge_uncert(col_val = NEP_mean, col_uncert = NEP_uncertainty,sep = "\n")%>%
+  cols_label(severity = "Severity (%)", NPP_can_mean = html("canopy ANPP<sub>w<sub>"),
+             NPP_sc_mean = html("subcanopy ANPP<sub>w<sub>"), 
              BNPP_mean = html("BNPP<sub>w<sub>"),
              NPP_ll_mean = html("NPP<sub>ll<sub>"),
              NPP_fwd_mean = html("NPP<sub>fwd<sub>"),
@@ -927,13 +927,15 @@ NEP_table <- NEP_dataframe_summary%>%
              CWD_mean = html("R<sub>cwd,ave<sub>"),
              Rh_mean = html("R<sub>sh,ave<sub>"),
              NEP_mean = ("NEP"))%>%
-  cols_width(everything () ~ px(120))
+  cols_width(everything () ~ px(83))%>%
+  tab_header(title = md(" "))%>%
+  tab_source_note(source_note = "")
 
 NEP_table 
 
 library(webshot2)
 
-gtsave(NEP_table, "NEP Table.png")
+gtsave(NEP_table, "NEP Table.png", expand = 5, zoom = 2)
 
 
 
