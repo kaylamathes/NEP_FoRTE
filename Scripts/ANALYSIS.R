@@ -6,6 +6,7 @@ library(rstatix)
 library(car)
 library(agricolae)
 library(gridExtra)
+library(plotrix)
 
 ####Load CSV files from other R scripts 
 
@@ -555,8 +556,7 @@ NEP_data_uncertainty_sumary_2 <- NEP_dataframe%>%
   summarize(NEP_MgChayr_grandmean_mean = mean(NEP_MgChayr_grandmean), NEP_se_rep = std.error(NEP_MgChayr_grandmean))
 
 NEP_uncertainty_summary <- merge(NEP_data_uncertainty_sumary_2, NEP_dataframe_uncertainty_summary_1, by = c("severity", "year"))%>%
-  mutate(NEP_uncertainty = sqrt(NEP_se_Model + NEP_se_rep ))%>%
-  filter(year == "2021")
+  mutate(NEP_uncertainty = sqrt(NEP_se_Model + NEP_se_rep ))
 
 
 ######Rh uncertainty 
@@ -851,8 +851,103 @@ summary(NEP_biomass_model)
 
 
 NEP_dataframe_summary <- NEP_dataframe%>%
-  group_by(severity, year)%>%
-  summarize(NPP_can_mean = mean(NPP_can), NPP_can_se = std.error(NPP_can), NPP_sc_mean = mean(NPP_sc), NPP_sc_se = std.error(NPP_sc),NPP_fr_mean = mean(NPP_fr), NPP_fr_se = std.error(NPP_fr),NPP_ll_mean = mean(NPP_ll), NPP_ll_se = std.error(NPP_ll), NPP_fwd_mean = mean(NPP_fwd), NPP_fwd_se = std.error(NPP_fwd),BNPP_mean = mean(BNPP), BNPP_se = std.error(BNPP), NPP_total_mean = mean(NPP_total), NPP_se_total = std.error(NPP_total))
+  group_by(year, severity)%>%
+  summarize(NPP_can_mean = mean(NPP_can), 
+            NPP_can_se = std.error(NPP_can), 
+            NPP_sc_mean = mean(NPP_sc), 
+            NPP_sc_se = std.error(NPP_sc),
+            BNPP_mean = mean(BNPP),
+            BNPP_se = std.error(BNPP),
+            NPP_ll_mean = mean(NPP_ll),
+            NPP_ll_se = std.error(NPP_ll), 
+            NPP_fwd_mean = mean(NPP_fwd), 
+            NPP_fwd_se = std.error(NPP_fwd), 
+            NPP_fr_mean = mean(NPP_fr),
+            NPP_fr_se = std.error(NPP_fr),
+            NPP_total_mean = mean(NPP_total), 
+            NPP_se_total = std.error(NPP_total))
+
+NEP_dataframe_summary <- merge(NEP_dataframe_summary, CWD_uncertainty_summary, by = c("year", "severity"))
+NEP_dataframe_summary <- merge(NEP_dataframe_summary, Rh_uncertainty_summary, by = c("year", "severity"))
+NEP_dataframe_summary <- merge(NEP_dataframe_summary, NEP_uncertainty_summary, by = c("year", "severity"))
+
+
+NEP_dataframe_summary <- NEP_dataframe_summary%>%
+  select(!NPP_total_mean)%>%
+  select(!NPP_se_total)%>%
+  select(!CWD_se_Model)%>%
+  select(!CWD_se_rep)%>%
+  select(!Rh_se_rep)%>%
+  select(!Rh_se_Model)%>%
+  select(!R_CWD_Mghayr_ave_mean)%>%
+  select(!Rh_Mghayr_ave_mean)%>%
+  select(!NEP_MgChayr_grandmean_mean)%>%
+  select(!NEP_se_Model)%>%
+  select(!NEP_se_rep)
+
+
+is.num <- sapply(NEP_dataframe_summary, is.numeric)
+NEP_dataframe_summary[is.num] <- lapply(NEP_dataframe_summary[is.num], round, 2)
+
+
+library(assertive.base)
+#####Add paranthesis to SE values 
+NEP_dataframe_summary$NPP_can_se <- parenthesize(NEP_dataframe_summary$NPP_can_se)
+NEP_dataframe_summary$NPP_sc_se <- parenthesize(NEP_dataframe_summary$NPP_sc_se)
+NEP_dataframe_summary$NPP_ll_se <- parenthesize(NEP_dataframe_summary$NPP_ll_se)
+NEP_dataframe_summary$NPP_fwd_se <- parenthesize(NEP_dataframe_summary$NPP_fwd_se)
+NEP_dataframe_summary$NPP_fr_se <- parenthesize(NEP_dataframe_summary$NPP_fr_se)
+NEP_dataframe_summary$BNPP_se <- parenthesize(NEP_dataframe_summary$BNPP_se)
+NEP_dataframe_summary$Rh_uncertainty <- parenthesize(NEP_dataframe_summary$Rh_uncertainty)
+NEP_dataframe_summary$CWD_uncertainty <- parenthesize(NEP_dataframe_summary$CWD_uncertainty)
+NEP_dataframe_summary$NEP_uncertainty <- parenthesize(NEP_dataframe_summary$NEP_uncertainty)
+
+########Make NEP Table 
+library(gt)
+
+NEP_table <- NEP_dataframe_summary%>%
+  group_by( year)%>%
+  gt()%>%
+  fmt_number(decimals = 2)%>%
+  cols_merge_uncert(col_val = NPP_can_mean, col_uncert = NPP_can_se, sep = "")%>%
+  cols_merge_uncert(col_val = NPP_sc_mean, col_uncert = NPP_sc_se,sep = "")%>%
+  cols_merge_uncert(col_val = BNPP_mean, col_uncert = BNPP_se,sep = "")%>%
+  cols_merge_uncert(col_val = NPP_ll_mean, col_uncert = NPP_ll_se,sep = "")%>%
+  cols_merge_uncert(col_val = NPP_fwd_mean, col_uncert = NPP_fwd_se,sep = "")%>%
+  cols_merge_uncert(col_val = NPP_fr_mean, col_uncert = NPP_fr_se,sep = "")%>%
+  cols_merge_uncert(col_val = CWD_mean, col_uncert = CWD_uncertainty,sep = "")%>%
+  cols_merge_uncert(col_val = Rh_mean, col_uncert = Rh_uncertainty,sep = "")%>%
+  cols_merge_uncert(col_val = NEP_mean, col_uncert = NEP_uncertainty,sep = "")%>%
+  cols_label(severity = "Severity (%)", NPP_can_mean = html("Canopy ANPP<sub>w<sub>"),
+             NPP_sc_mean = html("Subcanopy ANPP<sub>w<sub>"), 
+             BNPP_mean = html("BNPP<sub>w<sub>"),
+             NPP_ll_mean = html("NPP<sub>ll<sub>"),
+             NPP_fwd_mean = html("NPP<sub>fwd<sub>"),
+             NPP_fr_mean = html("NPP<sub>fr<sub>"),
+             CWD_mean = html("R<sub>cwd,ave<sub>"),
+             Rh_mean = html("R<sub>sh,ave<sub>"),
+             NEP_mean = ("NEP"))%>%
+  cols_width(everything () ~ px(120))
+
+NEP_table 
+
+library(webshot2)
+
+gtsave(NEP_table, "NEP Table.png")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 NEP_dataframe_summary_Rh <- NEP_dataframe%>%
   group_by(severity, year)%>%
@@ -878,10 +973,4 @@ NEP_dataframe_summary_NEP <- NEP_dataframe%>%
             NEP_12_mean = mean(NEP_MgChayr_12), NEP_12_se = std.error(NEP_MgChayr_12))%>%
   filter(year == "2019")
 
-########Make NEP Table 
-library(gt)
 
-NEP_table <- NEP_dataframe%>%
-gt()
-
-NEP_table 
