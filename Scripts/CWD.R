@@ -941,55 +941,142 @@ library(broom)
 fitted_model_temp_6 <-  Tower_T_6hour_2019_regression%>%
   nest_by(Subplot_ID)%>%
   mutate(model = list(lm(ave_point_temp ~ tower_temp, data = data)))%>%
-  summarize(tidy(model))
+  summarize(tidy(model, conf.int = TRUE, conf.level = 0.95))%>%
+  select(Subplot_ID, term, conf.low, conf.high)
+
+
+fitted_model_temp_6 <- fitted_model_temp_6%>%
+ pivot_wider(names_from = term, values_from = c( conf.low, conf.high))
 
 ###Organize model coefficients into a dataframe 
-library(data.table)
-
+ library(data.table)
+# 
 Tower_T_6hour_2019_regression <- data.table(Tower_T_6hour_2019_regression)
-
+# 
 Tower_T_6hour_2019_regression <- Tower_T_6hour_2019_regression[,as.list(coef(lm(ave_point_temp ~ tower_temp))), by=Subplot_ID]
-
+# 
 Tower_T_6hour_2019_regression <- as.data.frame.matrix(Tower_T_6hour_2019_regression)
+
+Tower_T_6hour_2019_regression <- merge(Tower_T_6hour_2019_regression,fitted_model_temp_6, by = "Subplot_ID" )
 
 
 ###Apply subplot specific regression models to model hourly temperature in each subplot for 2019 (temp(modeled) = m(tower_temp) + b)
+##mean
 Tower_T_6hour_2019_modeled <- Tower_T_6hour_2019%>%
-  mutate(D02E = Tower_T_6hour_2019_regression[1,3]*tower_temp + Tower_T_6hour_2019_regression[1,2])%>%
-  mutate(D02W = Tower_T_6hour_2019_regression[2,3]*tower_temp + Tower_T_6hour_2019_regression[2,2])%>%
-  mutate(D03E = Tower_T_6hour_2019_regression[3,3]*tower_temp + Tower_T_6hour_2019_regression[3,2])%>%
-  mutate(D03W = Tower_T_6hour_2019_regression[4,3]*tower_temp + Tower_T_6hour_2019_regression[4,2])%>%
-  mutate(D04E = Tower_T_6hour_2019_regression[5,3]*tower_temp + Tower_T_6hour_2019_regression[5,2])%>%
-  mutate(D04W = Tower_T_6hour_2019_regression[6,3]*tower_temp + Tower_T_6hour_2019_regression[6,2])%>%
-  mutate(C01E = Tower_T_6hour_2019_regression[7,3]*tower_temp + Tower_T_6hour_2019_regression[7,2])%>%
-  mutate(C01W = Tower_T_6hour_2019_regression[8,3]*tower_temp + Tower_T_6hour_2019_regression[8,2])%>%
-  mutate(C02E = Tower_T_6hour_2019_regression[9,3]*tower_temp + Tower_T_6hour_2019_regression[9,2])%>%
-  mutate(C02W = Tower_T_6hour_2019_regression[10,3]*tower_temp + Tower_T_6hour_2019_regression[10,2])%>%
-  mutate(C03E = Tower_T_6hour_2019_regression[11,3]*tower_temp + Tower_T_6hour_2019_regression[11,2])%>%
-  mutate(C03W = Tower_T_6hour_2019_regression[12,3]*tower_temp + Tower_T_6hour_2019_regression[12,2])%>%
-  mutate(C04E = Tower_T_6hour_2019_regression[13,3]*tower_temp + Tower_T_6hour_2019_regression[13,2])%>%
-  mutate(C04W = Tower_T_6hour_2019_regression[14,3]*tower_temp + Tower_T_6hour_2019_regression[14,2])%>%
-  mutate(D01E = Tower_T_6hour_2019_regression[15,3]*tower_temp + Tower_T_6hour_2019_regression[15,2])%>%
-  mutate(D01W = Tower_T_6hour_2019_regression[16,3]*tower_temp + Tower_T_6hour_2019_regression[16,2])%>%
-  mutate(B01E = Tower_T_6hour_2019_regression[17,3]*tower_temp + Tower_T_6hour_2019_regression[17,2])%>%
-  mutate(B01W = Tower_T_6hour_2019_regression[18,3]*tower_temp + Tower_T_6hour_2019_regression[18,2])%>%
-  mutate(B02E = Tower_T_6hour_2019_regression[19,3]*tower_temp + Tower_T_6hour_2019_regression[19,2])%>%
-  mutate(B02W = Tower_T_6hour_2019_regression[20,3]*tower_temp + Tower_T_6hour_2019_regression[20,2])%>%
-  mutate(B03E = Tower_T_6hour_2019_regression[21,3]*tower_temp + Tower_T_6hour_2019_regression[21,2])%>%
-  mutate(B03W = Tower_T_6hour_2019_regression[22,3]*tower_temp + Tower_T_6hour_2019_regression[22,2])%>%
-  mutate(B04E = Tower_T_6hour_2019_regression[23,3]*tower_temp + Tower_T_6hour_2019_regression[23,2])%>%
-  mutate(B04W = Tower_T_6hour_2019_regression[24,3]*tower_temp + Tower_T_6hour_2019_regression[24,2])%>%
-  mutate(A01E = Tower_T_6hour_2019_regression[25,3]*tower_temp + Tower_T_6hour_2019_regression[25,2])%>%
-  mutate(A01W = Tower_T_6hour_2019_regression[26,3]*tower_temp + Tower_T_6hour_2019_regression[26,2])%>%
-  mutate(A02E = Tower_T_6hour_2019_regression[27,3]*tower_temp + Tower_T_6hour_2019_regression[27,2])%>%
-  mutate(A02W = Tower_T_6hour_2019_regression[28,3]*tower_temp + Tower_T_6hour_2019_regression[28,2])%>%
-  mutate(A03E = Tower_T_6hour_2019_regression[29,3]*tower_temp + Tower_T_6hour_2019_regression[29,2])%>%
-  mutate(A03W = Tower_T_6hour_2019_regression[30,3]*tower_temp + Tower_T_6hour_2019_regression[30,2])%>%
-  mutate(A04E = Tower_T_6hour_2019_regression[31,3]*tower_temp + Tower_T_6hour_2019_regression[31,2])%>%
-  mutate(A04W = Tower_T_6hour_2019_regression[32,3]*tower_temp + Tower_T_6hour_2019_regression[32,2])
+  mutate(A01E = Tower_T_6hour_2019_regression[1,3]*tower_temp + Tower_T_6hour_2019_regression[1,2])%>%
+  mutate(A01W = Tower_T_6hour_2019_regression[2,3]*tower_temp + Tower_T_6hour_2019_regression[2,2])%>%
+  mutate(A02E = Tower_T_6hour_2019_regression[3,3]*tower_temp + Tower_T_6hour_2019_regression[3,2])%>%
+  mutate(A02W = Tower_T_6hour_2019_regression[4,3]*tower_temp + Tower_T_6hour_2019_regression[4,2])%>%
+  mutate(A03E = Tower_T_6hour_2019_regression[5,3]*tower_temp + Tower_T_6hour_2019_regression[5,2])%>%
+  mutate(A03W = Tower_T_6hour_2019_regression[6,3]*tower_temp + Tower_T_6hour_2019_regression[6,2])%>%
+  mutate(B01E = Tower_T_6hour_2019_regression[7,3]*tower_temp + Tower_T_6hour_2019_regression[7,2])%>%
+  mutate(B01W = Tower_T_6hour_2019_regression[8,3]*tower_temp + Tower_T_6hour_2019_regression[8,2])%>%
+  mutate(B02E = Tower_T_6hour_2019_regression[9,3]*tower_temp + Tower_T_6hour_2019_regression[9,2])%>%
+  mutate(B02W = Tower_T_6hour_2019_regression[10,3]*tower_temp + Tower_T_6hour_2019_regression[10,2])%>%
+  mutate(B03E = Tower_T_6hour_2019_regression[11,3]*tower_temp + Tower_T_6hour_2019_regression[11,2])%>%
+  mutate(B03W = Tower_T_6hour_2019_regression[12,3]*tower_temp + Tower_T_6hour_2019_regression[12,2])%>%
+  mutate(B04E = Tower_T_6hour_2019_regression[13,3]*tower_temp + Tower_T_6hour_2019_regression[13,2])%>%
+  mutate(B04W = Tower_T_6hour_2019_regression[14,3]*tower_temp + Tower_T_6hour_2019_regression[14,2])%>%
+  mutate(C01E = Tower_T_6hour_2019_regression[15,3]*tower_temp + Tower_T_6hour_2019_regression[15,2])%>%
+  mutate(C01W = Tower_T_6hour_2019_regression[16,3]*tower_temp + Tower_T_6hour_2019_regression[16,2])%>%
+  mutate(C01E = Tower_T_6hour_2019_regression[17,3]*tower_temp + Tower_T_6hour_2019_regression[17,2])%>%
+  mutate(C01W = Tower_T_6hour_2019_regression[18,3]*tower_temp + Tower_T_6hour_2019_regression[18,2])%>%
+  mutate(C02E = Tower_T_6hour_2019_regression[19,3]*tower_temp + Tower_T_6hour_2019_regression[19,2])%>%
+  mutate(C02W = Tower_T_6hour_2019_regression[20,3]*tower_temp + Tower_T_6hour_2019_regression[20,2])%>%
+  mutate(C03E = Tower_T_6hour_2019_regression[21,3]*tower_temp + Tower_T_6hour_2019_regression[21,2])%>%
+  mutate(C03W = Tower_T_6hour_2019_regression[22,3]*tower_temp + Tower_T_6hour_2019_regression[22,2])%>%
+  mutate(C04E = Tower_T_6hour_2019_regression[23,3]*tower_temp + Tower_T_6hour_2019_regression[23,2])%>%
+  mutate(C04W = Tower_T_6hour_2019_regression[24,3]*tower_temp + Tower_T_6hour_2019_regression[24,2])%>%
+  mutate(D01E = Tower_T_6hour_2019_regression[25,3]*tower_temp + Tower_T_6hour_2019_regression[25,2])%>%
+  mutate(D01W = Tower_T_6hour_2019_regression[26,3]*tower_temp + Tower_T_6hour_2019_regression[26,2])%>%
+  mutate(D02E = Tower_T_6hour_2019_regression[27,3]*tower_temp + Tower_T_6hour_2019_regression[27,2])%>%
+  mutate(D02W = Tower_T_6hour_2019_regression[28,3]*tower_temp + Tower_T_6hour_2019_regression[28,2])%>%
+  mutate(D03E = Tower_T_6hour_2019_regression[29,3]*tower_temp + Tower_T_6hour_2019_regression[29,2])%>%
+  mutate(D03W = Tower_T_6hour_2019_regression[30,3]*tower_temp + Tower_T_6hour_2019_regression[30,2])%>%
+  mutate(D04E = Tower_T_6hour_2019_regression[31,3]*tower_temp + Tower_T_6hour_2019_regression[31,2])%>%
+  mutate(D04W = Tower_T_6hour_2019_regression[32,3]*tower_temp + Tower_T_6hour_2019_regression[32,2])
+
+##low
+Tower_T_6hour_2019_modeled_low <- Tower_T_6hour_2019%>%
+mutate(A01E = Tower_T_6hour_2019_regression[1,5]*tower_temp + Tower_T_6hour_2019_regression[1,4])%>%
+  mutate(A01W = Tower_T_6hour_2019_regression[2,5]*tower_temp + Tower_T_6hour_2019_regression[2,4])%>%
+  mutate(A02E = Tower_T_6hour_2019_regression[3,5]*tower_temp + Tower_T_6hour_2019_regression[3,4])%>%
+  mutate(A02W = Tower_T_6hour_2019_regression[4,5]*tower_temp + Tower_T_6hour_2019_regression[4,4])%>%
+  mutate(A03E = Tower_T_6hour_2019_regression[5,5]*tower_temp + Tower_T_6hour_2019_regression[5,4])%>%
+  mutate(A03W = Tower_T_6hour_2019_regression[6,5]*tower_temp + Tower_T_6hour_2019_regression[6,4])%>%
+  mutate(B01E = Tower_T_6hour_2019_regression[7,5]*tower_temp + Tower_T_6hour_2019_regression[7,4])%>%
+  mutate(B01W = Tower_T_6hour_2019_regression[8,5]*tower_temp + Tower_T_6hour_2019_regression[8,4])%>%
+  mutate(B02E = Tower_T_6hour_2019_regression[9,5]*tower_temp + Tower_T_6hour_2019_regression[9,4])%>%
+  mutate(B02W = Tower_T_6hour_2019_regression[10,5]*tower_temp + Tower_T_6hour_2019_regression[10,4])%>%
+  mutate(B03E = Tower_T_6hour_2019_regression[11,5]*tower_temp + Tower_T_6hour_2019_regression[11,4])%>%
+  mutate(B03W = Tower_T_6hour_2019_regression[12,5]*tower_temp + Tower_T_6hour_2019_regression[12,4])%>%
+  mutate(B04E = Tower_T_6hour_2019_regression[13,5]*tower_temp + Tower_T_6hour_2019_regression[13,4])%>%
+  mutate(B04W = Tower_T_6hour_2019_regression[14,5]*tower_temp + Tower_T_6hour_2019_regression[14,4])%>%
+  mutate(C01E = Tower_T_6hour_2019_regression[15,5]*tower_temp + Tower_T_6hour_2019_regression[15,4])%>%
+  mutate(C01W = Tower_T_6hour_2019_regression[16,5]*tower_temp + Tower_T_6hour_2019_regression[16,4])%>%
+  mutate(C01E = Tower_T_6hour_2019_regression[17,5]*tower_temp + Tower_T_6hour_2019_regression[17,4])%>%
+  mutate(C01W = Tower_T_6hour_2019_regression[18,5]*tower_temp + Tower_T_6hour_2019_regression[18,4])%>%
+  mutate(C02E = Tower_T_6hour_2019_regression[19,5]*tower_temp + Tower_T_6hour_2019_regression[19,4])%>%
+  mutate(C02W = Tower_T_6hour_2019_regression[20,5]*tower_temp + Tower_T_6hour_2019_regression[20,4])%>%
+  mutate(C03E = Tower_T_6hour_2019_regression[21,5]*tower_temp + Tower_T_6hour_2019_regression[21,4])%>%
+  mutate(C03W = Tower_T_6hour_2019_regression[22,5]*tower_temp + Tower_T_6hour_2019_regression[22,4])%>%
+  mutate(C04E = Tower_T_6hour_2019_regression[23,5]*tower_temp + Tower_T_6hour_2019_regression[23,4])%>%
+  mutate(C04W = Tower_T_6hour_2019_regression[24,5]*tower_temp + Tower_T_6hour_2019_regression[24,4])%>%
+  mutate(D01E = Tower_T_6hour_2019_regression[25,5]*tower_temp + Tower_T_6hour_2019_regression[25,4])%>%
+  mutate(D01W = Tower_T_6hour_2019_regression[26,5]*tower_temp + Tower_T_6hour_2019_regression[26,4])%>%
+  mutate(D02E = Tower_T_6hour_2019_regression[27,5]*tower_temp + Tower_T_6hour_2019_regression[27,4])%>%
+  mutate(D02W = Tower_T_6hour_2019_regression[28,5]*tower_temp + Tower_T_6hour_2019_regression[28,4])%>%
+  mutate(D03E = Tower_T_6hour_2019_regression[29,5]*tower_temp + Tower_T_6hour_2019_regression[29,4])%>%
+  mutate(D03W = Tower_T_6hour_2019_regression[30,5]*tower_temp + Tower_T_6hour_2019_regression[30,4])%>%
+  mutate(D04E = Tower_T_6hour_2019_regression[31,5]*tower_temp + Tower_T_6hour_2019_regression[31,4])%>%
+  mutate(D04W = Tower_T_6hour_2019_regression[32,5]*tower_temp + Tower_T_6hour_2019_regression[32,4])
+
+##high
+Tower_T_6hour_2019_modeled_high <- Tower_T_6hour_2019%>%
+  mutate(A01E = Tower_T_6hour_2019_regression[1,7]*tower_temp + Tower_T_6hour_2019_regression[1,6])%>%
+  mutate(A01W = Tower_T_6hour_2019_regression[2,7]*tower_temp + Tower_T_6hour_2019_regression[2,6])%>%
+  mutate(A02E = Tower_T_6hour_2019_regression[3,7]*tower_temp + Tower_T_6hour_2019_regression[3,6])%>%
+  mutate(A02W = Tower_T_6hour_2019_regression[4,7]*tower_temp + Tower_T_6hour_2019_regression[4,6])%>%
+  mutate(A03E = Tower_T_6hour_2019_regression[5,7]*tower_temp + Tower_T_6hour_2019_regression[5,6])%>%
+  mutate(A03W = Tower_T_6hour_2019_regression[6,7]*tower_temp + Tower_T_6hour_2019_regression[6,6])%>%
+  mutate(B01E = Tower_T_6hour_2019_regression[7,7]*tower_temp + Tower_T_6hour_2019_regression[7,6])%>%
+  mutate(B01W = Tower_T_6hour_2019_regression[8,7]*tower_temp + Tower_T_6hour_2019_regression[8,6])%>%
+  mutate(B02E = Tower_T_6hour_2019_regression[9,7]*tower_temp + Tower_T_6hour_2019_regression[9,6])%>%
+  mutate(B02W = Tower_T_6hour_2019_regression[10,7]*tower_temp + Tower_T_6hour_2019_regression[10,6])%>%
+  mutate(B03E = Tower_T_6hour_2019_regression[11,7]*tower_temp + Tower_T_6hour_2019_regression[11,6])%>%
+  mutate(B03W = Tower_T_6hour_2019_regression[12,7]*tower_temp + Tower_T_6hour_2019_regression[12,6])%>%
+  mutate(B04E = Tower_T_6hour_2019_regression[13,7]*tower_temp + Tower_T_6hour_2019_regression[13,6])%>%
+  mutate(B04W = Tower_T_6hour_2019_regression[14,7]*tower_temp + Tower_T_6hour_2019_regression[14,6])%>%
+  mutate(C01E = Tower_T_6hour_2019_regression[15,7]*tower_temp + Tower_T_6hour_2019_regression[15,6])%>%
+  mutate(C01W = Tower_T_6hour_2019_regression[16,7]*tower_temp + Tower_T_6hour_2019_regression[16,6])%>%
+  mutate(C01E = Tower_T_6hour_2019_regression[17,7]*tower_temp + Tower_T_6hour_2019_regression[17,6])%>%
+  mutate(C01W = Tower_T_6hour_2019_regression[18,7]*tower_temp + Tower_T_6hour_2019_regression[18,6])%>%
+  mutate(C02E = Tower_T_6hour_2019_regression[19,7]*tower_temp + Tower_T_6hour_2019_regression[19,6])%>%
+  mutate(C02W = Tower_T_6hour_2019_regression[20,7]*tower_temp + Tower_T_6hour_2019_regression[20,6])%>%
+  mutate(C03E = Tower_T_6hour_2019_regression[21,7]*tower_temp + Tower_T_6hour_2019_regression[21,6])%>%
+  mutate(C03W = Tower_T_6hour_2019_regression[22,7]*tower_temp + Tower_T_6hour_2019_regression[22,6])%>%
+  mutate(C04E = Tower_T_6hour_2019_regression[23,7]*tower_temp + Tower_T_6hour_2019_regression[23,6])%>%
+  mutate(C04W = Tower_T_6hour_2019_regression[24,7]*tower_temp + Tower_T_6hour_2019_regression[24,6])%>%
+  mutate(D01E = Tower_T_6hour_2019_regression[25,7]*tower_temp + Tower_T_6hour_2019_regression[25,6])%>%
+  mutate(D01W = Tower_T_6hour_2019_regression[26,7]*tower_temp + Tower_T_6hour_2019_regression[26,6])%>%
+  mutate(D02E = Tower_T_6hour_2019_regression[27,7]*tower_temp + Tower_T_6hour_2019_regression[27,6])%>%
+  mutate(D02W = Tower_T_6hour_2019_regression[28,7]*tower_temp + Tower_T_6hour_2019_regression[28,6])%>%
+  mutate(D03E = Tower_T_6hour_2019_regression[29,7]*tower_temp + Tower_T_6hour_2019_regression[29,6])%>%
+  mutate(D03W = Tower_T_6hour_2019_regression[30,7]*tower_temp + Tower_T_6hour_2019_regression[30,6])%>%
+  mutate(D04E = Tower_T_6hour_2019_regression[31,7]*tower_temp + Tower_T_6hour_2019_regression[31,6])%>%
+  mutate(D04W = Tower_T_6hour_2019_regression[32,7]*tower_temp + Tower_T_6hour_2019_regression[32,6])
+  
 
 
-Tower_T_6hour_2019_modeled <- gather(Tower_T_6hour_2019_modeled, Subplot_ID, modeled_temp, D02E:A04W, factor_key = TRUE)
+Tower_T_6hour_2019_modeled <- gather(Tower_T_6hour_2019_modeled, Subplot_ID, modeled_temp, A01E:D04W, factor_key = TRUE)
+
+Tower_T_6hour_2019_modeled_low <- gather(Tower_T_6hour_2019_modeled_low, Subplot_ID, modeled_temp_low, A01E:D04W, factor_key = TRUE)
+
+Tower_T_6hour_2019_modeled_high <- gather(Tower_T_6hour_2019_modeled_high, Subplot_ID, modeled_temp_high, A01E:D04W, factor_key = TRUE)
+
+Tower_T_6hour_2019_modeled <- merge(Tower_T_6hour_2019_modeled,Tower_T_6hour_2019_modeled_low, by = c("Timestamp_6", "tower_temp", "Subplot_ID") )
+
+Tower_T_6hour_2019_modeled <- merge(Tower_T_6hour_2019_modeled,Tower_T_6hour_2019_modeled_high, by = c("Timestamp_6", "tower_temp", "Subplot_ID") )
 
 write.csv(Tower_T_6hour_2019_modeled, "modeled_6hr_Ts_2019.csv", row.names=FALSE)
 
@@ -1191,42 +1278,46 @@ as_id("https://drive.google.com/drive/folders/1HHnDpTj32O-aaFavUzugzIxojf_BGEei"
   Tower_T_6hour_2020_regression <- Tower_T_6hour_2020_combined%>%
     filter(!is.na(ave_soilTemp))
   
-  ###Run Regression to look at summary statistics (All models are highly significant)
-  library(broom)
-  
   fitted_model_temp_6_2020 <-  Tower_T_6hour_2020_regression%>%
     nest_by(Subplot_ID)%>%
     mutate(model = list(lm(ave_soilTemp ~ tower_temp, data = data)))%>%
-    summarize(tidy(model))
+    summarize(tidy(model, conf.int = TRUE, conf.level = 0.95))%>%
+    select(Subplot_ID, term, conf.low, conf.high)
+  
+  
+  fitted_model_temp_6_2020 <- fitted_model_temp_6_2020%>%
+    pivot_wider(names_from = term, values_from = c( conf.low, conf.high))
   
   ###Organize model coefficients into a dataframe 
   library(data.table)
-  
+  # 
   Tower_T_6hour_2020_regression <- data.table(Tower_T_6hour_2020_regression)
   
   Tower_T_6hour_2020_regression <- Tower_T_6hour_2020_regression[,as.list(coef(lm(ave_soilTemp ~ tower_temp))), by=Subplot_ID]
-  
+  # 
   Tower_T_6hour_2020_regression <- as.data.frame.matrix(Tower_T_6hour_2020_regression)
   
+  Tower_T_6hour_2020_regression <- merge(Tower_T_6hour_2020_regression,fitted_model_temp_6_2020, by = "Subplot_ID" )
   
-  ###Apply subplot specific regression models to model hourly temperature in each subplot for 2020 (temp(modeled) = m(tower_temp) + b)
+  
+  
   Tower_T_6hour_2020_modeled <- Tower_T_6hour_2020%>%
-    mutate(B01E = Tower_T_6hour_2020_regression[1,3]*tower_temp + Tower_T_6hour_2020_regression[1,2])%>%
-    mutate(B01W = Tower_T_6hour_2020_regression[2,3]*tower_temp + Tower_T_6hour_2020_regression[2,2])%>%
-    mutate(B02E = Tower_T_6hour_2020_regression[3,3]*tower_temp + Tower_T_6hour_2020_regression[3,2])%>%
-    mutate(B02W = Tower_T_6hour_2020_regression[4,3]*tower_temp + Tower_T_6hour_2020_regression[4,2])%>%
-    mutate(B03E = Tower_T_6hour_2020_regression[5,3]*tower_temp + Tower_T_6hour_2020_regression[5,2])%>%
-    mutate(B03W = Tower_T_6hour_2020_regression[6,3]*tower_temp + Tower_T_6hour_2020_regression[6,2])%>%
-    mutate(B04E = Tower_T_6hour_2020_regression[7,3]*tower_temp + Tower_T_6hour_2020_regression[7,2])%>%
-    mutate(B04W = Tower_T_6hour_2020_regression[8,3]*tower_temp + Tower_T_6hour_2020_regression[8,2])%>%
-    mutate(A01E = Tower_T_6hour_2020_regression[9,3]*tower_temp + Tower_T_6hour_2020_regression[9,2])%>%
-    mutate(A01W = Tower_T_6hour_2020_regression[10,3]*tower_temp + Tower_T_6hour_2020_regression[10,2])%>%
-    mutate(A02E = Tower_T_6hour_2020_regression[11,3]*tower_temp + Tower_T_6hour_2020_regression[11,2])%>%
-    mutate(A02W = Tower_T_6hour_2020_regression[12,3]*tower_temp + Tower_T_6hour_2020_regression[12,2])%>%
-    mutate(A03E = Tower_T_6hour_2020_regression[13,3]*tower_temp + Tower_T_6hour_2020_regression[13,2])%>%
-    mutate(A03W = Tower_T_6hour_2020_regression[14,3]*tower_temp + Tower_T_6hour_2020_regression[14,2])%>%
-    mutate(A04E = Tower_T_6hour_2020_regression[15,3]*tower_temp + Tower_T_6hour_2020_regression[15,2])%>%
-    mutate(A04W = Tower_T_6hour_2020_regression[16,3]*tower_temp + Tower_T_6hour_2020_regression[16,2])%>%
+    mutate(A01E = Tower_T_6hour_2020_regression[1,3]*tower_temp + Tower_T_6hour_2020_regression[1,2])%>%
+    mutate(A01W = Tower_T_6hour_2020_regression[2,3]*tower_temp + Tower_T_6hour_2020_regression[2,2])%>%
+    mutate(A02E = Tower_T_6hour_2020_regression[3,3]*tower_temp + Tower_T_6hour_2020_regression[3,2])%>%
+    mutate(A02W = Tower_T_6hour_2020_regression[4,3]*tower_temp + Tower_T_6hour_2020_regression[4,2])%>%
+    mutate(A03E = Tower_T_6hour_2020_regression[5,3]*tower_temp + Tower_T_6hour_2020_regression[5,2])%>%
+    mutate(A03W = Tower_T_6hour_2020_regression[6,3]*tower_temp + Tower_T_6hour_2020_regression[6,2])%>%
+    mutate(B01E = Tower_T_6hour_2020_regression[7,3]*tower_temp + Tower_T_6hour_2020_regression[7,2])%>%
+    mutate(B01W = Tower_T_6hour_2020_regression[8,3]*tower_temp + Tower_T_6hour_2020_regression[8,2])%>%
+    mutate(B02E = Tower_T_6hour_2020_regression[9,3]*tower_temp + Tower_T_6hour_2020_regression[9,2])%>%
+    mutate(B02W = Tower_T_6hour_2020_regression[10,3]*tower_temp + Tower_T_6hour_2020_regression[10,2])%>%
+    mutate(B03E = Tower_T_6hour_2020_regression[11,3]*tower_temp + Tower_T_6hour_2020_regression[11,2])%>%
+    mutate(B03W = Tower_T_6hour_2020_regression[12,3]*tower_temp + Tower_T_6hour_2020_regression[12,2])%>%
+    mutate(B04E = Tower_T_6hour_2020_regression[13,3]*tower_temp + Tower_T_6hour_2020_regression[13,2])%>%
+    mutate(B04W = Tower_T_6hour_2020_regression[14,3]*tower_temp + Tower_T_6hour_2020_regression[14,2])%>%
+    mutate(C01E = Tower_T_6hour_2020_regression[15,3]*tower_temp + Tower_T_6hour_2020_regression[15,2])%>%
+    mutate(C01W = Tower_T_6hour_2020_regression[16,3]*tower_temp + Tower_T_6hour_2020_regression[16,2])%>%
     mutate(C01E = Tower_T_6hour_2020_regression[17,3]*tower_temp + Tower_T_6hour_2020_regression[17,2])%>%
     mutate(C01W = Tower_T_6hour_2020_regression[18,3]*tower_temp + Tower_T_6hour_2020_regression[18,2])%>%
     mutate(C02E = Tower_T_6hour_2020_regression[19,3]*tower_temp + Tower_T_6hour_2020_regression[19,2])%>%
@@ -1244,10 +1335,89 @@ as_id("https://drive.google.com/drive/folders/1HHnDpTj32O-aaFavUzugzIxojf_BGEei"
     mutate(D04E = Tower_T_6hour_2020_regression[31,3]*tower_temp + Tower_T_6hour_2020_regression[31,2])%>%
     mutate(D04W = Tower_T_6hour_2020_regression[32,3]*tower_temp + Tower_T_6hour_2020_regression[32,2])
   
+  ##low
+  Tower_T_6hour_2020_modeled_low <- Tower_T_6hour_2020%>%
+    mutate(A01E = Tower_T_6hour_2020_regression[1,5]*tower_temp + Tower_T_6hour_2020_regression[1,4])%>%
+    mutate(A01W = Tower_T_6hour_2020_regression[2,5]*tower_temp + Tower_T_6hour_2020_regression[2,4])%>%
+    mutate(A02E = Tower_T_6hour_2020_regression[3,5]*tower_temp + Tower_T_6hour_2020_regression[3,4])%>%
+    mutate(A02W = Tower_T_6hour_2020_regression[4,5]*tower_temp + Tower_T_6hour_2020_regression[4,4])%>%
+    mutate(A03E = Tower_T_6hour_2020_regression[5,5]*tower_temp + Tower_T_6hour_2020_regression[5,4])%>%
+    mutate(A03W = Tower_T_6hour_2020_regression[6,5]*tower_temp + Tower_T_6hour_2020_regression[6,4])%>%
+    mutate(B01E = Tower_T_6hour_2020_regression[7,5]*tower_temp + Tower_T_6hour_2020_regression[7,4])%>%
+    mutate(B01W = Tower_T_6hour_2020_regression[8,5]*tower_temp + Tower_T_6hour_2020_regression[8,4])%>%
+    mutate(B02E = Tower_T_6hour_2020_regression[9,5]*tower_temp + Tower_T_6hour_2020_regression[9,4])%>%
+    mutate(B02W = Tower_T_6hour_2020_regression[10,5]*tower_temp + Tower_T_6hour_2020_regression[10,4])%>%
+    mutate(B03E = Tower_T_6hour_2020_regression[11,5]*tower_temp + Tower_T_6hour_2020_regression[11,4])%>%
+    mutate(B03W = Tower_T_6hour_2020_regression[12,5]*tower_temp + Tower_T_6hour_2020_regression[12,4])%>%
+    mutate(B04E = Tower_T_6hour_2020_regression[13,5]*tower_temp + Tower_T_6hour_2020_regression[13,4])%>%
+    mutate(B04W = Tower_T_6hour_2020_regression[14,5]*tower_temp + Tower_T_6hour_2020_regression[14,4])%>%
+    mutate(C01E = Tower_T_6hour_2020_regression[15,5]*tower_temp + Tower_T_6hour_2020_regression[15,4])%>%
+    mutate(C01W = Tower_T_6hour_2020_regression[16,5]*tower_temp + Tower_T_6hour_2020_regression[16,4])%>%
+    mutate(C01E = Tower_T_6hour_2020_regression[17,5]*tower_temp + Tower_T_6hour_2020_regression[17,4])%>%
+    mutate(C01W = Tower_T_6hour_2020_regression[18,5]*tower_temp + Tower_T_6hour_2020_regression[18,4])%>%
+    mutate(C02E = Tower_T_6hour_2020_regression[19,5]*tower_temp + Tower_T_6hour_2020_regression[19,4])%>%
+    mutate(C02W = Tower_T_6hour_2020_regression[20,5]*tower_temp + Tower_T_6hour_2020_regression[20,4])%>%
+    mutate(C03E = Tower_T_6hour_2020_regression[21,5]*tower_temp + Tower_T_6hour_2020_regression[21,4])%>%
+    mutate(C03W = Tower_T_6hour_2020_regression[22,5]*tower_temp + Tower_T_6hour_2020_regression[22,4])%>%
+    mutate(C04E = Tower_T_6hour_2020_regression[23,5]*tower_temp + Tower_T_6hour_2020_regression[23,4])%>%
+    mutate(C04W = Tower_T_6hour_2020_regression[24,5]*tower_temp + Tower_T_6hour_2020_regression[24,4])%>%
+    mutate(D01E = Tower_T_6hour_2020_regression[25,5]*tower_temp + Tower_T_6hour_2020_regression[25,4])%>%
+    mutate(D01W = Tower_T_6hour_2020_regression[26,5]*tower_temp + Tower_T_6hour_2020_regression[26,4])%>%
+    mutate(D02E = Tower_T_6hour_2020_regression[27,5]*tower_temp + Tower_T_6hour_2020_regression[27,4])%>%
+    mutate(D02W = Tower_T_6hour_2020_regression[28,5]*tower_temp + Tower_T_6hour_2020_regression[28,4])%>%
+    mutate(D03E = Tower_T_6hour_2020_regression[29,5]*tower_temp + Tower_T_6hour_2020_regression[29,4])%>%
+    mutate(D03W = Tower_T_6hour_2020_regression[30,5]*tower_temp + Tower_T_6hour_2020_regression[30,4])%>%
+    mutate(D04E = Tower_T_6hour_2020_regression[31,5]*tower_temp + Tower_T_6hour_2020_regression[31,4])%>%
+    mutate(D04W = Tower_T_6hour_2020_regression[32,5]*tower_temp + Tower_T_6hour_2020_regression[32,4])
   
-  Tower_T_6hour_2020_modeled <- gather(Tower_T_6hour_2020_modeled, Subplot_ID, modeled_temp, B01E:D04W, factor_key = TRUE)
+  ##high
+  Tower_T_6hour_2020_modeled_high <- Tower_T_6hour_2020%>%
+    mutate(A01E = Tower_T_6hour_2020_regression[1,7]*tower_temp + Tower_T_6hour_2020_regression[1,6])%>%
+    mutate(A01W = Tower_T_6hour_2020_regression[2,7]*tower_temp + Tower_T_6hour_2020_regression[2,6])%>%
+    mutate(A02E = Tower_T_6hour_2020_regression[3,7]*tower_temp + Tower_T_6hour_2020_regression[3,6])%>%
+    mutate(A02W = Tower_T_6hour_2020_regression[4,7]*tower_temp + Tower_T_6hour_2020_regression[4,6])%>%
+    mutate(A03E = Tower_T_6hour_2020_regression[5,7]*tower_temp + Tower_T_6hour_2020_regression[5,6])%>%
+    mutate(A03W = Tower_T_6hour_2020_regression[6,7]*tower_temp + Tower_T_6hour_2020_regression[6,6])%>%
+    mutate(B01E = Tower_T_6hour_2020_regression[7,7]*tower_temp + Tower_T_6hour_2020_regression[7,6])%>%
+    mutate(B01W = Tower_T_6hour_2020_regression[8,7]*tower_temp + Tower_T_6hour_2020_regression[8,6])%>%
+    mutate(B02E = Tower_T_6hour_2020_regression[9,7]*tower_temp + Tower_T_6hour_2020_regression[9,6])%>%
+    mutate(B02W = Tower_T_6hour_2020_regression[10,7]*tower_temp + Tower_T_6hour_2020_regression[10,6])%>%
+    mutate(B03E = Tower_T_6hour_2020_regression[11,7]*tower_temp + Tower_T_6hour_2020_regression[11,6])%>%
+    mutate(B03W = Tower_T_6hour_2020_regression[12,7]*tower_temp + Tower_T_6hour_2020_regression[12,6])%>%
+    mutate(B04E = Tower_T_6hour_2020_regression[13,7]*tower_temp + Tower_T_6hour_2020_regression[13,6])%>%
+    mutate(B04W = Tower_T_6hour_2020_regression[14,7]*tower_temp + Tower_T_6hour_2020_regression[14,6])%>%
+    mutate(C01E = Tower_T_6hour_2020_regression[15,7]*tower_temp + Tower_T_6hour_2020_regression[15,6])%>%
+    mutate(C01W = Tower_T_6hour_2020_regression[16,7]*tower_temp + Tower_T_6hour_2020_regression[16,6])%>%
+    mutate(C01E = Tower_T_6hour_2020_regression[17,7]*tower_temp + Tower_T_6hour_2020_regression[17,6])%>%
+    mutate(C01W = Tower_T_6hour_2020_regression[18,7]*tower_temp + Tower_T_6hour_2020_regression[18,6])%>%
+    mutate(C02E = Tower_T_6hour_2020_regression[19,7]*tower_temp + Tower_T_6hour_2020_regression[19,6])%>%
+    mutate(C02W = Tower_T_6hour_2020_regression[20,7]*tower_temp + Tower_T_6hour_2020_regression[20,6])%>%
+    mutate(C03E = Tower_T_6hour_2020_regression[21,7]*tower_temp + Tower_T_6hour_2020_regression[21,6])%>%
+    mutate(C03W = Tower_T_6hour_2020_regression[22,7]*tower_temp + Tower_T_6hour_2020_regression[22,6])%>%
+    mutate(C04E = Tower_T_6hour_2020_regression[23,7]*tower_temp + Tower_T_6hour_2020_regression[23,6])%>%
+    mutate(C04W = Tower_T_6hour_2020_regression[24,7]*tower_temp + Tower_T_6hour_2020_regression[24,6])%>%
+    mutate(D01E = Tower_T_6hour_2020_regression[25,7]*tower_temp + Tower_T_6hour_2020_regression[25,6])%>%
+    mutate(D01W = Tower_T_6hour_2020_regression[26,7]*tower_temp + Tower_T_6hour_2020_regression[26,6])%>%
+    mutate(D02E = Tower_T_6hour_2020_regression[27,7]*tower_temp + Tower_T_6hour_2020_regression[27,6])%>%
+    mutate(D02W = Tower_T_6hour_2020_regression[28,7]*tower_temp + Tower_T_6hour_2020_regression[28,6])%>%
+    mutate(D03E = Tower_T_6hour_2020_regression[29,7]*tower_temp + Tower_T_6hour_2020_regression[29,6])%>%
+    mutate(D03W = Tower_T_6hour_2020_regression[30,7]*tower_temp + Tower_T_6hour_2020_regression[30,6])%>%
+    mutate(D04E = Tower_T_6hour_2020_regression[31,7]*tower_temp + Tower_T_6hour_2020_regression[31,6])%>%
+    mutate(D04W = Tower_T_6hour_2020_regression[32,7]*tower_temp + Tower_T_6hour_2020_regression[32,6])
   
-write.csv(Tower_T_6hour_2020_modeled, "modeled_6hr_Ts_2020.csv", row.names=FALSE)
+  
+  
+  Tower_T_6hour_2020_modeled <- gather(Tower_T_6hour_2020_modeled, Subplot_ID, modeled_temp, A01E:D04W, factor_key = TRUE)
+  
+  Tower_T_6hour_2020_modeled_low <- gather(Tower_T_6hour_2020_modeled_low, Subplot_ID, modeled_temp_low, A01E:D04W, factor_key = TRUE)
+  
+  Tower_T_6hour_2020_modeled_high <- gather(Tower_T_6hour_2020_modeled_high, Subplot_ID, modeled_temp_high, A01E:D04W, factor_key = TRUE)
+  
+  Tower_T_6hour_2020_modeled <- merge(Tower_T_6hour_2020_modeled,Tower_T_6hour_2020_modeled_low, by = c("Timestamp_6", "tower_temp", "Subplot_ID") )
+  
+  Tower_T_6hour_2020_modeled <- merge(Tower_T_6hour_2020_modeled,Tower_T_6hour_2020_modeled_high, by = c("Timestamp_6", "tower_temp", "Subplot_ID") )
+  
+  write.csv(Tower_T_6hour_2020_modeled, "modeled_6hr_Ts_2020.csv", row.names=FALSE)
   
   ##plot modeled temperature data
   
@@ -1427,64 +1597,148 @@ write.csv(Tower_T_6hour_2020_modeled, "modeled_6hr_Ts_2020.csv", row.names=FALSE
   Tower_T_6hour_2021_regression <- Tower_T_6hour_2021_combined%>%
     filter(!is.na(ave_soilTemp))
   
-  ###Run Regression to look at summary statistics (All models are highly significant)
-  library(broom)
-  
   fitted_model_temp_6_2021 <-  Tower_T_6hour_2021_regression%>%
     nest_by(Subplot_ID)%>%
     mutate(model = list(lm(ave_soilTemp ~ tower_temp, data = data)))%>%
-    summarize(tidy(model))
+    summarize(tidy(model, conf.int = TRUE, conf.level = 0.95))%>%
+    select(Subplot_ID, term, conf.low, conf.high)
+  
+  
+  fitted_model_temp_6_2021 <- fitted_model_temp_6_2021%>%
+    pivot_wider(names_from = term, values_from = c( conf.low, conf.high))
   
   ###Organize model coefficients into a dataframe 
   library(data.table)
-  
+  # 
   Tower_T_6hour_2021_regression <- data.table(Tower_T_6hour_2021_regression)
   
   Tower_T_6hour_2021_regression <- Tower_T_6hour_2021_regression[,as.list(coef(lm(ave_soilTemp ~ tower_temp))), by=Subplot_ID]
-  
+  # 
   Tower_T_6hour_2021_regression <- as.data.frame.matrix(Tower_T_6hour_2021_regression)
   
+  Tower_T_6hour_2021_regression <- merge(Tower_T_6hour_2021_regression,fitted_model_temp_6_2021, by = "Subplot_ID" )
   
-  ###Apply subplot specific regression models to model hourly temperature in each subplot for 2021 (temp(modeled) = m(tower_temp) + b)
+  
+  
   Tower_T_6hour_2021_modeled <- Tower_T_6hour_2021%>%
-    mutate(D01E = Tower_T_6hour_2021_regression[1,3]*tower_temp + Tower_T_6hour_2021_regression[1,2])%>%
-    mutate(D01W = Tower_T_6hour_2021_regression[2,3]*tower_temp + Tower_T_6hour_2021_regression[2,2])%>%
-    mutate(D02E = Tower_T_6hour_2021_regression[3,3]*tower_temp + Tower_T_6hour_2021_regression[3,2])%>%
-    mutate(D02W = Tower_T_6hour_2021_regression[4,3]*tower_temp + Tower_T_6hour_2021_regression[4,2])%>%
-    mutate(D03E = Tower_T_6hour_2021_regression[5,3]*tower_temp + Tower_T_6hour_2021_regression[5,2])%>%
-    mutate(D03W = Tower_T_6hour_2021_regression[6,3]*tower_temp + Tower_T_6hour_2021_regression[6,2])%>%
-    mutate(D04E = Tower_T_6hour_2021_regression[7,3]*tower_temp + Tower_T_6hour_2021_regression[7,2])%>%
-    mutate(D04W = Tower_T_6hour_2021_regression[8,3]*tower_temp + Tower_T_6hour_2021_regression[8,2])%>%
-    mutate(C01E = Tower_T_6hour_2021_regression[9,3]*tower_temp + Tower_T_6hour_2021_regression[9,2])%>%
-    mutate(C01W = Tower_T_6hour_2021_regression[10,3]*tower_temp + Tower_T_6hour_2021_regression[10,2])%>%
-    mutate(C02E = Tower_T_6hour_2021_regression[11,3]*tower_temp + Tower_T_6hour_2021_regression[11,2])%>%
-    mutate(C02W = Tower_T_6hour_2021_regression[12,3]*tower_temp + Tower_T_6hour_2021_regression[12,2])%>%
-    mutate(C03E = Tower_T_6hour_2021_regression[13,3]*tower_temp + Tower_T_6hour_2021_regression[13,2])%>%
-    mutate(C03W = Tower_T_6hour_2021_regression[14,3]*tower_temp + Tower_T_6hour_2021_regression[14,2])%>%
-    mutate(C04E = Tower_T_6hour_2021_regression[15,3]*tower_temp + Tower_T_6hour_2021_regression[15,2])%>%
-    mutate(C04W = Tower_T_6hour_2021_regression[16,3]*tower_temp + Tower_T_6hour_2021_regression[16,2])%>%
-    mutate(B01E = Tower_T_6hour_2021_regression[17,3]*tower_temp + Tower_T_6hour_2021_regression[17,2])%>%
-    mutate(B01W = Tower_T_6hour_2021_regression[18,3]*tower_temp + Tower_T_6hour_2021_regression[18,2])%>%
-    mutate(B02E = Tower_T_6hour_2021_regression[19,3]*tower_temp + Tower_T_6hour_2021_regression[19,2])%>%
-    mutate(B02W = Tower_T_6hour_2021_regression[20,3]*tower_temp + Tower_T_6hour_2021_regression[20,2])%>%
-    mutate(B03E = Tower_T_6hour_2021_regression[21,3]*tower_temp + Tower_T_6hour_2021_regression[21,2])%>%
-    mutate(B03W = Tower_T_6hour_2021_regression[22,3]*tower_temp + Tower_T_6hour_2021_regression[22,2])%>%
-    mutate(B04E = Tower_T_6hour_2021_regression[23,3]*tower_temp + Tower_T_6hour_2021_regression[23,2])%>%
-    mutate(B04W = Tower_T_6hour_2021_regression[24,3]*tower_temp + Tower_T_6hour_2021_regression[24,2])%>%
-    mutate(A01E = Tower_T_6hour_2021_regression[25,3]*tower_temp + Tower_T_6hour_2021_regression[25,2])%>%
-    mutate(A01W = Tower_T_6hour_2021_regression[26,3]*tower_temp + Tower_T_6hour_2021_regression[26,2])%>%
-    mutate(A02E = Tower_T_6hour_2021_regression[27,3]*tower_temp + Tower_T_6hour_2021_regression[27,2])%>%
-    mutate(A02W = Tower_T_6hour_2021_regression[28,3]*tower_temp + Tower_T_6hour_2021_regression[28,2])%>%
-    mutate(A03E = Tower_T_6hour_2021_regression[29,3]*tower_temp + Tower_T_6hour_2021_regression[29,2])%>%
-    mutate(A03W = Tower_T_6hour_2021_regression[30,3]*tower_temp + Tower_T_6hour_2021_regression[30,2])%>%
-    mutate(A04E = Tower_T_6hour_2021_regression[31,3]*tower_temp + Tower_T_6hour_2021_regression[31,2])%>%
-    mutate(A04W = Tower_T_6hour_2021_regression[32,3]*tower_temp + Tower_T_6hour_2021_regression[32,2])
+    mutate(A01E = Tower_T_6hour_2021_regression[1,3]*tower_temp + Tower_T_6hour_2021_regression[1,2])%>%
+    mutate(A01W = Tower_T_6hour_2021_regression[2,3]*tower_temp + Tower_T_6hour_2021_regression[2,2])%>%
+    mutate(A02E = Tower_T_6hour_2021_regression[3,3]*tower_temp + Tower_T_6hour_2021_regression[3,2])%>%
+    mutate(A02W = Tower_T_6hour_2021_regression[4,3]*tower_temp + Tower_T_6hour_2021_regression[4,2])%>%
+    mutate(A03E = Tower_T_6hour_2021_regression[5,3]*tower_temp + Tower_T_6hour_2021_regression[5,2])%>%
+    mutate(A03W = Tower_T_6hour_2021_regression[6,3]*tower_temp + Tower_T_6hour_2021_regression[6,2])%>%
+    mutate(B01E = Tower_T_6hour_2021_regression[7,3]*tower_temp + Tower_T_6hour_2021_regression[7,2])%>%
+    mutate(B01W = Tower_T_6hour_2021_regression[8,3]*tower_temp + Tower_T_6hour_2021_regression[8,2])%>%
+    mutate(B02E = Tower_T_6hour_2021_regression[9,3]*tower_temp + Tower_T_6hour_2021_regression[9,2])%>%
+    mutate(B02W = Tower_T_6hour_2021_regression[10,3]*tower_temp + Tower_T_6hour_2021_regression[10,2])%>%
+    mutate(B03E = Tower_T_6hour_2021_regression[11,3]*tower_temp + Tower_T_6hour_2021_regression[11,2])%>%
+    mutate(B03W = Tower_T_6hour_2021_regression[12,3]*tower_temp + Tower_T_6hour_2021_regression[12,2])%>%
+    mutate(B04E = Tower_T_6hour_2021_regression[13,3]*tower_temp + Tower_T_6hour_2021_regression[13,2])%>%
+    mutate(B04W = Tower_T_6hour_2021_regression[14,3]*tower_temp + Tower_T_6hour_2021_regression[14,2])%>%
+    mutate(C01E = Tower_T_6hour_2021_regression[15,3]*tower_temp + Tower_T_6hour_2021_regression[15,2])%>%
+    mutate(C01W = Tower_T_6hour_2021_regression[16,3]*tower_temp + Tower_T_6hour_2021_regression[16,2])%>%
+    mutate(C01E = Tower_T_6hour_2021_regression[17,3]*tower_temp + Tower_T_6hour_2021_regression[17,2])%>%
+    mutate(C01W = Tower_T_6hour_2021_regression[18,3]*tower_temp + Tower_T_6hour_2021_regression[18,2])%>%
+    mutate(C02E = Tower_T_6hour_2021_regression[19,3]*tower_temp + Tower_T_6hour_2021_regression[19,2])%>%
+    mutate(C02W = Tower_T_6hour_2021_regression[20,3]*tower_temp + Tower_T_6hour_2021_regression[20,2])%>%
+    mutate(C03E = Tower_T_6hour_2021_regression[21,3]*tower_temp + Tower_T_6hour_2021_regression[21,2])%>%
+    mutate(C03W = Tower_T_6hour_2021_regression[22,3]*tower_temp + Tower_T_6hour_2021_regression[22,2])%>%
+    mutate(C04E = Tower_T_6hour_2021_regression[23,3]*tower_temp + Tower_T_6hour_2021_regression[23,2])%>%
+    mutate(C04W = Tower_T_6hour_2021_regression[24,3]*tower_temp + Tower_T_6hour_2021_regression[24,2])%>%
+    mutate(D01E = Tower_T_6hour_2021_regression[25,3]*tower_temp + Tower_T_6hour_2021_regression[25,2])%>%
+    mutate(D01W = Tower_T_6hour_2021_regression[26,3]*tower_temp + Tower_T_6hour_2021_regression[26,2])%>%
+    mutate(D02E = Tower_T_6hour_2021_regression[27,3]*tower_temp + Tower_T_6hour_2021_regression[27,2])%>%
+    mutate(D02W = Tower_T_6hour_2021_regression[28,3]*tower_temp + Tower_T_6hour_2021_regression[28,2])%>%
+    mutate(D03E = Tower_T_6hour_2021_regression[29,3]*tower_temp + Tower_T_6hour_2021_regression[29,2])%>%
+    mutate(D03W = Tower_T_6hour_2021_regression[30,3]*tower_temp + Tower_T_6hour_2021_regression[30,2])%>%
+    mutate(D04E = Tower_T_6hour_2021_regression[31,3]*tower_temp + Tower_T_6hour_2021_regression[31,2])%>%
+    mutate(D04W = Tower_T_6hour_2021_regression[32,3]*tower_temp + Tower_T_6hour_2021_regression[32,2])
+  
+  ##low
+  Tower_T_6hour_2021_modeled_low <- Tower_T_6hour_2021%>%
+    mutate(A01E = Tower_T_6hour_2021_regression[1,5]*tower_temp + Tower_T_6hour_2021_regression[1,4])%>%
+    mutate(A01W = Tower_T_6hour_2021_regression[2,5]*tower_temp + Tower_T_6hour_2021_regression[2,4])%>%
+    mutate(A02E = Tower_T_6hour_2021_regression[3,5]*tower_temp + Tower_T_6hour_2021_regression[3,4])%>%
+    mutate(A02W = Tower_T_6hour_2021_regression[4,5]*tower_temp + Tower_T_6hour_2021_regression[4,4])%>%
+    mutate(A03E = Tower_T_6hour_2021_regression[5,5]*tower_temp + Tower_T_6hour_2021_regression[5,4])%>%
+    mutate(A03W = Tower_T_6hour_2021_regression[6,5]*tower_temp + Tower_T_6hour_2021_regression[6,4])%>%
+    mutate(B01E = Tower_T_6hour_2021_regression[7,5]*tower_temp + Tower_T_6hour_2021_regression[7,4])%>%
+    mutate(B01W = Tower_T_6hour_2021_regression[8,5]*tower_temp + Tower_T_6hour_2021_regression[8,4])%>%
+    mutate(B02E = Tower_T_6hour_2021_regression[9,5]*tower_temp + Tower_T_6hour_2021_regression[9,4])%>%
+    mutate(B02W = Tower_T_6hour_2021_regression[10,5]*tower_temp + Tower_T_6hour_2021_regression[10,4])%>%
+    mutate(B03E = Tower_T_6hour_2021_regression[11,5]*tower_temp + Tower_T_6hour_2021_regression[11,4])%>%
+    mutate(B03W = Tower_T_6hour_2021_regression[12,5]*tower_temp + Tower_T_6hour_2021_regression[12,4])%>%
+    mutate(B04E = Tower_T_6hour_2021_regression[13,5]*tower_temp + Tower_T_6hour_2021_regression[13,4])%>%
+    mutate(B04W = Tower_T_6hour_2021_regression[14,5]*tower_temp + Tower_T_6hour_2021_regression[14,4])%>%
+    mutate(C01E = Tower_T_6hour_2021_regression[15,5]*tower_temp + Tower_T_6hour_2021_regression[15,4])%>%
+    mutate(C01W = Tower_T_6hour_2021_regression[16,5]*tower_temp + Tower_T_6hour_2021_regression[16,4])%>%
+    mutate(C01E = Tower_T_6hour_2021_regression[17,5]*tower_temp + Tower_T_6hour_2021_regression[17,4])%>%
+    mutate(C01W = Tower_T_6hour_2021_regression[18,5]*tower_temp + Tower_T_6hour_2021_regression[18,4])%>%
+    mutate(C02E = Tower_T_6hour_2021_regression[19,5]*tower_temp + Tower_T_6hour_2021_regression[19,4])%>%
+    mutate(C02W = Tower_T_6hour_2021_regression[20,5]*tower_temp + Tower_T_6hour_2021_regression[20,4])%>%
+    mutate(C03E = Tower_T_6hour_2021_regression[21,5]*tower_temp + Tower_T_6hour_2021_regression[21,4])%>%
+    mutate(C03W = Tower_T_6hour_2021_regression[22,5]*tower_temp + Tower_T_6hour_2021_regression[22,4])%>%
+    mutate(C04E = Tower_T_6hour_2021_regression[23,5]*tower_temp + Tower_T_6hour_2021_regression[23,4])%>%
+    mutate(C04W = Tower_T_6hour_2021_regression[24,5]*tower_temp + Tower_T_6hour_2021_regression[24,4])%>%
+    mutate(D01E = Tower_T_6hour_2021_regression[25,5]*tower_temp + Tower_T_6hour_2021_regression[25,4])%>%
+    mutate(D01W = Tower_T_6hour_2021_regression[26,5]*tower_temp + Tower_T_6hour_2021_regression[26,4])%>%
+    mutate(D02E = Tower_T_6hour_2021_regression[27,5]*tower_temp + Tower_T_6hour_2021_regression[27,4])%>%
+    mutate(D02W = Tower_T_6hour_2021_regression[28,5]*tower_temp + Tower_T_6hour_2021_regression[28,4])%>%
+    mutate(D03E = Tower_T_6hour_2021_regression[29,5]*tower_temp + Tower_T_6hour_2021_regression[29,4])%>%
+    mutate(D03W = Tower_T_6hour_2021_regression[30,5]*tower_temp + Tower_T_6hour_2021_regression[30,4])%>%
+    mutate(D04E = Tower_T_6hour_2021_regression[31,5]*tower_temp + Tower_T_6hour_2021_regression[31,4])%>%
+    mutate(D04W = Tower_T_6hour_2021_regression[32,5]*tower_temp + Tower_T_6hour_2021_regression[32,4])
+  
+  ##high
+  Tower_T_6hour_2021_modeled_high <- Tower_T_6hour_2021%>%
+    mutate(A01E = Tower_T_6hour_2021_regression[1,7]*tower_temp + Tower_T_6hour_2021_regression[1,6])%>%
+    mutate(A01W = Tower_T_6hour_2021_regression[2,7]*tower_temp + Tower_T_6hour_2021_regression[2,6])%>%
+    mutate(A02E = Tower_T_6hour_2021_regression[3,7]*tower_temp + Tower_T_6hour_2021_regression[3,6])%>%
+    mutate(A02W = Tower_T_6hour_2021_regression[4,7]*tower_temp + Tower_T_6hour_2021_regression[4,6])%>%
+    mutate(A03E = Tower_T_6hour_2021_regression[5,7]*tower_temp + Tower_T_6hour_2021_regression[5,6])%>%
+    mutate(A03W = Tower_T_6hour_2021_regression[6,7]*tower_temp + Tower_T_6hour_2021_regression[6,6])%>%
+    mutate(B01E = Tower_T_6hour_2021_regression[7,7]*tower_temp + Tower_T_6hour_2021_regression[7,6])%>%
+    mutate(B01W = Tower_T_6hour_2021_regression[8,7]*tower_temp + Tower_T_6hour_2021_regression[8,6])%>%
+    mutate(B02E = Tower_T_6hour_2021_regression[9,7]*tower_temp + Tower_T_6hour_2021_regression[9,6])%>%
+    mutate(B02W = Tower_T_6hour_2021_regression[10,7]*tower_temp + Tower_T_6hour_2021_regression[10,6])%>%
+    mutate(B03E = Tower_T_6hour_2021_regression[11,7]*tower_temp + Tower_T_6hour_2021_regression[11,6])%>%
+    mutate(B03W = Tower_T_6hour_2021_regression[12,7]*tower_temp + Tower_T_6hour_2021_regression[12,6])%>%
+    mutate(B04E = Tower_T_6hour_2021_regression[13,7]*tower_temp + Tower_T_6hour_2021_regression[13,6])%>%
+    mutate(B04W = Tower_T_6hour_2021_regression[14,7]*tower_temp + Tower_T_6hour_2021_regression[14,6])%>%
+    mutate(C01E = Tower_T_6hour_2021_regression[15,7]*tower_temp + Tower_T_6hour_2021_regression[15,6])%>%
+    mutate(C01W = Tower_T_6hour_2021_regression[16,7]*tower_temp + Tower_T_6hour_2021_regression[16,6])%>%
+    mutate(C01E = Tower_T_6hour_2021_regression[17,7]*tower_temp + Tower_T_6hour_2021_regression[17,6])%>%
+    mutate(C01W = Tower_T_6hour_2021_regression[18,7]*tower_temp + Tower_T_6hour_2021_regression[18,6])%>%
+    mutate(C02E = Tower_T_6hour_2021_regression[19,7]*tower_temp + Tower_T_6hour_2021_regression[19,6])%>%
+    mutate(C02W = Tower_T_6hour_2021_regression[20,7]*tower_temp + Tower_T_6hour_2021_regression[20,6])%>%
+    mutate(C03E = Tower_T_6hour_2021_regression[21,7]*tower_temp + Tower_T_6hour_2021_regression[21,6])%>%
+    mutate(C03W = Tower_T_6hour_2021_regression[22,7]*tower_temp + Tower_T_6hour_2021_regression[22,6])%>%
+    mutate(C04E = Tower_T_6hour_2021_regression[23,7]*tower_temp + Tower_T_6hour_2021_regression[23,6])%>%
+    mutate(C04W = Tower_T_6hour_2021_regression[24,7]*tower_temp + Tower_T_6hour_2021_regression[24,6])%>%
+    mutate(D01E = Tower_T_6hour_2021_regression[25,7]*tower_temp + Tower_T_6hour_2021_regression[25,6])%>%
+    mutate(D01W = Tower_T_6hour_2021_regression[26,7]*tower_temp + Tower_T_6hour_2021_regression[26,6])%>%
+    mutate(D02E = Tower_T_6hour_2021_regression[27,7]*tower_temp + Tower_T_6hour_2021_regression[27,6])%>%
+    mutate(D02W = Tower_T_6hour_2021_regression[28,7]*tower_temp + Tower_T_6hour_2021_regression[28,6])%>%
+    mutate(D03E = Tower_T_6hour_2021_regression[29,7]*tower_temp + Tower_T_6hour_2021_regression[29,6])%>%
+    mutate(D03W = Tower_T_6hour_2021_regression[30,7]*tower_temp + Tower_T_6hour_2021_regression[30,6])%>%
+    mutate(D04E = Tower_T_6hour_2021_regression[31,7]*tower_temp + Tower_T_6hour_2021_regression[31,6])%>%
+    mutate(D04W = Tower_T_6hour_2021_regression[32,7]*tower_temp + Tower_T_6hour_2021_regression[32,6])
   
   
-  Tower_T_6hour_2021_modeled <- gather(Tower_T_6hour_2021_modeled, Subplot_ID, modeled_temp, D01E:A04W, factor_key = TRUE)
+  
+  Tower_T_6hour_2021_modeled <- gather(Tower_T_6hour_2021_modeled, Subplot_ID, modeled_temp, A01E:D04W, factor_key = TRUE)
+  
+  Tower_T_6hour_2021_modeled_low <- gather(Tower_T_6hour_2021_modeled_low, Subplot_ID, modeled_temp_low, A01E:D04W, factor_key = TRUE)
+  
+  Tower_T_6hour_2021_modeled_high <- gather(Tower_T_6hour_2021_modeled_high, Subplot_ID, modeled_temp_high, A01E:D04W, factor_key = TRUE)
+  
+  Tower_T_6hour_2021_modeled <- merge(Tower_T_6hour_2021_modeled,Tower_T_6hour_2021_modeled_low, by = c("Timestamp_6", "tower_temp", "Subplot_ID") )
+  
+  Tower_T_6hour_2021_modeled <- merge(Tower_T_6hour_2021_modeled,Tower_T_6hour_2021_modeled_high, by = c("Timestamp_6", "tower_temp", "Subplot_ID") )
   
   write.csv(Tower_T_6hour_2021_modeled, "modeled_6hr_Ts_2021.csv", row.names=FALSE)
   
+ 
 ##plot modeled temperature data
   
 ##Create a dataframe with average modeled temp per day 
@@ -1879,12 +2133,12 @@ tower_raw_2022$Day.of.Year <- format(tower_raw_2022$Day.of.Year, "%m-%d")
 ########2019  
 ###Merge the modelled temperature and moisture dataframes 
   
-Modeled_T_SWC_2019 <- merge(Tower_SWC_6hour_2019_modeled,   Tower_T_6hour_2019_modeled, by = c("Timestamp_6", "Subplot_ID"))
+#Modeled_T_SWC_2019 <- merge(Tower_SWC_6hour_2019_modeled,   Tower_T_6hour_2019_modeled, by = c("Timestamp_6", "Subplot_ID"))
 
 ##Assume the modeled SWC below 0 is = to 0   
-Modeled_T_SWC_2019 <- Modeled_T_SWC_2019%>%
-  mutate(modeled_SWC_adjusted = case_when(modeled_SWC < 0 ~ 0, 
-                                          modeled_SWC > 0 ~ modeled_SWC))
+#Modeled_T_SWC_2019 <- Modeled_T_SWC_2019%>%
+  #mutate(modeled_SWC_adjusted = case_when(modeled_SWC < 0 ~ 0, 
+                                          #modeled_SWC > 0 ~ modeled_SWC))
 
 ##Apply the regression for CWD -1.2773*exp(-0.0339*modeled_temp) + 0.2493*log(fixed GWC), if temp <0, R CWD = 0. R_CWD (umol C kg s ). fixed gravemetric water content from the Gough et al. 2007 based on decay classes 
 ##Decay class one: 50%
@@ -1893,7 +2147,7 @@ Modeled_T_SWC_2019 <- Modeled_T_SWC_2019%>%
 ##Decay class four: 260%
 ##Decay class five: 200%
 
-Modeled_R_T_SWC_2019 <- Modeled_T_SWC_2019%>%
+Modeled_R_T_SWC_2019 <- Tower_T_6hour_2019_modeled%>%
   mutate(R_CWD_umol_kg_s_1 = case_when(modeled_temp > 0 ~ (-1.2773*exp(-0.0339*modeled_temp)) + 0.2493*log(50), 
                                      modeled_temp < 0 ~ 0))%>%
   mutate(R_CWD_umol_kg_s_2 = case_when(modeled_temp > 0 ~ (-1.2773*exp(-0.0339*modeled_temp)) + 0.2493*log(85), 
@@ -1904,6 +2158,32 @@ Modeled_R_T_SWC_2019 <- Modeled_T_SWC_2019%>%
                                        modeled_temp < 0 ~ 0))%>%
   mutate(R_CWD_umol_kg_s_5 = case_when(modeled_temp > 0 ~ (-1.2773*exp(-0.0339*modeled_temp)) + 0.2493*log(200), 
                                        modeled_temp < 0 ~ 0))
+
+Modeled_R_T_SWC_2019_low <- Tower_T_6hour_2019_modeled%>%
+mutate(R_CWD_umol_kg_s_1_low = case_when(modeled_temp_low > 0 ~ (-1.2773*exp(-0.0339*modeled_temp_low)) + 0.2493*log(50), 
+                                     modeled_temp_low < 0 ~ 0))%>%
+  mutate(R_CWD_umol_kg_s_2_low = case_when(modeled_temp_low > 0 ~ (-1.2773*exp(-0.0339*modeled_temp_low)) + 0.2493*log(85), 
+                                           modeled_temp_low < 0 ~ 0))%>%
+  mutate(R_CWD_umol_kg_s_3_low = case_when(modeled_temp_low > 0 ~ (-1.2773*exp(-0.0339*modeled_temp_low)) + 0.2493*log(72), 
+                                           modeled_temp_low < 0 ~ 0))%>%
+  mutate(R_CWD_umol_kg_s_4_low = case_when(modeled_temp_low > 0 ~ (-1.2773*exp(-0.0339*modeled_temp_low)) + 0.2493*log(260), 
+                                           modeled_temp_low < 0 ~ 0))%>%
+  mutate(R_CWD_umol_kg_s_5_low = case_when(modeled_temp_low > 0 ~ (-1.2773*exp(-0.0339*modeled_temp_low)) + 0.2493*log(200), 
+                                           modeled_temp_low < 0 ~ 0))
+
+
+Modeled_R_T_SWC_2019_high <- Tower_T_6hour_2019_modeled%>%
+  mutate(R_CWD_umol_kg_s_1_high = case_when(modeled_temp_high > 0 ~ (-1.2773*exp(-0.0339*modeled_temp_high)) + 0.2493*log(50), 
+                                           modeled_temp_high < 0 ~ 0))%>%
+  mutate(R_CWD_umol_kg_s_2_high = case_when(modeled_temp_high > 0 ~ (-1.2773*exp(-0.0339*modeled_temp_high)) + 0.2493*log(85), 
+                                           modeled_temp_high < 0 ~ 0))%>%
+  mutate(R_CWD_umol_kg_s_3_high = case_when(modeled_temp_high > 0 ~ (-1.2773*exp(-0.0339*modeled_temp_high)) + 0.2493*log(72), 
+                                           modeled_temp_high < 0 ~ 0))%>%
+  mutate(R_CWD_umol_kg_s_4_high = case_when(modeled_temp_high > 0 ~ (-1.2773*exp(-0.0339*modeled_temp_high)) + 0.2493*log(260), 
+                                           modeled_temp_high < 0 ~ 0))%>%
+  mutate(R_CWD_umol_kg_s_5_high = case_when(modeled_temp_high > 0 ~ (-1.2773*exp(-0.0339*modeled_temp_high)) + 0.2493*log(200), 
+                                           modeled_temp_high < 0 ~ 0))
+
 
 # #####Convert negative values to zero 
 # Modeled_R_T_SWC_2019 <- Modeled_R_T_SWC_2019%>%
@@ -1928,12 +2208,36 @@ Modeled_6hour_R_T_SWC_2019 <- Modeled_R_T_SWC_2019%>%
   mutate(R_CWD_umol_kg_6hour_4 = R_CWD_umol_kg_s_4*21600)%>%
   mutate(R_CWD_umol_kg_6hour_5 = R_CWD_umol_kg_s_5*21600)
 
+###Low
+Modeled_6hour_R_T_SWC_2019_low <- Modeled_R_T_SWC_2019_low%>%
+  mutate(R_CWD_umol_kg_6hour_1_low = R_CWD_umol_kg_s_1_low*21600)%>%
+  mutate(R_CWD_umol_kg_6hour_2_low = R_CWD_umol_kg_s_2_low*21600)%>%
+  mutate(R_CWD_umol_kg_6hour_3_low = R_CWD_umol_kg_s_3_low*21600)%>%
+  mutate(R_CWD_umol_kg_6hour_4_low = R_CWD_umol_kg_s_4_low*21600)%>%
+  mutate(R_CWD_umol_kg_6hour_5_low = R_CWD_umol_kg_s_5_low*21600)
+
+#high 
+Modeled_6hour_R_T_SWC_2019_high <- Modeled_R_T_SWC_2019_high%>%
+  mutate(R_CWD_umol_kg_6hour_1_high = R_CWD_umol_kg_s_1_high*21600)%>%
+  mutate(R_CWD_umol_kg_6hour_2_high = R_CWD_umol_kg_s_2_high*21600)%>%
+  mutate(R_CWD_umol_kg_6hour_3_high = R_CWD_umol_kg_s_3_high*21600)%>%
+  mutate(R_CWD_umol_kg_6hour_4_high = R_CWD_umol_kg_s_4_high*21600)%>%
+  mutate(R_CWD_umol_kg_6hour_5_high = R_CWD_umol_kg_s_5_high*21600)
+
 ###Scale from umol C kg 6hour -> umol C kg yr
 Modeled_annual_R_T_SWC_2019 <- Modeled_6hour_R_T_SWC_2019%>%
   group_by(Subplot_ID)%>%
   summarize(R_CWD_umol_kg_year_1 = sum(R_CWD_umol_kg_6hour_1),R_CWD_umol_kg_year_2 = sum(R_CWD_umol_kg_6hour_2),R_CWD_umol_kg_year_3 = sum(R_CWD_umol_kg_6hour_3),R_CWD_umol_kg_year_4 = sum(R_CWD_umol_kg_6hour_4),R_CWD_umol_kg_year_5 = sum(R_CWD_umol_kg_6hour_5))
 
+##Low 
+Modeled_annual_R_T_SWC_2019_low <- Modeled_6hour_R_T_SWC_2019_low%>%
+  group_by(Subplot_ID)%>%
+  summarize(R_CWD_umol_kg_year_1_low = sum(R_CWD_umol_kg_6hour_1_low),R_CWD_umol_kg_year_2_low = sum(R_CWD_umol_kg_6hour_2_low),R_CWD_umol_kg_year_3_low = sum(R_CWD_umol_kg_6hour_3_low),R_CWD_umol_kg_year_4_low = sum(R_CWD_umol_kg_6hour_4_low),R_CWD_umol_kg_year_5_low = sum(R_CWD_umol_kg_6hour_5_low))
 
+##High 
+Modeled_annual_R_T_SWC_2019_high <- Modeled_6hour_R_T_SWC_2019_high%>%
+  group_by(Subplot_ID)%>%
+  summarize(R_CWD_umol_kg_year_1_high = sum(R_CWD_umol_kg_6hour_1_high),R_CWD_umol_kg_year_2_high = sum(R_CWD_umol_kg_6hour_2_high),R_CWD_umol_kg_year_3_high = sum(R_CWD_umol_kg_6hour_3_high),R_CWD_umol_kg_year_4_high = sum(R_CWD_umol_kg_6hour_4_high),R_CWD_umol_kg_year_5_high = sum(R_CWD_umol_kg_6hour_5_high))
 
 
 ##Make modeled Rcwd dataframe long again
@@ -1941,7 +2245,20 @@ Modeled_annual_R_T_SWC_2019 <- Modeled_6hour_R_T_SWC_2019%>%
 Modeled_annual_R_T_SWC_2019 <- Modeled_annual_R_T_SWC_2019%>%
   rename("1" = R_CWD_umol_kg_year_1, "2" = R_CWD_umol_kg_year_2, "3" = R_CWD_umol_kg_year_3, "4" = R_CWD_umol_kg_year_4, "5" = R_CWD_umol_kg_year_5)
 
+##low
+Modeled_annual_R_T_SWC_2019_low <- Modeled_annual_R_T_SWC_2019_low%>%
+  rename("1" = R_CWD_umol_kg_year_1_low, "2" = R_CWD_umol_kg_year_2_low, "3" = R_CWD_umol_kg_year_3_low, "4" = R_CWD_umol_kg_year_4_low, "5" = R_CWD_umol_kg_year_5_low)
+
+##high
+Modeled_annual_R_T_SWC_2019_high <- Modeled_annual_R_T_SWC_2019_high%>%
+  rename("1" = R_CWD_umol_kg_year_1_high, "2" = R_CWD_umol_kg_year_2_high, "3" = R_CWD_umol_kg_year_3_high, "4" = R_CWD_umol_kg_year_4_high, "5" = R_CWD_umol_kg_year_5_high)
+
 Modeled_annual_R_T_SWC_2019 <- gather(Modeled_annual_R_T_SWC_2019, decay_class, R_CWD_umol_kg_year, "1":"5", factor_key = TRUE)
+
+Modeled_annual_R_T_SWC_2019_low <- gather(Modeled_annual_R_T_SWC_2019_low, decay_class, R_CWD_umol_kg_year_low, "1":"5", factor_key = TRUE)
+
+Modeled_annual_R_T_SWC_2019_high <- gather(Modeled_annual_R_T_SWC_2019_high, decay_class, R_CWD_umol_kg_year_high, "1":"5", factor_key = TRUE)
+
 
 ###Bring in Mass of CWD in 2019 from CWD_2019_subplot_agg and convert to kg
 
@@ -1960,55 +2277,39 @@ Modeled_annual_R_T_SWC_2019 <- Modeled_annual_R_T_SWC_2019%>%
   mutate(R_CWD_Mg_subplot_yr = R_CWD_umol_kg_year*C_mass_kg_subplot_total/1000000*12.0107/1000000)%>%
   mutate(Remaining_C_mass_Mg_subplot_yr = C_mass_Mg_subplot_total -R_CWD_Mg_subplot_yr )
 
-# ##Add up the decay classes together 
-# Modeled_annual_R_T_SWC_2019_total <- Modeled_annual_R_T_SWC_2019%>%
-#   group_by(Subplot_ID)%>%
-#   summarize(R_CWD_Mg_ha_yr_total = sum(R_CWD_Mg_ha_yr))%>%
-#   rename(subplot_id = Subplot_ID)
-# 
-# ###Add Severity and treatment to CWD Dataframe 
-# Modeled_annual_R_T_SWC_2019_total <-  Modeled_annual_R_T_SWC_2019_total%>%
-#   mutate(severity = case_when(
-#     subplot_id == "A01E" ~ "85", subplot_id == "A01W" ~ "85", subplot_id == "A02E" ~ "45",
-#     subplot_id == "A02W" ~ "45", subplot_id == "A03E" ~ "65", subplot_id == "A03W" ~ "65",
-#     subplot_id == "A04E" ~ "0", subplot_id == "A04W" ~ "0", subplot_id == "B01E" ~ "0",
-#     subplot_id == "B01W" ~ "0", subplot_id == "B02E" ~ "45", subplot_id == "B02W" ~ "45",
-#     subplot_id == "B03E" ~ "85", subplot_id == "B03W" ~ "85", subplot_id == "B04E" ~ "65",
-#     subplot_id == "B04W" ~ "65", subplot_id == "C01E" ~ "0", subplot_id == "C01W" ~ "0",
-#     subplot_id == "C02E" ~ "65", subplot_id == "C02W" ~ "65", subplot_id == "C03E" ~ "85",
-#     subplot_id == "C03W" ~ "85", subplot_id == "C04E" ~ "45", subplot_id == "C04W" ~ "45", 
-#     subplot_id == "D01E" ~ "0", subplot_id == "D01W" ~ "0", subplot_id == "D02E" ~ "85",
-#     subplot_id == "D02W" ~ "85", subplot_id == "D03E" ~ "45", subplot_id == "D03W" ~ "45",
-#     subplot_id == "D04E" ~ "65", subplot_id == "D04W" ~ "65"
-#   )) %>% 
-#   mutate(treatment = case_when(
-#     subplot_id == "A01E" ~ "bottom", subplot_id == "A01W" ~ "top", subplot_id == "A02E" ~ "top",
-#     subplot_id == "A02W" ~ "bottom", subplot_id == "A03E" ~ "bottom", subplot_id == "A03W" ~ "top",
-#     subplot_id == "A04E" ~ "bottom", subplot_id == "A04W" ~ "top", subplot_id == "B01E" ~ "bottom",
-#     subplot_id == "B01W" ~ "top", subplot_id == "B02E" ~ "top", subplot_id == "B02W" ~ "bottom",
-#     subplot_id == "B03E" ~ "bottom", subplot_id == "B03W" ~ "top", subplot_id == "B04E" ~ "top",
-#     subplot_id == "B04W" ~ "bottom", subplot_id == "C01E" ~ "top", subplot_id == "C01W" ~ "bottom",
-#     subplot_id == "C02E" ~ "bottom", subplot_id == "C02W" ~ "top", subplot_id == "C03E" ~ "bottom",
-#     subplot_id == "C03W" ~ "top", subplot_id == "C04E" ~ "top", subplot_id == "C04W" ~ "bottom", 
-#     subplot_id == "D01E" ~ "bottom", subplot_id == "D01W" ~ "top", subplot_id == "D02E" ~ "bottom",
-#     subplot_id == "D02W" ~ "top", subplot_id == "D03E" ~ "bottom", subplot_id == "D03W" ~ "top",
-#     subplot_id == "D04E" ~ "top", subplot_id == "D04W" ~ "bottom"
-#   ))
-# 
-# ##Summarize by severity 
-# Modeled_annual_R_T_SWC_2019_severity <- Modeled_annual_R_T_SWC_2019_total%>%
-#   group_by(severity)%>%
-#   summarize(R_CWD_Mg_ha_yr_mean = mean(R_CWD_Mg_ha_yr_total), R_CWD_Mg_ha_yr_se = std.error(R_CWD_Mg_ha_yr_total))
-  
+
+###Low 
+###Merge the CWD mass by subplot and decay class with the R CWD flux dataframe from 2019 
+
+Modeled_annual_R_T_SWC_2019_low <- merge(CWD_2019_subplot_agg_sub, Modeled_annual_R_T_SWC_2019_low, by = c("decay_class", "Subplot_ID"))
+
+###Convert from Rcwd (umol C kg yr) -> Mg C subplot yr: use the subplot level mass (kg) of CWD within each decay class 
+Modeled_annual_R_T_SWC_2019_low <- Modeled_annual_R_T_SWC_2019_low%>%
+  mutate(R_CWD_Mg_subplot_yr_low = R_CWD_umol_kg_year_low*C_mass_kg_subplot_total/1000000*12.0107/1000000)%>%
+  mutate(Remaining_C_mass_Mg_subplot_yr_low = C_mass_Mg_subplot_total -R_CWD_Mg_subplot_yr_low )
+
+
+###high
+###Merge the CWD mass by subplot and decay class with the R CWD flux dataframe from 2019 
+
+Modeled_annual_R_T_SWC_2019_high <- merge(CWD_2019_subplot_agg_sub, Modeled_annual_R_T_SWC_2019_high, by = c("decay_class", "Subplot_ID"))
+
+###Convert from Rcwd (umol C kg yr) -> Mg C subplot yr: use the subplot level mass (kg) of CWD within each decay class 
+Modeled_annual_R_T_SWC_2019_high <- Modeled_annual_R_T_SWC_2019_high%>%
+  mutate(R_CWD_Mg_subplot_yr_high = R_CWD_umol_kg_year_high*C_mass_kg_subplot_total/1000000*12.0107/1000000)%>%
+  mutate(Remaining_C_mass_Mg_subplot_yr_high = C_mass_Mg_subplot_total -R_CWD_Mg_subplot_yr_high)
+
+
+
 
 #######2020 
 
-Modeled_T_SWC_2020 <- merge(Tower_SWC_6hour_2020_modeled,   Tower_T_6hour_2020_modeled, by = c("Timestamp_6", "Subplot_ID"))
+#Modeled_T_SWC_2020 <- merge(Tower_SWC_6hour_2020_modeled,   Tower_T_6hour_2020_modeled, by = c("Timestamp_6", "Subplot_ID"))
 
 ##Assume the modeled SWC below 0 is = to 0   
-Modeled_T_SWC_2020 <- Modeled_T_SWC_2020%>%
-  mutate(modeled_SWC_adjusted = case_when(modeled_SWC < 0 ~ 0, 
-                                          modeled_SWC > 0 ~ modeled_SWC))
+#Modeled_T_SWC_2020 <- Modeled_T_SWC_2020%>%
+  #mutate(modeled_SWC_adjusted = case_when(modeled_SWC < 0 ~ 0, 
+                                          #modeled_SWC > 0 ~ modeled_SWC))
 
 ##Apply the regression for CWD 1.2773*exp(-0.0339*modeled_temp) + 0.2493*log(fixed GWC), if temp <0, R CWD = 0. R_CWD (umol C kg s ). fixed gravemetric water content from the Gough et al. 2007 based on decay classes 
 ##Decay class one: 50%
@@ -2017,7 +2318,7 @@ Modeled_T_SWC_2020 <- Modeled_T_SWC_2020%>%
 ##Decay class four: 260%
 ##Decay class five: 200%
 
-Modeled_R_T_SWC_2020 <- Modeled_T_SWC_2020%>%
+Modeled_R_T_SWC_2020 <- Tower_T_6hour_2020_modeled%>%
   mutate(R_CWD_umol_kg_s_1 = case_when(modeled_temp > 0 ~ (-1.2773*exp(-0.0339*modeled_temp)) + 0.2493*log(50), 
                                        modeled_temp < 0 ~ 0))%>%
   mutate(R_CWD_umol_kg_s_2 = case_when(modeled_temp > 0 ~ (-1.2773*exp(-0.0339*modeled_temp)) + 0.2493*log(85), 
@@ -2028,6 +2329,32 @@ Modeled_R_T_SWC_2020 <- Modeled_T_SWC_2020%>%
                                        modeled_temp < 0 ~ 0))%>%
   mutate(R_CWD_umol_kg_s_5 = case_when(modeled_temp > 0 ~ (-1.2773*exp(-0.0339*modeled_temp)) + 0.2493*log(200), 
                                        modeled_temp < 0 ~ 0))
+
+Modeled_R_T_SWC_2020_low <- Tower_T_6hour_2020_modeled%>%
+  mutate(R_CWD_umol_kg_s_1_low = case_when(modeled_temp_low > 0 ~ (-1.2773*exp(-0.0339*modeled_temp_low)) + 0.2493*log(50), 
+                                           modeled_temp_low < 0 ~ 0))%>%
+  mutate(R_CWD_umol_kg_s_2_low = case_when(modeled_temp_low > 0 ~ (-1.2773*exp(-0.0339*modeled_temp_low)) + 0.2493*log(85), 
+                                           modeled_temp_low < 0 ~ 0))%>%
+  mutate(R_CWD_umol_kg_s_3_low = case_when(modeled_temp_low > 0 ~ (-1.2773*exp(-0.0339*modeled_temp_low)) + 0.2493*log(72), 
+                                           modeled_temp_low < 0 ~ 0))%>%
+  mutate(R_CWD_umol_kg_s_4_low = case_when(modeled_temp_low > 0 ~ (-1.2773*exp(-0.0339*modeled_temp_low)) + 0.2493*log(260), 
+                                           modeled_temp_low < 0 ~ 0))%>%
+  mutate(R_CWD_umol_kg_s_5_low = case_when(modeled_temp_low > 0 ~ (-1.2773*exp(-0.0339*modeled_temp_low)) + 0.2493*log(200), 
+                                           modeled_temp_low < 0 ~ 0))
+
+
+Modeled_R_T_SWC_2020_high <- Tower_T_6hour_2020_modeled%>%
+  mutate(R_CWD_umol_kg_s_1_high = case_when(modeled_temp_high > 0 ~ (-1.2773*exp(-0.0339*modeled_temp_high)) + 0.2493*log(50), 
+                                            modeled_temp_high < 0 ~ 0))%>%
+  mutate(R_CWD_umol_kg_s_2_high = case_when(modeled_temp_high > 0 ~ (-1.2773*exp(-0.0339*modeled_temp_high)) + 0.2493*log(85), 
+                                            modeled_temp_high < 0 ~ 0))%>%
+  mutate(R_CWD_umol_kg_s_3_high = case_when(modeled_temp_high > 0 ~ (-1.2773*exp(-0.0339*modeled_temp_high)) + 0.2493*log(72), 
+                                            modeled_temp_high < 0 ~ 0))%>%
+  mutate(R_CWD_umol_kg_s_4_high = case_when(modeled_temp_high > 0 ~ (-1.2773*exp(-0.0339*modeled_temp_high)) + 0.2493*log(260), 
+                                            modeled_temp_high < 0 ~ 0))%>%
+  mutate(R_CWD_umol_kg_s_5_high = case_when(modeled_temp_high > 0 ~ (-1.2773*exp(-0.0339*modeled_temp_high)) + 0.2493*log(200), 
+                                            modeled_temp_high < 0 ~ 0))
+
 
 # #####Convert negative values to zero 
 # Modeled_R_T_SWC_2020 <- Modeled_R_T_SWC_2020%>%
@@ -2052,10 +2379,37 @@ Modeled_6hour_R_T_SWC_2020 <- Modeled_R_T_SWC_2020%>%
   mutate(R_CWD_umol_kg_6hour_4 = R_CWD_umol_kg_s_4*21600)%>%
   mutate(R_CWD_umol_kg_6hour_5 = R_CWD_umol_kg_s_5*21600)
 
+###Low
+Modeled_6hour_R_T_SWC_2020_low <- Modeled_R_T_SWC_2020_low%>%
+  mutate(R_CWD_umol_kg_6hour_1_low = R_CWD_umol_kg_s_1_low*21600)%>%
+  mutate(R_CWD_umol_kg_6hour_2_low = R_CWD_umol_kg_s_2_low*21600)%>%
+  mutate(R_CWD_umol_kg_6hour_3_low = R_CWD_umol_kg_s_3_low*21600)%>%
+  mutate(R_CWD_umol_kg_6hour_4_low = R_CWD_umol_kg_s_4_low*21600)%>%
+  mutate(R_CWD_umol_kg_6hour_5_low = R_CWD_umol_kg_s_5_low*21600)
+
+#high 
+Modeled_6hour_R_T_SWC_2020_high <- Modeled_R_T_SWC_2020_high%>%
+  mutate(R_CWD_umol_kg_6hour_1_high = R_CWD_umol_kg_s_1_high*21600)%>%
+  mutate(R_CWD_umol_kg_6hour_2_high = R_CWD_umol_kg_s_2_high*21600)%>%
+  mutate(R_CWD_umol_kg_6hour_3_high = R_CWD_umol_kg_s_3_high*21600)%>%
+  mutate(R_CWD_umol_kg_6hour_4_high = R_CWD_umol_kg_s_4_high*21600)%>%
+  mutate(R_CWD_umol_kg_6hour_5_high = R_CWD_umol_kg_s_5_high*21600)
+
+
 ###Scale from umol C kg 6hour -> umol C kg yr
 Modeled_annual_R_T_SWC_2020 <- Modeled_6hour_R_T_SWC_2020%>%
   group_by(Subplot_ID)%>%
   summarize(R_CWD_umol_kg_year_1 = sum(R_CWD_umol_kg_6hour_1),R_CWD_umol_kg_year_2 = sum(R_CWD_umol_kg_6hour_2),R_CWD_umol_kg_year_3 = sum(R_CWD_umol_kg_6hour_3),R_CWD_umol_kg_year_4 = sum(R_CWD_umol_kg_6hour_4),R_CWD_umol_kg_year_5 = sum(R_CWD_umol_kg_6hour_5))
+
+##Low 
+Modeled_annual_R_T_SWC_2020_low <- Modeled_6hour_R_T_SWC_2020_low%>%
+  group_by(Subplot_ID)%>%
+  summarize(R_CWD_umol_kg_year_1_low = sum(R_CWD_umol_kg_6hour_1_low),R_CWD_umol_kg_year_2_low = sum(R_CWD_umol_kg_6hour_2_low),R_CWD_umol_kg_year_3_low = sum(R_CWD_umol_kg_6hour_3_low),R_CWD_umol_kg_year_4_low = sum(R_CWD_umol_kg_6hour_4_low),R_CWD_umol_kg_year_5_low = sum(R_CWD_umol_kg_6hour_5_low))
+
+##High 
+Modeled_annual_R_T_SWC_2020_high <- Modeled_6hour_R_T_SWC_2020_high%>%
+  group_by(Subplot_ID)%>%
+  summarize(R_CWD_umol_kg_year_1_high = sum(R_CWD_umol_kg_6hour_1_high),R_CWD_umol_kg_year_2_high = sum(R_CWD_umol_kg_6hour_2_high),R_CWD_umol_kg_year_3_high = sum(R_CWD_umol_kg_6hour_3_high),R_CWD_umol_kg_year_4_high = sum(R_CWD_umol_kg_6hour_4_high),R_CWD_umol_kg_year_5_high = sum(R_CWD_umol_kg_6hour_5_high))
 
 
 ##Make modeled Rcwd dataframe long again
@@ -2063,7 +2417,17 @@ Modeled_annual_R_T_SWC_2020 <- Modeled_6hour_R_T_SWC_2020%>%
 Modeled_annual_R_T_SWC_2020 <- Modeled_annual_R_T_SWC_2020%>%
   rename("1" = R_CWD_umol_kg_year_1, "2" = R_CWD_umol_kg_year_2, "3" = R_CWD_umol_kg_year_3, "4" = R_CWD_umol_kg_year_4, "5" = R_CWD_umol_kg_year_5)
 
+Modeled_annual_R_T_SWC_2020_low <- Modeled_annual_R_T_SWC_2020_low%>%
+  rename("1" = R_CWD_umol_kg_year_1_low, "2" = R_CWD_umol_kg_year_2_low, "3" = R_CWD_umol_kg_year_3_low, "4" = R_CWD_umol_kg_year_4_low, "5" = R_CWD_umol_kg_year_5_low)
+
+Modeled_annual_R_T_SWC_2020_high <- Modeled_annual_R_T_SWC_2020_high%>%
+  rename("1" = R_CWD_umol_kg_year_1_high, "2" = R_CWD_umol_kg_year_2_high, "3" = R_CWD_umol_kg_year_3_high, "4" = R_CWD_umol_kg_year_4_high, "5" = R_CWD_umol_kg_year_5_high)
+
 Modeled_annual_R_T_SWC_2020 <- gather(Modeled_annual_R_T_SWC_2020, decay_class, R_CWD_umol_kg_year, "1":"5", factor_key = TRUE)
+
+Modeled_annual_R_T_SWC_2020_low <- gather(Modeled_annual_R_T_SWC_2020_low, decay_class, R_CWD_umol_kg_year_low, "1":"5", factor_key = TRUE)
+
+Modeled_annual_R_T_SWC_2020_high <- gather(Modeled_annual_R_T_SWC_2020_high, decay_class, R_CWD_umol_kg_year_high, "1":"5", factor_key = TRUE)
 
 ###Bring in Mass of CWD in 2020 from Modeled_annual_R_T_SWC_2019,add CWD additions, and convert to kg 
 
@@ -2099,16 +2463,75 @@ Modeled_annual_R_T_SWC_2020 <- merge(CWD_2020_T_VWC_remaining_plus, Modeled_annu
 Modeled_annual_R_T_SWC_2020 <- Modeled_annual_R_T_SWC_2020%>%
   mutate(R_CWD_Mg_subplot_yr = R_CWD_umol_kg_year*C_mass_kg_subplot_total/1000000*12.0107/1000000)%>%
   mutate(Remaining_C_mass_Mg_subplot_yr = C_mass_Mg_subplot_total - R_CWD_Mg_subplot_yr)
-  
+
+#########low
+###Bring in Mass of CWD in 2020 from Modeled_annual_R_T_SWC_2019,add CWD additions, and convert to kg 
+
+CWD_2020_T_VWC_remaining_low <- Modeled_annual_R_T_SWC_2019_low%>%
+  select(Subplot_ID, decay_class, Remaining_C_mass_Mg_subplot_yr_low)
+
+CWD_2020_T_VWC_remaining_plus_low<- merge( CWD_2020_T_VWC_remaining_low ,dendro_data_CWD_subplot_2020, by = c("Subplot_ID", "decay_class"), all = TRUE)%>%
+  rename(Mass_additions_Mg_subplot_2020 = C_mass_Mg_subplot)%>%
+  select(!year)%>%
+  select(!rep_id)
+
+
+##Make the NAs = zero for addition 
+
+CWD_2020_T_VWC_remaining_plus_low <- replace(CWD_2020_T_VWC_remaining_plus_low, is.na(CWD_2020_T_VWC_remaining_plus_low), 0)
+
+##Add the remaining C mass to the additional CWD mass that entered the pool and convert to kg 
+
+CWD_2020_T_VWC_remaining_plus_low <- CWD_2020_T_VWC_remaining_plus_low%>%
+  mutate(C_mass_Mg_subplot_total_low = Mass_additions_Mg_subplot_2020 + Remaining_C_mass_Mg_subplot_yr_low)%>%
+  mutate(C_mass_kg_subplot_total_low = C_mass_Mg_subplot_total_low*1000)
+
+
+
+###Merge the CWD mass by subplot and decay class with the R CWD flux dataframe from 2020 
+
+Modeled_annual_R_T_SWC_2020_low <- merge(CWD_2020_T_VWC_remaining_plus_low, Modeled_annual_R_T_SWC_2020_low, by = c("decay_class", "Subplot_ID"))
+
+###Convert from Rcwd (umol C kg yr) -> Mg C subplot yr: use the subplot level mass (kg) of CWD within each decay class. Subtract the subplot level CWD mass from the flux rate to determine the remaining Cmass for 2020 
+Modeled_annual_R_T_SWC_2020_low <- Modeled_annual_R_T_SWC_2020_low%>%
+  mutate(R_CWD_Mg_subplot_yr_low = R_CWD_umol_kg_year_low*C_mass_kg_subplot_total_low/1000000*12.0107/1000000)%>%
+  mutate(Remaining_C_mass_Mg_subplot_yr_low = C_mass_Mg_subplot_total_low - R_CWD_Mg_subplot_yr_low)
+
+#########High
+###Bring in Mass of CWD in 2020 from Modeled_annual_R_T_SWC_2019,add CWD additions, and convert to kg 
+
+CWD_2020_T_VWC_remaining_high <- Modeled_annual_R_T_SWC_2019_high%>%
+  select(Subplot_ID, decay_class, Remaining_C_mass_Mg_subplot_yr_high)
+
+CWD_2020_T_VWC_remaining_plus_high<- merge( CWD_2020_T_VWC_remaining_high ,dendro_data_CWD_subplot_2020, by = c("Subplot_ID", "decay_class"), all = TRUE)%>%
+  rename(Mass_additions_Mg_subplot_2020 = C_mass_Mg_subplot)%>%
+  select(!year)%>%
+  select(!rep_id)
+
+
+##Make the NAs = zero for addition 
+
+CWD_2020_T_VWC_remaining_plus_high <- replace(CWD_2020_T_VWC_remaining_plus_high, is.na(CWD_2020_T_VWC_remaining_plus_high), 0)
+
+##Add the remaining C mass to the additional CWD mass that entered the pool and convert to kg 
+
+CWD_2020_T_VWC_remaining_plus_high <- CWD_2020_T_VWC_remaining_plus_high%>%
+  mutate(C_mass_Mg_subplot_total_high = Mass_additions_Mg_subplot_2020 + Remaining_C_mass_Mg_subplot_yr_high)%>%
+  mutate(C_mass_kg_subplot_total_high = C_mass_Mg_subplot_total_high*1000)
+
+
+
+###Merge the CWD mass by subplot and decay class with the R CWD flux dataframe from 2020 
+
+Modeled_annual_R_T_SWC_2020_high <- merge(CWD_2020_T_VWC_remaining_plus_high, Modeled_annual_R_T_SWC_2020_high, by = c("decay_class", "Subplot_ID"))
+
+###Convert from Rcwd (umol C kg yr) -> Mg C subplot yr: use the subplot level mass (kg) of CWD within each decay class. Subtract the subplot level CWD mass from the flux rate to determine the remaining Cmass for 2020 
+Modeled_annual_R_T_SWC_2020_high <- Modeled_annual_R_T_SWC_2020_high%>%
+  mutate(R_CWD_Mg_subplot_yr_high = R_CWD_umol_kg_year_high*C_mass_kg_subplot_total_high/1000000*12.0107/1000000)%>%
+  mutate(Remaining_C_mass_Mg_subplot_yr_high = C_mass_Mg_subplot_total_high - R_CWD_Mg_subplot_yr_high)
+
 
 #######2021
-
-Modeled_T_SWC_2021 <- merge(Tower_SWC_6hour_2021_modeled, Tower_T_6hour_2021_modeled, by = c("Timestamp_6", "Subplot_ID"))
-
-##Assume the modeled SWC below 0 is = to 0   
-Modeled_T_SWC_2021 <- Modeled_T_SWC_2021%>%
-  mutate(modeled_SWC_adjusted = case_when(modeled_SWC < 0 ~ 0, 
-                                          modeled_SWC > 0 ~ modeled_SWC))
 
 ##Apply the regression for CWD 1.2773*exp(-0.0339*modeled_temp) + 0.2493*log(fixed GWC), if temp <0, R CWD = 0. R_CWD (umol C kg s ). fixed gravemetric water content from the Gough et al. 2007 based on decay classes 
 ##Decay class one: 50%
@@ -2117,7 +2540,7 @@ Modeled_T_SWC_2021 <- Modeled_T_SWC_2021%>%
 ##Decay class four: 260%
 ##Decay class five: 200%
 
-Modeled_R_T_SWC_2021 <- Modeled_T_SWC_2021%>%
+Modeled_R_T_SWC_2021 <- Tower_T_6hour_2021_modeled%>%
   mutate(R_CWD_umol_kg_s_1 = case_when(modeled_temp > 0 ~ (-1.2773*exp(-0.0339*modeled_temp)) + 0.2493*log(50), 
                                        modeled_temp < 0 ~ 0))%>%
   mutate(R_CWD_umol_kg_s_2 = case_when(modeled_temp > 0 ~ (-1.2773*exp(-0.0339*modeled_temp)) + 0.2493*log(85), 
@@ -2129,18 +2552,32 @@ Modeled_R_T_SWC_2021 <- Modeled_T_SWC_2021%>%
   mutate(R_CWD_umol_kg_s_5 = case_when(modeled_temp > 0 ~ (-1.2773*exp(-0.0339*modeled_temp)) + 0.2493*log(200), 
                                        modeled_temp < 0 ~ 0))
 
-# #####Convert negative values to zero 
-# Modeled_R_T_SWC_2021 <- Modeled_R_T_SWC_2021%>%
-#   mutate(R_CWD_umol_kg_s_1_adj = case_when(R_CWD_umol_kg_s_1 >= 0 ~ Modeled_R_T_SWC_2021$R_CWD_umol_kg_s_1, 
-#                                            R_CWD_umol_kg_s_1 < 0 ~ 0))%>%
-#   mutate(R_CWD_umol_kg_s_2_adj = case_when(R_CWD_umol_kg_s_2 >= 0 ~ Modeled_R_T_SWC_2021$R_CWD_umol_kg_s_2, 
-#                                            R_CWD_umol_kg_s_2 < 0 ~ 0))%>%
-#   mutate(R_CWD_umol_kg_s_3_adj = case_when(R_CWD_umol_kg_s_3 >= 0 ~ Modeled_R_T_SWC_2021$R_CWD_umol_kg_s_3, 
-#                                            R_CWD_umol_kg_s_3 < 0 ~ 0))%>%
-#   mutate(R_CWD_umol_kg_s_4_adj = case_when(R_CWD_umol_kg_s_4 >= 0 ~ Modeled_R_T_SWC_2021$R_CWD_umol_kg_s_4, 
-#                                            R_CWD_umol_kg_s_4 < 0 ~ 0))%>%
-#   mutate(R_CWD_umol_kg_s_5_adj = case_when(R_CWD_umol_kg_s_5 >= 0 ~ Modeled_R_T_SWC_2021$R_CWD_umol_kg_s_5, 
-#                                            R_CWD_umol_kg_s_5 < 0 ~ 0))
+Modeled_R_T_SWC_2021_low <- Tower_T_6hour_2021_modeled%>%
+  mutate(R_CWD_umol_kg_s_1_low = case_when(modeled_temp_low > 0 ~ (-1.2773*exp(-0.0339*modeled_temp_low)) + 0.2493*log(50), 
+                                           modeled_temp_low < 0 ~ 0))%>%
+  mutate(R_CWD_umol_kg_s_2_low = case_when(modeled_temp_low > 0 ~ (-1.2773*exp(-0.0339*modeled_temp_low)) + 0.2493*log(85), 
+                                           modeled_temp_low < 0 ~ 0))%>%
+  mutate(R_CWD_umol_kg_s_3_low = case_when(modeled_temp_low > 0 ~ (-1.2773*exp(-0.0339*modeled_temp_low)) + 0.2493*log(72), 
+                                           modeled_temp_low < 0 ~ 0))%>%
+  mutate(R_CWD_umol_kg_s_4_low = case_when(modeled_temp_low > 0 ~ (-1.2773*exp(-0.0339*modeled_temp_low)) + 0.2493*log(260), 
+                                           modeled_temp_low < 0 ~ 0))%>%
+  mutate(R_CWD_umol_kg_s_5_low = case_when(modeled_temp_low > 0 ~ (-1.2773*exp(-0.0339*modeled_temp_low)) + 0.2493*log(200), 
+                                           modeled_temp_low < 0 ~ 0))
+
+
+Modeled_R_T_SWC_2021_high <- Tower_T_6hour_2021_modeled%>%
+  mutate(R_CWD_umol_kg_s_1_high = case_when(modeled_temp_high > 0 ~ (-1.2773*exp(-0.0339*modeled_temp_high)) + 0.2493*log(50), 
+                                            modeled_temp_high < 0 ~ 0))%>%
+  mutate(R_CWD_umol_kg_s_2_high = case_when(modeled_temp_high > 0 ~ (-1.2773*exp(-0.0339*modeled_temp_high)) + 0.2493*log(85), 
+                                            modeled_temp_high < 0 ~ 0))%>%
+  mutate(R_CWD_umol_kg_s_3_high = case_when(modeled_temp_high > 0 ~ (-1.2773*exp(-0.0339*modeled_temp_high)) + 0.2493*log(72), 
+                                            modeled_temp_high < 0 ~ 0))%>%
+  mutate(R_CWD_umol_kg_s_4_high = case_when(modeled_temp_high > 0 ~ (-1.2773*exp(-0.0339*modeled_temp_high)) + 0.2493*log(260), 
+                                            modeled_temp_high < 0 ~ 0))%>%
+  mutate(R_CWD_umol_kg_s_5_high = case_when(modeled_temp_high > 0 ~ (-1.2773*exp(-0.0339*modeled_temp_high)) + 0.2493*log(200), 
+                                            modeled_temp_high < 0 ~ 0))
+
+
 
 
 ###Scale Rcwd from (umol C kg s) -> umol C kg 6hour
@@ -2152,10 +2589,37 @@ Modeled_6hour_R_T_SWC_2021 <- Modeled_R_T_SWC_2021%>%
   mutate(R_CWD_umol_kg_6hour_4 = R_CWD_umol_kg_s_4*21600)%>%
   mutate(R_CWD_umol_kg_6hour_5 = R_CWD_umol_kg_s_5*21600)
 
+###Low
+Modeled_6hour_R_T_SWC_2021_low <- Modeled_R_T_SWC_2021_low%>%
+  mutate(R_CWD_umol_kg_6hour_1_low = R_CWD_umol_kg_s_1_low*21600)%>%
+  mutate(R_CWD_umol_kg_6hour_2_low = R_CWD_umol_kg_s_2_low*21600)%>%
+  mutate(R_CWD_umol_kg_6hour_3_low = R_CWD_umol_kg_s_3_low*21600)%>%
+  mutate(R_CWD_umol_kg_6hour_4_low = R_CWD_umol_kg_s_4_low*21600)%>%
+  mutate(R_CWD_umol_kg_6hour_5_low = R_CWD_umol_kg_s_5_low*21600)
+
+#high 
+Modeled_6hour_R_T_SWC_2021_high <- Modeled_R_T_SWC_2021_high%>%
+  mutate(R_CWD_umol_kg_6hour_1_high = R_CWD_umol_kg_s_1_high*21600)%>%
+  mutate(R_CWD_umol_kg_6hour_2_high = R_CWD_umol_kg_s_2_high*21600)%>%
+  mutate(R_CWD_umol_kg_6hour_3_high = R_CWD_umol_kg_s_3_high*21600)%>%
+  mutate(R_CWD_umol_kg_6hour_4_high = R_CWD_umol_kg_s_4_high*21600)%>%
+  mutate(R_CWD_umol_kg_6hour_5_high = R_CWD_umol_kg_s_5_high*21600)
+
+
 ###Scale from umol C kg 6hour -> umol C kg yr
 Modeled_annual_R_T_SWC_2021 <- Modeled_6hour_R_T_SWC_2021%>%
   group_by(Subplot_ID)%>%
   summarize(R_CWD_umol_kg_year_1 = sum(R_CWD_umol_kg_6hour_1),R_CWD_umol_kg_year_2 = sum(R_CWD_umol_kg_6hour_2),R_CWD_umol_kg_year_3 = sum(R_CWD_umol_kg_6hour_3),R_CWD_umol_kg_year_4 = sum(R_CWD_umol_kg_6hour_4),R_CWD_umol_kg_year_5 = sum(R_CWD_umol_kg_6hour_5))
+
+##Low 
+Modeled_annual_R_T_SWC_2021_low <- Modeled_6hour_R_T_SWC_2021_low%>%
+  group_by(Subplot_ID)%>%
+  summarize(R_CWD_umol_kg_year_1_low = sum(R_CWD_umol_kg_6hour_1_low),R_CWD_umol_kg_year_2_low = sum(R_CWD_umol_kg_6hour_2_low),R_CWD_umol_kg_year_3_low = sum(R_CWD_umol_kg_6hour_3_low),R_CWD_umol_kg_year_4_low = sum(R_CWD_umol_kg_6hour_4_low),R_CWD_umol_kg_year_5_low = sum(R_CWD_umol_kg_6hour_5_low))
+
+##High 
+Modeled_annual_R_T_SWC_2021_high <- Modeled_6hour_R_T_SWC_2021_high%>%
+  group_by(Subplot_ID)%>%
+  summarize(R_CWD_umol_kg_year_1_high = sum(R_CWD_umol_kg_6hour_1_high),R_CWD_umol_kg_year_2_high = sum(R_CWD_umol_kg_6hour_2_high),R_CWD_umol_kg_year_3_high = sum(R_CWD_umol_kg_6hour_3_high),R_CWD_umol_kg_year_4_high = sum(R_CWD_umol_kg_6hour_4_high),R_CWD_umol_kg_year_5_high = sum(R_CWD_umol_kg_6hour_5_high))
 
 
 ##Make modeled Rcwd dataframe long again
@@ -2163,7 +2627,17 @@ Modeled_annual_R_T_SWC_2021 <- Modeled_6hour_R_T_SWC_2021%>%
 Modeled_annual_R_T_SWC_2021 <- Modeled_annual_R_T_SWC_2021%>%
   rename("1" = R_CWD_umol_kg_year_1, "2" = R_CWD_umol_kg_year_2, "3" = R_CWD_umol_kg_year_3, "4" = R_CWD_umol_kg_year_4, "5" = R_CWD_umol_kg_year_5)
 
+Modeled_annual_R_T_SWC_2021_low <- Modeled_annual_R_T_SWC_2021_low%>%
+  rename("1" = R_CWD_umol_kg_year_1_low, "2" = R_CWD_umol_kg_year_2_low, "3" = R_CWD_umol_kg_year_3_low, "4" = R_CWD_umol_kg_year_4_low, "5" = R_CWD_umol_kg_year_5_low)
+
+Modeled_annual_R_T_SWC_2021_high <- Modeled_annual_R_T_SWC_2021_high%>%
+  rename("1" = R_CWD_umol_kg_year_1_high, "2" = R_CWD_umol_kg_year_2_high, "3" = R_CWD_umol_kg_year_3_high, "4" = R_CWD_umol_kg_year_4_high, "5" = R_CWD_umol_kg_year_5_high)
+
 Modeled_annual_R_T_SWC_2021 <- gather(Modeled_annual_R_T_SWC_2021, decay_class, R_CWD_umol_kg_year, "1":"5", factor_key = TRUE)
+
+Modeled_annual_R_T_SWC_2021_low <- gather(Modeled_annual_R_T_SWC_2021_low, decay_class, R_CWD_umol_kg_year_low, "1":"5", factor_key = TRUE)
+
+Modeled_annual_R_T_SWC_2021_high <- gather(Modeled_annual_R_T_SWC_2021_high, decay_class, R_CWD_umol_kg_year_high, "1":"5", factor_key = TRUE)
 
 ###Bring in Mass of CWD in 2020 from Modeled_annual_R_T_SWC_2019,add CWD additions, and convert to kg 
 
@@ -2195,137 +2669,217 @@ CWD_2021_T_VWC_remaining_plus <- CWD_2021_T_VWC_remaining_plus%>%
 
 Modeled_annual_R_T_SWC_2021 <- merge(CWD_2021_T_VWC_remaining_plus, Modeled_annual_R_T_SWC_2021, by = c("decay_class", "Subplot_ID"))
 
-###Convert from Rcwd (umol C kg yr) -> Mg C subplot yr: use the subplot level mass (kg) of CWD within each decay class. Subtract the subplot level CWD mass from the flux rate to determine the remaining Cmass for 2021
+###Convert from Rcwd (umol C kg yr) -> Mg C subplot yr: use the subplot level mass (kg) of CWD within each decay class. Subtract the subplot level CWD mass from the flux rate to determine the remaining Cmass for 2020 
 Modeled_annual_R_T_SWC_2021 <- Modeled_annual_R_T_SWC_2021%>%
   mutate(R_CWD_Mg_subplot_yr = R_CWD_umol_kg_year*C_mass_kg_subplot_total/1000000*12.0107/1000000)%>%
   mutate(Remaining_C_mass_Mg_subplot_yr = C_mass_Mg_subplot_total - R_CWD_Mg_subplot_yr)
 
+#########low
+###Bring in Mass of CWD in 2020 from Modeled_annual_R_T_SWC_2019,add CWD additions, and convert to kg 
 
+CWD_2021_T_VWC_remaining_low <- Modeled_annual_R_T_SWC_2020_low%>%
+  select(Subplot_ID, decay_class, Remaining_C_mass_Mg_subplot_yr_low)
 
-#######2022
-
-
-
-##Apply the regression for CWD 1.2773*exp(-0.0339*modeled_temp) + 0.2493*log(fixed GWC), if temp <0, R CWD = 0. R_CWD (umol C kg s ). fixed gravemetric water content from the Gough et al. 2007 based on decay classes 
-##Decay class one: 50%
-##Decay class two: 80%
-##Decay class three: 75%
-##Decay class four: 260%
-##Decay class five: 200%
-
-Tower_R_T_6hour_2022_modeled <- Tower_T_6hour_2022_modeled%>%
-  mutate(R_CWD_umol_kg_s_1 = case_when(modeled_temp > 0 ~ (-1.2773*exp(-0.0339*modeled_temp)) + 0.2493*log(50), 
-                                       modeled_temp < 0 ~ 0))%>%
-  mutate(R_CWD_umol_kg_s_2 = case_when(modeled_temp > 0 ~ (-1.2773*exp(-0.0339*modeled_temp)) + 0.2493*log(85), 
-                                       modeled_temp < 0 ~ 0))%>%
-  mutate(R_CWD_umol_kg_s_3 = case_when(modeled_temp > 0 ~ (-1.2773*exp(-0.0339*modeled_temp)) + 0.2493*log(72), 
-                                       modeled_temp < 0 ~ 0))%>%
-  mutate(R_CWD_umol_kg_s_4 = case_when(modeled_temp > 0 ~ (-1.2773*exp(-0.0339*modeled_temp)) + 0.2493*log(260), 
-                                       modeled_temp < 0 ~ 0))%>%
-  mutate(R_CWD_umol_kg_s_5 = case_when(modeled_temp > 0 ~ (-1.2773*exp(-0.0339*modeled_temp)) + 0.2493*log(200), 
-                                       modeled_temp < 0 ~ 0))
-
-# #####Convert negative values to zero 
-# Tower_R_T_6hour_2022_modeled<- Tower_T_6hour_2022_modeled%>%
-#   mutate(R_CWD_umol_kg_s_1_adj = case_when(R_CWD_umol_kg_s_1 >= 0 ~ Tower_T_6hour_2022_modeled$R_CWD_umol_kg_s_1, 
-#                                            R_CWD_umol_kg_s_1 < 0 ~ 0))%>%
-#   mutate(R_CWD_umol_kg_s_2_adj = case_when(R_CWD_umol_kg_s_2 >= 0 ~ Tower_T_6hour_2022_modeled$R_CWD_umol_kg_s_2, 
-#                                            R_CWD_umol_kg_s_2 < 0 ~ 0))%>%
-#   mutate(R_CWD_umol_kg_s_3_adj = case_when(R_CWD_umol_kg_s_3 >= 0 ~ Tower_T_6hour_2022_modeled$R_CWD_umol_kg_s_3, 
-#                                            R_CWD_umol_kg_s_3 < 0 ~ 0))%>%
-#   mutate(R_CWD_umol_kg_s_4_adj = case_when(R_CWD_umol_kg_s_4 >= 0 ~ Tower_T_6hour_2022_modeled$R_CWD_umol_kg_s_4, 
-#                                            R_CWD_umol_kg_s_4 < 0 ~ 0))%>%
-#   mutate(R_CWD_umol_kg_s_5_adj = case_when(R_CWD_umol_kg_s_5 >= 0 ~ Tower_T_6hour_2022_modeled$R_CWD_umol_kg_s_5, 
-#                                            R_CWD_umol_kg_s_5 < 0 ~ 0))
-
-
-###Scale Rcwd from (umol C kg s) -> umol C kg 6hour
-
-Tower_R_T_6hour_2022_modeled <- Tower_R_T_6hour_2022_modeled%>%
-  mutate(R_CWD_umol_kg_6hour_1 = R_CWD_umol_kg_s_1*21600)%>%
-  mutate(R_CWD_umol_kg_6hour_2 = R_CWD_umol_kg_s_2*21600)%>%
-  mutate(R_CWD_umol_kg_6hour_3 = R_CWD_umol_kg_s_3*21600)%>%
-  mutate(R_CWD_umol_kg_6hour_4 = R_CWD_umol_kg_s_4*21600)%>%
-  mutate(R_CWD_umol_kg_6hour_5 = R_CWD_umol_kg_s_5*21600)
-
-###Scale from umol C kg 6hour -> umol C kg yr
-Tower_R_T_annual_2022_modeled <- Tower_R_T_6hour_2022_modeled%>%
-  group_by(Subplot_ID)%>%
-  summarize(R_CWD_umol_kg_year_1 = sum(R_CWD_umol_kg_6hour_1),R_CWD_umol_kg_year_2 = sum(R_CWD_umol_kg_6hour_2),R_CWD_umol_kg_year_3 = sum(R_CWD_umol_kg_6hour_3),R_CWD_umol_kg_year_4 = sum(R_CWD_umol_kg_6hour_4),R_CWD_umol_kg_year_5 = sum(R_CWD_umol_kg_6hour_5))
-
-
-##Make modeled Rcwd dataframe long again
-
-Tower_R_T_annual_2022_modeled  <- Tower_R_T_annual_2022_modeled %>%
-  rename("1" = R_CWD_umol_kg_year_1, "2" = R_CWD_umol_kg_year_2, "3" = R_CWD_umol_kg_year_3, "4" = R_CWD_umol_kg_year_4, "5" = R_CWD_umol_kg_year_5)
-
-Tower_R_T_annual_2022_modeled  <- gather(Tower_R_T_annual_2022_modeled , decay_class, R_CWD_umol_kg_year, "1":"5", factor_key = TRUE)
-
-###Bring in Mass of CWD in 2022 from Modeled_annual_R_T_SWC_2021,add CWD additions, and convert to kg 
-
-CWD_2022_T_VWC_remaining <- Modeled_annual_R_T_SWC_2021%>%
-  select(Subplot_ID, decay_class, Remaining_C_mass_Mg_subplot_yr)
-
-dendro_data_CWD_subplot_2022 <- dendro_data_CWD_subplot_2022%>%
-  rename(Subplot_ID = subplot_id)
-
-CWD_2022_T_VWC_remaining_plus<- merge( CWD_2022_T_VWC_remaining ,dendro_data_CWD_subplot_2022, by = c("Subplot_ID", "decay_class"), all = TRUE)%>%
-  rename(Mass_additions_Mg_subplot_2022 = C_mass_Mg_subplot)%>%
+CWD_2021_T_VWC_remaining_plus_low<- merge( CWD_2021_T_VWC_remaining_low ,dendro_data_CWD_subplot_2021, by = c("Subplot_ID", "decay_class"), all = TRUE)%>%
+  rename(Mass_additions_Mg_subplot_2021 = C_mass_Mg_subplot)%>%
   select(!year)%>%
   select(!rep_id)
 
 
 ##Make the NAs = zero for addition 
 
-CWD_2022_T_VWC_remaining_plus <- replace(CWD_2022_T_VWC_remaining_plus, is.na(CWD_2022_T_VWC_remaining_plus), 0)
+CWD_2021_T_VWC_remaining_plus_low <- replace(CWD_2021_T_VWC_remaining_plus_low, is.na(CWD_2021_T_VWC_remaining_plus_low), 0)
 
 ##Add the remaining C mass to the additional CWD mass that entered the pool and convert to kg 
 
-CWD_2022_T_VWC_remaining_plus <- CWD_2022_T_VWC_remaining_plus%>%
-  mutate(C_mass_Mg_subplot_total = Mass_additions_Mg_subplot_2022 + Remaining_C_mass_Mg_subplot_yr)%>%
-  mutate(C_mass_kg_subplot_total = C_mass_Mg_subplot_total*1000)
+CWD_2021_T_VWC_remaining_plus_low <- CWD_2021_T_VWC_remaining_plus_low%>%
+  mutate(C_mass_Mg_subplot_total_low = Mass_additions_Mg_subplot_2021 + Remaining_C_mass_Mg_subplot_yr_low)%>%
+  mutate(C_mass_kg_subplot_total_low = C_mass_Mg_subplot_total_low*1000)
 
 
 
 ###Merge the CWD mass by subplot and decay class with the R CWD flux dataframe from 2020 
 
-Tower_R_T_annual_2022_modeled <- merge(CWD_2022_T_VWC_remaining_plus, Tower_R_T_annual_2022_modeled, by = c("decay_class", "Subplot_ID"))
+Modeled_annual_R_T_SWC_2021_low <- merge(CWD_2021_T_VWC_remaining_plus_low, Modeled_annual_R_T_SWC_2021_low, by = c("decay_class", "Subplot_ID"))
 
-###Convert from Rcwd (umol C kg yr) -> Mg C subplot yr: use the subplot level mass (kg) of CWD within each decay class. Subtract the subplot level CWD mass from the flux rate to determine the remaining Cmass for 2021
-Tower_R_T_annual_2022_modeled <- Tower_R_T_annual_2022_modeled%>%
-  mutate(R_CWD_Mg_subplot_yr = R_CWD_umol_kg_year*C_mass_kg_subplot_total/1000000*12.0107/1000000)%>%
-  mutate(Remaining_C_mass_Mg_subplot_yr = C_mass_Mg_subplot_total - R_CWD_Mg_subplot_yr)
+###Convert from Rcwd (umol C kg yr) -> Mg C subplot yr: use the subplot level mass (kg) of CWD within each decay class. Subtract the subplot level CWD mass from the flux rate to determine the remaining Cmass for 2020 
+Modeled_annual_R_T_SWC_2021_low <- Modeled_annual_R_T_SWC_2021_low%>%
+  mutate(R_CWD_Mg_subplot_yr_low = R_CWD_umol_kg_year_low*C_mass_kg_subplot_total_low/1000000*12.0107/1000000)%>%
+  mutate(Remaining_C_mass_Mg_subplot_yr_low = C_mass_Mg_subplot_total_low - R_CWD_Mg_subplot_yr_low)
+
+#########High
+###Bring in Mass of CWD in 2020 from Modeled_annual_R_T_SWC_2019,add CWD additions, and convert to kg 
+
+CWD_2021_T_VWC_remaining_high <- Modeled_annual_R_T_SWC_2020_high%>%
+  select(Subplot_ID, decay_class, Remaining_C_mass_Mg_subplot_yr_high)
+
+CWD_2021_T_VWC_remaining_plus_high<- merge( CWD_2021_T_VWC_remaining_high ,dendro_data_CWD_subplot_2021, by = c("Subplot_ID", "decay_class"), all = TRUE)%>%
+  rename(Mass_additions_Mg_subplot_2021 = C_mass_Mg_subplot)%>%
+  select(!year)%>%
+  select(!rep_id)
+
+
+##Make the NAs = zero for addition 
+
+CWD_2021_T_VWC_remaining_plus_high <- replace(CWD_2021_T_VWC_remaining_plus_high, is.na(CWD_2021_T_VWC_remaining_plus_high), 0)
+
+##Add the remaining C mass to the additional CWD mass that entered the pool and convert to kg 
+
+CWD_2021_T_VWC_remaining_plus_high <- CWD_2021_T_VWC_remaining_plus_high%>%
+  mutate(C_mass_Mg_subplot_total_high = Mass_additions_Mg_subplot_2021 + Remaining_C_mass_Mg_subplot_yr_high)%>%
+  mutate(C_mass_kg_subplot_total_high = C_mass_Mg_subplot_total_high*1000)
+
+
+
+###Merge the CWD mass by subplot and decay class with the R CWD flux dataframe from 2020 
+
+Modeled_annual_R_T_SWC_2021_high <- merge(CWD_2021_T_VWC_remaining_plus_high, Modeled_annual_R_T_SWC_2021_high, by = c("decay_class", "Subplot_ID"))
+
+###Convert from Rcwd (umol C kg yr) -> Mg C subplot yr: use the subplot level mass (kg) of CWD within each decay class. Subtract the subplot level CWD mass from the flux rate to determine the remaining Cmass for 2020 
+Modeled_annual_R_T_SWC_2021_high <- Modeled_annual_R_T_SWC_2021_high%>%
+  mutate(R_CWD_Mg_subplot_yr_high = R_CWD_umol_kg_year_high*C_mass_kg_subplot_total_high/1000000*12.0107/1000000)%>%
+  mutate(Remaining_C_mass_Mg_subplot_yr_high = C_mass_Mg_subplot_total_high - R_CWD_Mg_subplot_yr_high)
+  
+
+# 
+# #######2022
+# 
+# 
+# 
+# ##Apply the regression for CWD 1.2773*exp(-0.0339*modeled_temp) + 0.2493*log(fixed GWC), if temp <0, R CWD = 0. R_CWD (umol C kg s ). fixed gravemetric water content from the Gough et al. 2007 based on decay classes 
+# ##Decay class one: 50%
+# ##Decay class two: 80%
+# ##Decay class three: 75%
+# ##Decay class four: 260%
+# ##Decay class five: 200%
+# 
+# Tower_R_T_6hour_2022_modeled <- Tower_T_6hour_2022_modeled%>%
+#   mutate(R_CWD_umol_kg_s_1 = case_when(modeled_temp > 0 ~ (-1.2773*exp(-0.0339*modeled_temp)) + 0.2493*log(50), 
+#                                        modeled_temp < 0 ~ 0))%>%
+#   mutate(R_CWD_umol_kg_s_2 = case_when(modeled_temp > 0 ~ (-1.2773*exp(-0.0339*modeled_temp)) + 0.2493*log(85), 
+#                                        modeled_temp < 0 ~ 0))%>%
+#   mutate(R_CWD_umol_kg_s_3 = case_when(modeled_temp > 0 ~ (-1.2773*exp(-0.0339*modeled_temp)) + 0.2493*log(72), 
+#                                        modeled_temp < 0 ~ 0))%>%
+#   mutate(R_CWD_umol_kg_s_4 = case_when(modeled_temp > 0 ~ (-1.2773*exp(-0.0339*modeled_temp)) + 0.2493*log(260), 
+#                                        modeled_temp < 0 ~ 0))%>%
+#   mutate(R_CWD_umol_kg_s_5 = case_when(modeled_temp > 0 ~ (-1.2773*exp(-0.0339*modeled_temp)) + 0.2493*log(200), 
+#                                        modeled_temp < 0 ~ 0))
+# 
+# # #####Convert negative values to zero 
+# # Tower_R_T_6hour_2022_modeled<- Tower_T_6hour_2022_modeled%>%
+# #   mutate(R_CWD_umol_kg_s_1_adj = case_when(R_CWD_umol_kg_s_1 >= 0 ~ Tower_T_6hour_2022_modeled$R_CWD_umol_kg_s_1, 
+# #                                            R_CWD_umol_kg_s_1 < 0 ~ 0))%>%
+# #   mutate(R_CWD_umol_kg_s_2_adj = case_when(R_CWD_umol_kg_s_2 >= 0 ~ Tower_T_6hour_2022_modeled$R_CWD_umol_kg_s_2, 
+# #                                            R_CWD_umol_kg_s_2 < 0 ~ 0))%>%
+# #   mutate(R_CWD_umol_kg_s_3_adj = case_when(R_CWD_umol_kg_s_3 >= 0 ~ Tower_T_6hour_2022_modeled$R_CWD_umol_kg_s_3, 
+# #                                            R_CWD_umol_kg_s_3 < 0 ~ 0))%>%
+# #   mutate(R_CWD_umol_kg_s_4_adj = case_when(R_CWD_umol_kg_s_4 >= 0 ~ Tower_T_6hour_2022_modeled$R_CWD_umol_kg_s_4, 
+# #                                            R_CWD_umol_kg_s_4 < 0 ~ 0))%>%
+# #   mutate(R_CWD_umol_kg_s_5_adj = case_when(R_CWD_umol_kg_s_5 >= 0 ~ Tower_T_6hour_2022_modeled$R_CWD_umol_kg_s_5, 
+# #                                            R_CWD_umol_kg_s_5 < 0 ~ 0))
+# 
+# 
+# ###Scale Rcwd from (umol C kg s) -> umol C kg 6hour
+# 
+# Tower_R_T_6hour_2022_modeled <- Tower_R_T_6hour_2022_modeled%>%
+#   mutate(R_CWD_umol_kg_6hour_1 = R_CWD_umol_kg_s_1*21600)%>%
+#   mutate(R_CWD_umol_kg_6hour_2 = R_CWD_umol_kg_s_2*21600)%>%
+#   mutate(R_CWD_umol_kg_6hour_3 = R_CWD_umol_kg_s_3*21600)%>%
+#   mutate(R_CWD_umol_kg_6hour_4 = R_CWD_umol_kg_s_4*21600)%>%
+#   mutate(R_CWD_umol_kg_6hour_5 = R_CWD_umol_kg_s_5*21600)
+# 
+# ###Scale from umol C kg 6hour -> umol C kg yr
+# Tower_R_T_annual_2022_modeled <- Tower_R_T_6hour_2022_modeled%>%
+#   group_by(Subplot_ID)%>%
+#   summarize(R_CWD_umol_kg_year_1 = sum(R_CWD_umol_kg_6hour_1),R_CWD_umol_kg_year_2 = sum(R_CWD_umol_kg_6hour_2),R_CWD_umol_kg_year_3 = sum(R_CWD_umol_kg_6hour_3),R_CWD_umol_kg_year_4 = sum(R_CWD_umol_kg_6hour_4),R_CWD_umol_kg_year_5 = sum(R_CWD_umol_kg_6hour_5))
+# 
+# 
+# ##Make modeled Rcwd dataframe long again
+# 
+# Tower_R_T_annual_2022_modeled  <- Tower_R_T_annual_2022_modeled %>%
+#   rename("1" = R_CWD_umol_kg_year_1, "2" = R_CWD_umol_kg_year_2, "3" = R_CWD_umol_kg_year_3, "4" = R_CWD_umol_kg_year_4, "5" = R_CWD_umol_kg_year_5)
+# 
+# Tower_R_T_annual_2022_modeled  <- gather(Tower_R_T_annual_2022_modeled , decay_class, R_CWD_umol_kg_year, "1":"5", factor_key = TRUE)
+# 
+# ###Bring in Mass of CWD in 2022 from Modeled_annual_R_T_SWC_2021,add CWD additions, and convert to kg 
+# 
+# CWD_2022_T_VWC_remaining <- Modeled_annual_R_T_SWC_2021%>%
+#   select(Subplot_ID, decay_class, Remaining_C_mass_Mg_subplot_yr)
+# 
+# dendro_data_CWD_subplot_2022 <- dendro_data_CWD_subplot_2022%>%
+#   rename(Subplot_ID = subplot_id)
+# 
+# CWD_2022_T_VWC_remaining_plus<- merge( CWD_2022_T_VWC_remaining ,dendro_data_CWD_subplot_2022, by = c("Subplot_ID", "decay_class"), all = TRUE)%>%
+#   rename(Mass_additions_Mg_subplot_2022 = C_mass_Mg_subplot)%>%
+#   select(!year)%>%
+#   select(!rep_id)
+# 
+# 
+# ##Make the NAs = zero for addition 
+# 
+# CWD_2022_T_VWC_remaining_plus <- replace(CWD_2022_T_VWC_remaining_plus, is.na(CWD_2022_T_VWC_remaining_plus), 0)
+# 
+# ##Add the remaining C mass to the additional CWD mass that entered the pool and convert to kg 
+# 
+# CWD_2022_T_VWC_remaining_plus <- CWD_2022_T_VWC_remaining_plus%>%
+#   mutate(C_mass_Mg_subplot_total = Mass_additions_Mg_subplot_2022 + Remaining_C_mass_Mg_subplot_yr)%>%
+#   mutate(C_mass_kg_subplot_total = C_mass_Mg_subplot_total*1000)
+# 
+# 
+# 
+# ###Merge the CWD mass by subplot and decay class with the R CWD flux dataframe from 2020 
+# 
+# Tower_R_T_annual_2022_modeled <- merge(CWD_2022_T_VWC_remaining_plus, Tower_R_T_annual_2022_modeled, by = c("decay_class", "Subplot_ID"))
+# 
+# ###Convert from Rcwd (umol C kg yr) -> Mg C subplot yr: use the subplot level mass (kg) of CWD within each decay class. Subtract the subplot level CWD mass from the flux rate to determine the remaining Cmass for 2021
+# Tower_R_T_annual_2022_modeled <- Tower_R_T_annual_2022_modeled%>%
+#   mutate(R_CWD_Mg_subplot_yr = R_CWD_umol_kg_year*C_mass_kg_subplot_total/1000000*12.0107/1000000)%>%
+#   mutate(Remaining_C_mass_Mg_subplot_yr = C_mass_Mg_subplot_total - R_CWD_Mg_subplot_yr)
 
 
 
 ####Merge all years together 
+Modeled_annual_R_T_SWC_2019 <- merge(Modeled_annual_R_T_SWC_2019,Modeled_annual_R_T_SWC_2019_low, by = c("decay_class", "Subplot_ID"))
+Modeled_annual_R_T_SWC_2019 <- merge(Modeled_annual_R_T_SWC_2019,Modeled_annual_R_T_SWC_2019_high, by = c("decay_class", "Subplot_ID"))
+
+Modeled_annual_R_T_SWC_2020 <- merge(Modeled_annual_R_T_SWC_2020,Modeled_annual_R_T_SWC_2020_low, by = c("decay_class", "Subplot_ID"))
+Modeled_annual_R_T_SWC_2020 <- merge(Modeled_annual_R_T_SWC_2020,Modeled_annual_R_T_SWC_2020_high, by = c("decay_class", "Subplot_ID"))
+
+Modeled_annual_R_T_SWC_2021 <- merge(Modeled_annual_R_T_SWC_2021,Modeled_annual_R_T_SWC_2021_low, by = c("decay_class", "Subplot_ID"))
+Modeled_annual_R_T_SWC_2021 <- merge(Modeled_annual_R_T_SWC_2021,Modeled_annual_R_T_SWC_2021_high, by = c("decay_class", "Subplot_ID"))
+
 
 Modeled_annual_R_T_SWC_2019_sub <- Modeled_annual_R_T_SWC_2019%>%
-  select(decay_class, Subplot_ID,R_CWD_Mg_subplot_yr)%>%
+  select(decay_class, Subplot_ID,R_CWD_Mg_subplot_yr,R_CWD_Mg_subplot_yr_low,R_CWD_Mg_subplot_yr_high)%>%
   mutate(year = "2019")
 Modeled_annual_R_T_SWC_2020_sub <- Modeled_annual_R_T_SWC_2020%>%
-  select(decay_class, Subplot_ID,R_CWD_Mg_subplot_yr)%>%
+  select(decay_class, Subplot_ID,R_CWD_Mg_subplot_yr,R_CWD_Mg_subplot_yr,R_CWD_Mg_subplot_yr_low,R_CWD_Mg_subplot_yr_high)%>%
   mutate(year = "2020")
 Modeled_annual_R_T_SWC_2021_sub <- Modeled_annual_R_T_SWC_2021%>%
-  select(decay_class, Subplot_ID,R_CWD_Mg_subplot_yr)%>%
+  select(decay_class, Subplot_ID,R_CWD_Mg_subplot_yr,R_CWD_Mg_subplot_yr,R_CWD_Mg_subplot_yr_low,R_CWD_Mg_subplot_yr_high)%>%
   mutate(year = "2021")
 
-Tower_R_T_annual_2022_modeled_sub <-Tower_R_T_annual_2022_modeled%>%
-  select(decay_class, Subplot_ID,R_CWD_Mg_subplot_yr)%>%
-  mutate(year = "2022")
 
-Modeled_annual_R_T_SWC_all_years <- rbind(Modeled_annual_R_T_SWC_2019_sub, Modeled_annual_R_T_SWC_2020_sub, Modeled_annual_R_T_SWC_2021_sub,Tower_R_T_annual_2022_modeled_sub)
+
+#Tower_R_T_annual_2022_modeled_sub <-Tower_R_T_annual_2022_modeled%>%
+  #select(decay_class, Subplot_ID,R_CWD_Mg_subplot_yr)%>%
+ # mutate(year = "2022")
+
+Modeled_annual_R_T_SWC_all_years <- rbind(Modeled_annual_R_T_SWC_2019_sub, Modeled_annual_R_T_SWC_2020_sub, Modeled_annual_R_T_SWC_2021_sub)
 
 ##Scale from subplot to ha 
 
 Modeled_annual_R_T_SWC_all_years <- Modeled_annual_R_T_SWC_all_years%>%
-  mutate(R_CWD_Mg_ha_yr = R_CWD_Mg_subplot_yr*10)
+  mutate(R_CWD_Mg_ha_yr = R_CWD_Mg_subplot_yr*10)%>%
+  mutate(R_CWD_Mg_ha_yr_low = R_CWD_Mg_subplot_yr_low*10)%>%
+  mutate(R_CWD_Mg_ha_yr_high = R_CWD_Mg_subplot_yr_high*10)
+  
 
 
  ##Add up the decay classes together 
 Modeled_annual_R_T_SWC_all_years_total <- Modeled_annual_R_T_SWC_all_years%>%
   group_by(Subplot_ID, year)%>%
- summarize(R_CWD_Mg_ha_yr_total = sum(R_CWD_Mg_ha_yr))%>%
+ summarize(R_CWD_Mg_ha_yr_total = sum(R_CWD_Mg_ha_yr),R_CWD_Mg_ha_yr_total_low = sum(R_CWD_Mg_ha_yr_low),R_CWD_Mg_ha_yr_total_high = sum(R_CWD_Mg_ha_yr_high) )%>%
   rename(subplot_id = Subplot_ID)
 
  
@@ -2385,7 +2939,7 @@ CWD_all_years_species_total <- CWD_all_years_species_total%>%
   rename(R_CWD_Mghayr_2 = Mass_loss_Mg_ha_total)
 
 Modeled_annual_R_T_SWC_all_years_total <- Modeled_annual_R_T_SWC_all_years_total%>%
-  rename(R_CWD_Mghayr_3 = R_CWD_Mg_ha_yr_total)
+  rename(R_CWD_Mghayr_3 = R_CWD_Mg_ha_yr_total,R_CWD_Mghayr_3_low = R_CWD_Mg_ha_yr_total_low,R_CWD_Mghayr_3_high = R_CWD_Mg_ha_yr_total_high)
 
 
 CWD_all_methods <- merge(CWD_all_years_total, CWD_all_years_species_total, by = c("rep_id", "subplot_id", "treatment", "severity", "year"))
