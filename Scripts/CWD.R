@@ -969,16 +969,16 @@ Tower_T_6hour_2019_modeled <- Tower_T_6hour_2019%>%
   mutate(A02W = Tower_T_6hour_2019_regression[4,3]*tower_temp + Tower_T_6hour_2019_regression[4,2])%>%
   mutate(A03E = Tower_T_6hour_2019_regression[5,3]*tower_temp + Tower_T_6hour_2019_regression[5,2])%>%
   mutate(A03W = Tower_T_6hour_2019_regression[6,3]*tower_temp + Tower_T_6hour_2019_regression[6,2])%>%
-  mutate(B01E = Tower_T_6hour_2019_regression[7,3]*tower_temp + Tower_T_6hour_2019_regression[7,2])%>%
-  mutate(B01W = Tower_T_6hour_2019_regression[8,3]*tower_temp + Tower_T_6hour_2019_regression[8,2])%>%
-  mutate(B02E = Tower_T_6hour_2019_regression[9,3]*tower_temp + Tower_T_6hour_2019_regression[9,2])%>%
-  mutate(B02W = Tower_T_6hour_2019_regression[10,3]*tower_temp + Tower_T_6hour_2019_regression[10,2])%>%
-  mutate(B03E = Tower_T_6hour_2019_regression[11,3]*tower_temp + Tower_T_6hour_2019_regression[11,2])%>%
-  mutate(B03W = Tower_T_6hour_2019_regression[12,3]*tower_temp + Tower_T_6hour_2019_regression[12,2])%>%
-  mutate(B04E = Tower_T_6hour_2019_regression[13,3]*tower_temp + Tower_T_6hour_2019_regression[13,2])%>%
-  mutate(B04W = Tower_T_6hour_2019_regression[14,3]*tower_temp + Tower_T_6hour_2019_regression[14,2])%>%
-  mutate(C01E = Tower_T_6hour_2019_regression[15,3]*tower_temp + Tower_T_6hour_2019_regression[15,2])%>%
-  mutate(C01W = Tower_T_6hour_2019_regression[16,3]*tower_temp + Tower_T_6hour_2019_regression[16,2])%>%
+  mutate(A04E = Tower_T_6hour_2019_regression[7,3]*tower_temp + Tower_T_6hour_2019_regression[7,2])%>%
+  mutate(A04W = Tower_T_6hour_2019_regression[8,3]*tower_temp + Tower_T_6hour_2019_regression[8,2])%>%  
+  mutate(B01E = Tower_T_6hour_2019_regression[9,3]*tower_temp + Tower_T_6hour_2019_regression[9,2])%>%
+  mutate(B01W = Tower_T_6hour_2019_regression[10,3]*tower_temp + Tower_T_6hour_2019_regression[10,2])%>%
+  mutate(B02E = Tower_T_6hour_2019_regression[11,3]*tower_temp + Tower_T_6hour_2019_regression[11,2])%>%
+  mutate(B02W = Tower_T_6hour_2019_regression[12,3]*tower_temp + Tower_T_6hour_2019_regression[12,2])%>%
+  mutate(B03E = Tower_T_6hour_2019_regression[13,3]*tower_temp + Tower_T_6hour_2019_regression[13,2])%>%
+  mutate(B03W = Tower_T_6hour_2019_regression[14,3]*tower_temp + Tower_T_6hour_2019_regression[14,2])%>%
+  mutate(B04E = Tower_T_6hour_2019_regression[15,3]*tower_temp + Tower_T_6hour_2019_regression[15,2])%>%
+  mutate(B04W = Tower_T_6hour_2019_regression[16,3]*tower_temp + Tower_T_6hour_2019_regression[16,2])%>%
   mutate(C01E = Tower_T_6hour_2019_regression[17,3]*tower_temp + Tower_T_6hour_2019_regression[17,2])%>%
   mutate(C01W = Tower_T_6hour_2019_regression[18,3]*tower_temp + Tower_T_6hour_2019_regression[18,2])%>%
   mutate(C02E = Tower_T_6hour_2019_regression[19,3]*tower_temp + Tower_T_6hour_2019_regression[19,2])%>%
@@ -998,22 +998,22 @@ Tower_T_6hour_2019_modeled <- Tower_T_6hour_2019%>%
 
 ##low
 Tower_T_6hour_2019_modeled_low <- Tower_T_6hour_2019%>%
-mutate(A01E = Tower_T_6hour_2019_regression[1,5]*tower_temp + Tower_T_6hour_2019_regression[1,4])%>%
+  mutate(A01E = Tower_T_6hour_2019_regression[1,5]*tower_temp + Tower_T_6hour_2019_regression[1,4])%>%
   mutate(A01W = Tower_T_6hour_2019_regression[2,5]*tower_temp + Tower_T_6hour_2019_regression[2,4])%>%
   mutate(A02E = Tower_T_6hour_2019_regression[3,5]*tower_temp + Tower_T_6hour_2019_regression[3,4])%>%
   mutate(A02W = Tower_T_6hour_2019_regression[4,5]*tower_temp + Tower_T_6hour_2019_regression[4,4])%>%
   mutate(A03E = Tower_T_6hour_2019_regression[5,5]*tower_temp + Tower_T_6hour_2019_regression[5,4])%>%
   mutate(A03W = Tower_T_6hour_2019_regression[6,5]*tower_temp + Tower_T_6hour_2019_regression[6,4])%>%
-  mutate(B01E = Tower_T_6hour_2019_regression[7,5]*tower_temp + Tower_T_6hour_2019_regression[7,4])%>%
-  mutate(B01W = Tower_T_6hour_2019_regression[8,5]*tower_temp + Tower_T_6hour_2019_regression[8,4])%>%
-  mutate(B02E = Tower_T_6hour_2019_regression[9,5]*tower_temp + Tower_T_6hour_2019_regression[9,4])%>%
-  mutate(B02W = Tower_T_6hour_2019_regression[10,5]*tower_temp + Tower_T_6hour_2019_regression[10,4])%>%
-  mutate(B03E = Tower_T_6hour_2019_regression[11,5]*tower_temp + Tower_T_6hour_2019_regression[11,4])%>%
-  mutate(B03W = Tower_T_6hour_2019_regression[12,5]*tower_temp + Tower_T_6hour_2019_regression[12,4])%>%
-  mutate(B04E = Tower_T_6hour_2019_regression[13,5]*tower_temp + Tower_T_6hour_2019_regression[13,4])%>%
-  mutate(B04W = Tower_T_6hour_2019_regression[14,5]*tower_temp + Tower_T_6hour_2019_regression[14,4])%>%
-  mutate(C01E = Tower_T_6hour_2019_regression[15,5]*tower_temp + Tower_T_6hour_2019_regression[15,4])%>%
-  mutate(C01W = Tower_T_6hour_2019_regression[16,5]*tower_temp + Tower_T_6hour_2019_regression[16,4])%>%
+  mutate(A04E = Tower_T_6hour_2019_regression[7,5]*tower_temp + Tower_T_6hour_2019_regression[7,4])%>%
+  mutate(A04W = Tower_T_6hour_2019_regression[8,5]*tower_temp + Tower_T_6hour_2019_regression[8,4])%>%  
+  mutate(B01E = Tower_T_6hour_2019_regression[9,5]*tower_temp + Tower_T_6hour_2019_regression[9,4])%>%
+  mutate(B01W = Tower_T_6hour_2019_regression[10,5]*tower_temp + Tower_T_6hour_2019_regression[10,4])%>%
+  mutate(B02E = Tower_T_6hour_2019_regression[11,5]*tower_temp + Tower_T_6hour_2019_regression[11,4])%>%
+  mutate(B02W = Tower_T_6hour_2019_regression[12,5]*tower_temp + Tower_T_6hour_2019_regression[12,4])%>%
+  mutate(B03E = Tower_T_6hour_2019_regression[13,5]*tower_temp + Tower_T_6hour_2019_regression[13,4])%>%
+  mutate(B03W = Tower_T_6hour_2019_regression[14,5]*tower_temp + Tower_T_6hour_2019_regression[14,4])%>%
+  mutate(B04E = Tower_T_6hour_2019_regression[15,5]*tower_temp + Tower_T_6hour_2019_regression[15,4])%>%
+  mutate(B04W = Tower_T_6hour_2019_regression[16,5]*tower_temp + Tower_T_6hour_2019_regression[16,4])%>%
   mutate(C01E = Tower_T_6hour_2019_regression[17,5]*tower_temp + Tower_T_6hour_2019_regression[17,4])%>%
   mutate(C01W = Tower_T_6hour_2019_regression[18,5]*tower_temp + Tower_T_6hour_2019_regression[18,4])%>%
   mutate(C02E = Tower_T_6hour_2019_regression[19,5]*tower_temp + Tower_T_6hour_2019_regression[19,4])%>%
@@ -1031,6 +1031,7 @@ mutate(A01E = Tower_T_6hour_2019_regression[1,5]*tower_temp + Tower_T_6hour_2019
   mutate(D04E = Tower_T_6hour_2019_regression[31,5]*tower_temp + Tower_T_6hour_2019_regression[31,4])%>%
   mutate(D04W = Tower_T_6hour_2019_regression[32,5]*tower_temp + Tower_T_6hour_2019_regression[32,4])
 
+
 ##high
 Tower_T_6hour_2019_modeled_high <- Tower_T_6hour_2019%>%
   mutate(A01E = Tower_T_6hour_2019_regression[1,7]*tower_temp + Tower_T_6hour_2019_regression[1,6])%>%
@@ -1039,16 +1040,16 @@ Tower_T_6hour_2019_modeled_high <- Tower_T_6hour_2019%>%
   mutate(A02W = Tower_T_6hour_2019_regression[4,7]*tower_temp + Tower_T_6hour_2019_regression[4,6])%>%
   mutate(A03E = Tower_T_6hour_2019_regression[5,7]*tower_temp + Tower_T_6hour_2019_regression[5,6])%>%
   mutate(A03W = Tower_T_6hour_2019_regression[6,7]*tower_temp + Tower_T_6hour_2019_regression[6,6])%>%
-  mutate(B01E = Tower_T_6hour_2019_regression[7,7]*tower_temp + Tower_T_6hour_2019_regression[7,6])%>%
-  mutate(B01W = Tower_T_6hour_2019_regression[8,7]*tower_temp + Tower_T_6hour_2019_regression[8,6])%>%
-  mutate(B02E = Tower_T_6hour_2019_regression[9,7]*tower_temp + Tower_T_6hour_2019_regression[9,6])%>%
-  mutate(B02W = Tower_T_6hour_2019_regression[10,7]*tower_temp + Tower_T_6hour_2019_regression[10,6])%>%
-  mutate(B03E = Tower_T_6hour_2019_regression[11,7]*tower_temp + Tower_T_6hour_2019_regression[11,6])%>%
-  mutate(B03W = Tower_T_6hour_2019_regression[12,7]*tower_temp + Tower_T_6hour_2019_regression[12,6])%>%
-  mutate(B04E = Tower_T_6hour_2019_regression[13,7]*tower_temp + Tower_T_6hour_2019_regression[13,6])%>%
-  mutate(B04W = Tower_T_6hour_2019_regression[14,7]*tower_temp + Tower_T_6hour_2019_regression[14,6])%>%
-  mutate(C01E = Tower_T_6hour_2019_regression[15,7]*tower_temp + Tower_T_6hour_2019_regression[15,6])%>%
-  mutate(C01W = Tower_T_6hour_2019_regression[16,7]*tower_temp + Tower_T_6hour_2019_regression[16,6])%>%
+  mutate(A04E = Tower_T_6hour_2019_regression[7,7]*tower_temp + Tower_T_6hour_2019_regression[7,6])%>%
+  mutate(A04W = Tower_T_6hour_2019_regression[8,7]*tower_temp + Tower_T_6hour_2019_regression[8,6])%>%  
+  mutate(B01E = Tower_T_6hour_2019_regression[9,7]*tower_temp + Tower_T_6hour_2019_regression[9,6])%>%
+  mutate(B01W = Tower_T_6hour_2019_regression[10,7]*tower_temp + Tower_T_6hour_2019_regression[10,6])%>%
+  mutate(B02E = Tower_T_6hour_2019_regression[11,7]*tower_temp + Tower_T_6hour_2019_regression[11,6])%>%
+  mutate(B02W = Tower_T_6hour_2019_regression[12,7]*tower_temp + Tower_T_6hour_2019_regression[12,6])%>%
+  mutate(B03E = Tower_T_6hour_2019_regression[13,7]*tower_temp + Tower_T_6hour_2019_regression[13,6])%>%
+  mutate(B03W = Tower_T_6hour_2019_regression[14,7]*tower_temp + Tower_T_6hour_2019_regression[14,6])%>%
+  mutate(B04E = Tower_T_6hour_2019_regression[15,7]*tower_temp + Tower_T_6hour_2019_regression[15,6])%>%
+  mutate(B04W = Tower_T_6hour_2019_regression[16,7]*tower_temp + Tower_T_6hour_2019_regression[16,6])%>%
   mutate(C01E = Tower_T_6hour_2019_regression[17,7]*tower_temp + Tower_T_6hour_2019_regression[17,6])%>%
   mutate(C01W = Tower_T_6hour_2019_regression[18,7]*tower_temp + Tower_T_6hour_2019_regression[18,6])%>%
   mutate(C02E = Tower_T_6hour_2019_regression[19,7]*tower_temp + Tower_T_6hour_2019_regression[19,6])%>%
@@ -1065,6 +1066,7 @@ Tower_T_6hour_2019_modeled_high <- Tower_T_6hour_2019%>%
   mutate(D03W = Tower_T_6hour_2019_regression[30,7]*tower_temp + Tower_T_6hour_2019_regression[30,6])%>%
   mutate(D04E = Tower_T_6hour_2019_regression[31,7]*tower_temp + Tower_T_6hour_2019_regression[31,6])%>%
   mutate(D04W = Tower_T_6hour_2019_regression[32,7]*tower_temp + Tower_T_6hour_2019_regression[32,6])
+
   
 
 
@@ -1308,16 +1310,16 @@ as_id("https://drive.google.com/drive/folders/1HHnDpTj32O-aaFavUzugzIxojf_BGEei"
     mutate(A02W = Tower_T_6hour_2020_regression[4,3]*tower_temp + Tower_T_6hour_2020_regression[4,2])%>%
     mutate(A03E = Tower_T_6hour_2020_regression[5,3]*tower_temp + Tower_T_6hour_2020_regression[5,2])%>%
     mutate(A03W = Tower_T_6hour_2020_regression[6,3]*tower_temp + Tower_T_6hour_2020_regression[6,2])%>%
-    mutate(B01E = Tower_T_6hour_2020_regression[7,3]*tower_temp + Tower_T_6hour_2020_regression[7,2])%>%
-    mutate(B01W = Tower_T_6hour_2020_regression[8,3]*tower_temp + Tower_T_6hour_2020_regression[8,2])%>%
-    mutate(B02E = Tower_T_6hour_2020_regression[9,3]*tower_temp + Tower_T_6hour_2020_regression[9,2])%>%
-    mutate(B02W = Tower_T_6hour_2020_regression[10,3]*tower_temp + Tower_T_6hour_2020_regression[10,2])%>%
-    mutate(B03E = Tower_T_6hour_2020_regression[11,3]*tower_temp + Tower_T_6hour_2020_regression[11,2])%>%
-    mutate(B03W = Tower_T_6hour_2020_regression[12,3]*tower_temp + Tower_T_6hour_2020_regression[12,2])%>%
-    mutate(B04E = Tower_T_6hour_2020_regression[13,3]*tower_temp + Tower_T_6hour_2020_regression[13,2])%>%
-    mutate(B04W = Tower_T_6hour_2020_regression[14,3]*tower_temp + Tower_T_6hour_2020_regression[14,2])%>%
-    mutate(C01E = Tower_T_6hour_2020_regression[15,3]*tower_temp + Tower_T_6hour_2020_regression[15,2])%>%
-    mutate(C01W = Tower_T_6hour_2020_regression[16,3]*tower_temp + Tower_T_6hour_2020_regression[16,2])%>%
+    mutate(A04E = Tower_T_6hour_2020_regression[7,3]*tower_temp + Tower_T_6hour_2020_regression[7,2])%>%
+    mutate(A04W = Tower_T_6hour_2020_regression[8,3]*tower_temp + Tower_T_6hour_2020_regression[8,2])%>%  
+    mutate(B01E = Tower_T_6hour_2020_regression[9,3]*tower_temp + Tower_T_6hour_2020_regression[9,2])%>%
+    mutate(B01W = Tower_T_6hour_2020_regression[10,3]*tower_temp + Tower_T_6hour_2020_regression[10,2])%>%
+    mutate(B02E = Tower_T_6hour_2020_regression[11,3]*tower_temp + Tower_T_6hour_2020_regression[11,2])%>%
+    mutate(B02W = Tower_T_6hour_2020_regression[12,3]*tower_temp + Tower_T_6hour_2020_regression[12,2])%>%
+    mutate(B03E = Tower_T_6hour_2020_regression[13,3]*tower_temp + Tower_T_6hour_2020_regression[13,2])%>%
+    mutate(B03W = Tower_T_6hour_2020_regression[14,3]*tower_temp + Tower_T_6hour_2020_regression[14,2])%>%
+    mutate(B04E = Tower_T_6hour_2020_regression[15,3]*tower_temp + Tower_T_6hour_2020_regression[15,2])%>%
+    mutate(B04W = Tower_T_6hour_2020_regression[16,3]*tower_temp + Tower_T_6hour_2020_regression[16,2])%>%
     mutate(C01E = Tower_T_6hour_2020_regression[17,3]*tower_temp + Tower_T_6hour_2020_regression[17,2])%>%
     mutate(C01W = Tower_T_6hour_2020_regression[18,3]*tower_temp + Tower_T_6hour_2020_regression[18,2])%>%
     mutate(C02E = Tower_T_6hour_2020_regression[19,3]*tower_temp + Tower_T_6hour_2020_regression[19,2])%>%
@@ -1337,22 +1339,22 @@ as_id("https://drive.google.com/drive/folders/1HHnDpTj32O-aaFavUzugzIxojf_BGEei"
   
   ##low
   Tower_T_6hour_2020_modeled_low <- Tower_T_6hour_2020%>%
-    mutate(A01E = Tower_T_6hour_2020_regression[1,5]*tower_temp + Tower_T_6hour_2020_regression[1,4])%>%
+    mutate(A01E = Tower_T_6hour_2020_regression[1,5]*tower_temp + Tower_T_6hour_2020_regression[1,2])%>%
     mutate(A01W = Tower_T_6hour_2020_regression[2,5]*tower_temp + Tower_T_6hour_2020_regression[2,4])%>%
     mutate(A02E = Tower_T_6hour_2020_regression[3,5]*tower_temp + Tower_T_6hour_2020_regression[3,4])%>%
     mutate(A02W = Tower_T_6hour_2020_regression[4,5]*tower_temp + Tower_T_6hour_2020_regression[4,4])%>%
     mutate(A03E = Tower_T_6hour_2020_regression[5,5]*tower_temp + Tower_T_6hour_2020_regression[5,4])%>%
     mutate(A03W = Tower_T_6hour_2020_regression[6,5]*tower_temp + Tower_T_6hour_2020_regression[6,4])%>%
-    mutate(B01E = Tower_T_6hour_2020_regression[7,5]*tower_temp + Tower_T_6hour_2020_regression[7,4])%>%
-    mutate(B01W = Tower_T_6hour_2020_regression[8,5]*tower_temp + Tower_T_6hour_2020_regression[8,4])%>%
-    mutate(B02E = Tower_T_6hour_2020_regression[9,5]*tower_temp + Tower_T_6hour_2020_regression[9,4])%>%
-    mutate(B02W = Tower_T_6hour_2020_regression[10,5]*tower_temp + Tower_T_6hour_2020_regression[10,4])%>%
-    mutate(B03E = Tower_T_6hour_2020_regression[11,5]*tower_temp + Tower_T_6hour_2020_regression[11,4])%>%
-    mutate(B03W = Tower_T_6hour_2020_regression[12,5]*tower_temp + Tower_T_6hour_2020_regression[12,4])%>%
-    mutate(B04E = Tower_T_6hour_2020_regression[13,5]*tower_temp + Tower_T_6hour_2020_regression[13,4])%>%
-    mutate(B04W = Tower_T_6hour_2020_regression[14,5]*tower_temp + Tower_T_6hour_2020_regression[14,4])%>%
-    mutate(C01E = Tower_T_6hour_2020_regression[15,5]*tower_temp + Tower_T_6hour_2020_regression[15,4])%>%
-    mutate(C01W = Tower_T_6hour_2020_regression[16,5]*tower_temp + Tower_T_6hour_2020_regression[16,4])%>%
+    mutate(A04E = Tower_T_6hour_2020_regression[7,5]*tower_temp + Tower_T_6hour_2020_regression[7,4])%>%
+    mutate(A04W = Tower_T_6hour_2020_regression[8,5]*tower_temp + Tower_T_6hour_2020_regression[8,4])%>%  
+    mutate(B01E = Tower_T_6hour_2020_regression[9,5]*tower_temp + Tower_T_6hour_2020_regression[9,4])%>%
+    mutate(B01W = Tower_T_6hour_2020_regression[10,5]*tower_temp + Tower_T_6hour_2020_regression[10,4])%>%
+    mutate(B02E = Tower_T_6hour_2020_regression[11,5]*tower_temp + Tower_T_6hour_2020_regression[11,4])%>%
+    mutate(B02W = Tower_T_6hour_2020_regression[12,5]*tower_temp + Tower_T_6hour_2020_regression[12,4])%>%
+    mutate(B03E = Tower_T_6hour_2020_regression[13,5]*tower_temp + Tower_T_6hour_2020_regression[13,4])%>%
+    mutate(B03W = Tower_T_6hour_2020_regression[14,5]*tower_temp + Tower_T_6hour_2020_regression[14,4])%>%
+    mutate(B04E = Tower_T_6hour_2020_regression[15,5]*tower_temp + Tower_T_6hour_2020_regression[15,4])%>%
+    mutate(B04W = Tower_T_6hour_2020_regression[16,5]*tower_temp + Tower_T_6hour_2020_regression[16,4])%>%
     mutate(C01E = Tower_T_6hour_2020_regression[17,5]*tower_temp + Tower_T_6hour_2020_regression[17,4])%>%
     mutate(C01W = Tower_T_6hour_2020_regression[18,5]*tower_temp + Tower_T_6hour_2020_regression[18,4])%>%
     mutate(C02E = Tower_T_6hour_2020_regression[19,5]*tower_temp + Tower_T_6hour_2020_regression[19,4])%>%
@@ -1370,6 +1372,7 @@ as_id("https://drive.google.com/drive/folders/1HHnDpTj32O-aaFavUzugzIxojf_BGEei"
     mutate(D04E = Tower_T_6hour_2020_regression[31,5]*tower_temp + Tower_T_6hour_2020_regression[31,4])%>%
     mutate(D04W = Tower_T_6hour_2020_regression[32,5]*tower_temp + Tower_T_6hour_2020_regression[32,4])
   
+  
   ##high
   Tower_T_6hour_2020_modeled_high <- Tower_T_6hour_2020%>%
     mutate(A01E = Tower_T_6hour_2020_regression[1,7]*tower_temp + Tower_T_6hour_2020_regression[1,6])%>%
@@ -1378,16 +1381,16 @@ as_id("https://drive.google.com/drive/folders/1HHnDpTj32O-aaFavUzugzIxojf_BGEei"
     mutate(A02W = Tower_T_6hour_2020_regression[4,7]*tower_temp + Tower_T_6hour_2020_regression[4,6])%>%
     mutate(A03E = Tower_T_6hour_2020_regression[5,7]*tower_temp + Tower_T_6hour_2020_regression[5,6])%>%
     mutate(A03W = Tower_T_6hour_2020_regression[6,7]*tower_temp + Tower_T_6hour_2020_regression[6,6])%>%
-    mutate(B01E = Tower_T_6hour_2020_regression[7,7]*tower_temp + Tower_T_6hour_2020_regression[7,6])%>%
-    mutate(B01W = Tower_T_6hour_2020_regression[8,7]*tower_temp + Tower_T_6hour_2020_regression[8,6])%>%
-    mutate(B02E = Tower_T_6hour_2020_regression[9,7]*tower_temp + Tower_T_6hour_2020_regression[9,6])%>%
-    mutate(B02W = Tower_T_6hour_2020_regression[10,7]*tower_temp + Tower_T_6hour_2020_regression[10,6])%>%
-    mutate(B03E = Tower_T_6hour_2020_regression[11,7]*tower_temp + Tower_T_6hour_2020_regression[11,6])%>%
-    mutate(B03W = Tower_T_6hour_2020_regression[12,7]*tower_temp + Tower_T_6hour_2020_regression[12,6])%>%
-    mutate(B04E = Tower_T_6hour_2020_regression[13,7]*tower_temp + Tower_T_6hour_2020_regression[13,6])%>%
-    mutate(B04W = Tower_T_6hour_2020_regression[14,7]*tower_temp + Tower_T_6hour_2020_regression[14,6])%>%
-    mutate(C01E = Tower_T_6hour_2020_regression[15,7]*tower_temp + Tower_T_6hour_2020_regression[15,6])%>%
-    mutate(C01W = Tower_T_6hour_2020_regression[16,7]*tower_temp + Tower_T_6hour_2020_regression[16,6])%>%
+    mutate(A04E = Tower_T_6hour_2020_regression[7,7]*tower_temp + Tower_T_6hour_2020_regression[7,6])%>%
+    mutate(A04W = Tower_T_6hour_2020_regression[8,7]*tower_temp + Tower_T_6hour_2020_regression[8,6])%>%  
+    mutate(B01E = Tower_T_6hour_2020_regression[9,7]*tower_temp + Tower_T_6hour_2020_regression[9,6])%>%
+    mutate(B01W = Tower_T_6hour_2020_regression[10,7]*tower_temp + Tower_T_6hour_2020_regression[10,6])%>%
+    mutate(B02E = Tower_T_6hour_2020_regression[11,7]*tower_temp + Tower_T_6hour_2020_regression[11,6])%>%
+    mutate(B02W = Tower_T_6hour_2020_regression[12,7]*tower_temp + Tower_T_6hour_2020_regression[12,6])%>%
+    mutate(B03E = Tower_T_6hour_2020_regression[13,7]*tower_temp + Tower_T_6hour_2020_regression[13,6])%>%
+    mutate(B03W = Tower_T_6hour_2020_regression[14,7]*tower_temp + Tower_T_6hour_2020_regression[14,6])%>%
+    mutate(B04E = Tower_T_6hour_2020_regression[15,7]*tower_temp + Tower_T_6hour_2020_regression[15,6])%>%
+    mutate(B04W = Tower_T_6hour_2020_regression[16,7]*tower_temp + Tower_T_6hour_2020_regression[16,6])%>%
     mutate(C01E = Tower_T_6hour_2020_regression[17,7]*tower_temp + Tower_T_6hour_2020_regression[17,6])%>%
     mutate(C01W = Tower_T_6hour_2020_regression[18,7]*tower_temp + Tower_T_6hour_2020_regression[18,6])%>%
     mutate(C02E = Tower_T_6hour_2020_regression[19,7]*tower_temp + Tower_T_6hour_2020_regression[19,6])%>%
@@ -1404,8 +1407,6 @@ as_id("https://drive.google.com/drive/folders/1HHnDpTj32O-aaFavUzugzIxojf_BGEei"
     mutate(D03W = Tower_T_6hour_2020_regression[30,7]*tower_temp + Tower_T_6hour_2020_regression[30,6])%>%
     mutate(D04E = Tower_T_6hour_2020_regression[31,7]*tower_temp + Tower_T_6hour_2020_regression[31,6])%>%
     mutate(D04W = Tower_T_6hour_2020_regression[32,7]*tower_temp + Tower_T_6hour_2020_regression[32,6])
-  
-  
   
   Tower_T_6hour_2020_modeled <- gather(Tower_T_6hour_2020_modeled, Subplot_ID, modeled_temp, A01E:D04W, factor_key = TRUE)
   
@@ -1580,14 +1581,14 @@ as_id("https://drive.google.com/drive/folders/1HHnDpTj32O-aaFavUzugzIxojf_BGEei"
   
   ##Add tower data to match the point measurements 
   
-  ##Rename the tower variables and select only the 2019 Timestamps 
+  ##Rename the tower variables and select only the 2020 Timestamps 
   
   
   Tower_T_6hour_2021 <- Tower_T_6hour%>%
     filter(between(Timestamp_6, as.POSIXct('2021-01-01 00:00:00'), as.POSIXct('2021-12-31 18:00:00')))
   
   
-  ###Join Tower and point data for 2019 
+  ###Join Tower and point data for 2020 
   
   Tower_T_6hour_2021_combined <- Tower_T_6hour_2021 %>% 
     left_join(point_2021_mean_temp_6, by = "Timestamp_6")
@@ -1619,7 +1620,6 @@ as_id("https://drive.google.com/drive/folders/1HHnDpTj32O-aaFavUzugzIxojf_BGEei"
   Tower_T_6hour_2021_regression <- merge(Tower_T_6hour_2021_regression,fitted_model_temp_6_2021, by = "Subplot_ID" )
   
   
-  
   Tower_T_6hour_2021_modeled <- Tower_T_6hour_2021%>%
     mutate(A01E = Tower_T_6hour_2021_regression[1,3]*tower_temp + Tower_T_6hour_2021_regression[1,2])%>%
     mutate(A01W = Tower_T_6hour_2021_regression[2,3]*tower_temp + Tower_T_6hour_2021_regression[2,2])%>%
@@ -1627,16 +1627,16 @@ as_id("https://drive.google.com/drive/folders/1HHnDpTj32O-aaFavUzugzIxojf_BGEei"
     mutate(A02W = Tower_T_6hour_2021_regression[4,3]*tower_temp + Tower_T_6hour_2021_regression[4,2])%>%
     mutate(A03E = Tower_T_6hour_2021_regression[5,3]*tower_temp + Tower_T_6hour_2021_regression[5,2])%>%
     mutate(A03W = Tower_T_6hour_2021_regression[6,3]*tower_temp + Tower_T_6hour_2021_regression[6,2])%>%
-    mutate(B01E = Tower_T_6hour_2021_regression[7,3]*tower_temp + Tower_T_6hour_2021_regression[7,2])%>%
-    mutate(B01W = Tower_T_6hour_2021_regression[8,3]*tower_temp + Tower_T_6hour_2021_regression[8,2])%>%
-    mutate(B02E = Tower_T_6hour_2021_regression[9,3]*tower_temp + Tower_T_6hour_2021_regression[9,2])%>%
-    mutate(B02W = Tower_T_6hour_2021_regression[10,3]*tower_temp + Tower_T_6hour_2021_regression[10,2])%>%
-    mutate(B03E = Tower_T_6hour_2021_regression[11,3]*tower_temp + Tower_T_6hour_2021_regression[11,2])%>%
-    mutate(B03W = Tower_T_6hour_2021_regression[12,3]*tower_temp + Tower_T_6hour_2021_regression[12,2])%>%
-    mutate(B04E = Tower_T_6hour_2021_regression[13,3]*tower_temp + Tower_T_6hour_2021_regression[13,2])%>%
-    mutate(B04W = Tower_T_6hour_2021_regression[14,3]*tower_temp + Tower_T_6hour_2021_regression[14,2])%>%
-    mutate(C01E = Tower_T_6hour_2021_regression[15,3]*tower_temp + Tower_T_6hour_2021_regression[15,2])%>%
-    mutate(C01W = Tower_T_6hour_2021_regression[16,3]*tower_temp + Tower_T_6hour_2021_regression[16,2])%>%
+    mutate(A04E = Tower_T_6hour_2021_regression[7,3]*tower_temp + Tower_T_6hour_2021_regression[7,2])%>%
+    mutate(A04W = Tower_T_6hour_2021_regression[8,3]*tower_temp + Tower_T_6hour_2021_regression[8,2])%>%  
+    mutate(B01E = Tower_T_6hour_2021_regression[9,3]*tower_temp + Tower_T_6hour_2021_regression[9,2])%>%
+    mutate(B01W = Tower_T_6hour_2021_regression[10,3]*tower_temp + Tower_T_6hour_2021_regression[10,2])%>%
+    mutate(B02E = Tower_T_6hour_2021_regression[11,3]*tower_temp + Tower_T_6hour_2021_regression[11,2])%>%
+    mutate(B02W = Tower_T_6hour_2021_regression[12,3]*tower_temp + Tower_T_6hour_2021_regression[12,2])%>%
+    mutate(B03E = Tower_T_6hour_2021_regression[13,3]*tower_temp + Tower_T_6hour_2021_regression[13,2])%>%
+    mutate(B03W = Tower_T_6hour_2021_regression[14,3]*tower_temp + Tower_T_6hour_2021_regression[14,2])%>%
+    mutate(B04E = Tower_T_6hour_2021_regression[15,3]*tower_temp + Tower_T_6hour_2021_regression[15,2])%>%
+    mutate(B04W = Tower_T_6hour_2021_regression[16,3]*tower_temp + Tower_T_6hour_2021_regression[16,2])%>%
     mutate(C01E = Tower_T_6hour_2021_regression[17,3]*tower_temp + Tower_T_6hour_2021_regression[17,2])%>%
     mutate(C01W = Tower_T_6hour_2021_regression[18,3]*tower_temp + Tower_T_6hour_2021_regression[18,2])%>%
     mutate(C02E = Tower_T_6hour_2021_regression[19,3]*tower_temp + Tower_T_6hour_2021_regression[19,2])%>%
@@ -1662,16 +1662,16 @@ as_id("https://drive.google.com/drive/folders/1HHnDpTj32O-aaFavUzugzIxojf_BGEei"
     mutate(A02W = Tower_T_6hour_2021_regression[4,5]*tower_temp + Tower_T_6hour_2021_regression[4,4])%>%
     mutate(A03E = Tower_T_6hour_2021_regression[5,5]*tower_temp + Tower_T_6hour_2021_regression[5,4])%>%
     mutate(A03W = Tower_T_6hour_2021_regression[6,5]*tower_temp + Tower_T_6hour_2021_regression[6,4])%>%
-    mutate(B01E = Tower_T_6hour_2021_regression[7,5]*tower_temp + Tower_T_6hour_2021_regression[7,4])%>%
-    mutate(B01W = Tower_T_6hour_2021_regression[8,5]*tower_temp + Tower_T_6hour_2021_regression[8,4])%>%
-    mutate(B02E = Tower_T_6hour_2021_regression[9,5]*tower_temp + Tower_T_6hour_2021_regression[9,4])%>%
-    mutate(B02W = Tower_T_6hour_2021_regression[10,5]*tower_temp + Tower_T_6hour_2021_regression[10,4])%>%
-    mutate(B03E = Tower_T_6hour_2021_regression[11,5]*tower_temp + Tower_T_6hour_2021_regression[11,4])%>%
-    mutate(B03W = Tower_T_6hour_2021_regression[12,5]*tower_temp + Tower_T_6hour_2021_regression[12,4])%>%
-    mutate(B04E = Tower_T_6hour_2021_regression[13,5]*tower_temp + Tower_T_6hour_2021_regression[13,4])%>%
-    mutate(B04W = Tower_T_6hour_2021_regression[14,5]*tower_temp + Tower_T_6hour_2021_regression[14,4])%>%
-    mutate(C01E = Tower_T_6hour_2021_regression[15,5]*tower_temp + Tower_T_6hour_2021_regression[15,4])%>%
-    mutate(C01W = Tower_T_6hour_2021_regression[16,5]*tower_temp + Tower_T_6hour_2021_regression[16,4])%>%
+    mutate(A04E = Tower_T_6hour_2021_regression[7,5]*tower_temp + Tower_T_6hour_2021_regression[7,4])%>%
+    mutate(A04W = Tower_T_6hour_2021_regression[8,5]*tower_temp + Tower_T_6hour_2021_regression[8,4])%>%  
+    mutate(B01E = Tower_T_6hour_2021_regression[9,5]*tower_temp + Tower_T_6hour_2021_regression[9,4])%>%
+    mutate(B01W = Tower_T_6hour_2021_regression[10,5]*tower_temp + Tower_T_6hour_2021_regression[10,4])%>%
+    mutate(B02E = Tower_T_6hour_2021_regression[11,5]*tower_temp + Tower_T_6hour_2021_regression[11,4])%>%
+    mutate(B02W = Tower_T_6hour_2021_regression[12,5]*tower_temp + Tower_T_6hour_2021_regression[12,4])%>%
+    mutate(B03E = Tower_T_6hour_2021_regression[13,5]*tower_temp + Tower_T_6hour_2021_regression[13,4])%>%
+    mutate(B03W = Tower_T_6hour_2021_regression[14,5]*tower_temp + Tower_T_6hour_2021_regression[14,4])%>%
+    mutate(B04E = Tower_T_6hour_2021_regression[15,5]*tower_temp + Tower_T_6hour_2021_regression[15,4])%>%
+    mutate(B04W = Tower_T_6hour_2021_regression[16,5]*tower_temp + Tower_T_6hour_2021_regression[16,4])%>%
     mutate(C01E = Tower_T_6hour_2021_regression[17,5]*tower_temp + Tower_T_6hour_2021_regression[17,4])%>%
     mutate(C01W = Tower_T_6hour_2021_regression[18,5]*tower_temp + Tower_T_6hour_2021_regression[18,4])%>%
     mutate(C02E = Tower_T_6hour_2021_regression[19,5]*tower_temp + Tower_T_6hour_2021_regression[19,4])%>%
@@ -1689,6 +1689,7 @@ as_id("https://drive.google.com/drive/folders/1HHnDpTj32O-aaFavUzugzIxojf_BGEei"
     mutate(D04E = Tower_T_6hour_2021_regression[31,5]*tower_temp + Tower_T_6hour_2021_regression[31,4])%>%
     mutate(D04W = Tower_T_6hour_2021_regression[32,5]*tower_temp + Tower_T_6hour_2021_regression[32,4])
   
+  
   ##high
   Tower_T_6hour_2021_modeled_high <- Tower_T_6hour_2021%>%
     mutate(A01E = Tower_T_6hour_2021_regression[1,7]*tower_temp + Tower_T_6hour_2021_regression[1,6])%>%
@@ -1697,16 +1698,16 @@ as_id("https://drive.google.com/drive/folders/1HHnDpTj32O-aaFavUzugzIxojf_BGEei"
     mutate(A02W = Tower_T_6hour_2021_regression[4,7]*tower_temp + Tower_T_6hour_2021_regression[4,6])%>%
     mutate(A03E = Tower_T_6hour_2021_regression[5,7]*tower_temp + Tower_T_6hour_2021_regression[5,6])%>%
     mutate(A03W = Tower_T_6hour_2021_regression[6,7]*tower_temp + Tower_T_6hour_2021_regression[6,6])%>%
-    mutate(B01E = Tower_T_6hour_2021_regression[7,7]*tower_temp + Tower_T_6hour_2021_regression[7,6])%>%
-    mutate(B01W = Tower_T_6hour_2021_regression[8,7]*tower_temp + Tower_T_6hour_2021_regression[8,6])%>%
-    mutate(B02E = Tower_T_6hour_2021_regression[9,7]*tower_temp + Tower_T_6hour_2021_regression[9,6])%>%
-    mutate(B02W = Tower_T_6hour_2021_regression[10,7]*tower_temp + Tower_T_6hour_2021_regression[10,6])%>%
-    mutate(B03E = Tower_T_6hour_2021_regression[11,7]*tower_temp + Tower_T_6hour_2021_regression[11,6])%>%
-    mutate(B03W = Tower_T_6hour_2021_regression[12,7]*tower_temp + Tower_T_6hour_2021_regression[12,6])%>%
-    mutate(B04E = Tower_T_6hour_2021_regression[13,7]*tower_temp + Tower_T_6hour_2021_regression[13,6])%>%
-    mutate(B04W = Tower_T_6hour_2021_regression[14,7]*tower_temp + Tower_T_6hour_2021_regression[14,6])%>%
-    mutate(C01E = Tower_T_6hour_2021_regression[15,7]*tower_temp + Tower_T_6hour_2021_regression[15,6])%>%
-    mutate(C01W = Tower_T_6hour_2021_regression[16,7]*tower_temp + Tower_T_6hour_2021_regression[16,6])%>%
+    mutate(A04E = Tower_T_6hour_2021_regression[7,7]*tower_temp + Tower_T_6hour_2021_regression[7,6])%>%
+    mutate(A04W = Tower_T_6hour_2021_regression[8,7]*tower_temp + Tower_T_6hour_2021_regression[8,6])%>%  
+    mutate(B01E = Tower_T_6hour_2021_regression[9,7]*tower_temp + Tower_T_6hour_2021_regression[9,6])%>%
+    mutate(B01W = Tower_T_6hour_2021_regression[10,7]*tower_temp + Tower_T_6hour_2021_regression[10,6])%>%
+    mutate(B02E = Tower_T_6hour_2021_regression[11,7]*tower_temp + Tower_T_6hour_2021_regression[11,6])%>%
+    mutate(B02W = Tower_T_6hour_2021_regression[12,7]*tower_temp + Tower_T_6hour_2021_regression[12,6])%>%
+    mutate(B03E = Tower_T_6hour_2021_regression[13,7]*tower_temp + Tower_T_6hour_2021_regression[13,6])%>%
+    mutate(B03W = Tower_T_6hour_2021_regression[14,7]*tower_temp + Tower_T_6hour_2021_regression[14,6])%>%
+    mutate(B04E = Tower_T_6hour_2021_regression[15,7]*tower_temp + Tower_T_6hour_2021_regression[15,6])%>%
+    mutate(B04W = Tower_T_6hour_2021_regression[16,7]*tower_temp + Tower_T_6hour_2021_regression[16,6])%>%
     mutate(C01E = Tower_T_6hour_2021_regression[17,7]*tower_temp + Tower_T_6hour_2021_regression[17,6])%>%
     mutate(C01W = Tower_T_6hour_2021_regression[18,7]*tower_temp + Tower_T_6hour_2021_regression[18,6])%>%
     mutate(C02E = Tower_T_6hour_2021_regression[19,7]*tower_temp + Tower_T_6hour_2021_regression[19,6])%>%
@@ -1723,8 +1724,6 @@ as_id("https://drive.google.com/drive/folders/1HHnDpTj32O-aaFavUzugzIxojf_BGEei"
     mutate(D03W = Tower_T_6hour_2021_regression[30,7]*tower_temp + Tower_T_6hour_2021_regression[30,6])%>%
     mutate(D04E = Tower_T_6hour_2021_regression[31,7]*tower_temp + Tower_T_6hour_2021_regression[31,6])%>%
     mutate(D04W = Tower_T_6hour_2021_regression[32,7]*tower_temp + Tower_T_6hour_2021_regression[32,6])
-  
-  
   
   Tower_T_6hour_2021_modeled <- gather(Tower_T_6hour_2021_modeled, Subplot_ID, modeled_temp, A01E:D04W, factor_key = TRUE)
   
@@ -2130,7 +2129,7 @@ tower_raw_2022$Day.of.Year <- format(tower_raw_2022$Day.of.Year, "%m-%d")
   
  ##################################################################### Estimate CWD Flux (Temperature + Moisture model method) ###################################################
 
-########2019  
+########2021  
 ###Merge the modelled temperature and moisture dataframes 
   
 #Modeled_T_SWC_2019 <- merge(Tower_SWC_6hour_2019_modeled,   Tower_T_6hour_2019_modeled, by = c("Timestamp_6", "Subplot_ID"))
@@ -2302,7 +2301,7 @@ Modeled_annual_R_T_SWC_2019_high <- Modeled_annual_R_T_SWC_2019_high%>%
 
 
 
-#######2020 
+#######2021 
 
 #Modeled_T_SWC_2020 <- merge(Tower_SWC_6hour_2020_modeled,   Tower_T_6hour_2020_modeled, by = c("Timestamp_6", "Subplot_ID"))
 
