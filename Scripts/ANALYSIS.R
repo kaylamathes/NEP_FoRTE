@@ -93,12 +93,14 @@ R_CWD_3yr <-  R_CWD%>%
 
 R_CWD_3yr <-  R_CWD_3yr%>%
   group_by(severity, rep, year)%>%
-  summarize(R_CWD_Mghayr_ave = mean(R_CWD_Mghayr_ave),R_CWD_Mghayr_1 = mean(R_CWD_Mghayr_1),R_CWD_Mghayr_2 = mean(R_CWD_Mghayr_2),R_CWD_Mghayr_3 = mean(R_CWD_Mghayr_3))
+  summarize(R_CWD_Mghayr_ave = mean(R_CWD_Mghayr_ave),R_CWD_Mghayr_1 = mean(R_CWD_Mghayr_1),R_CWD_Mghayr_2 = mean(R_CWD_Mghayr_2),R_CWD_Mghayr_3 = mean(R_CWD_Mghayr_3),R_CWD_Mghayr_3_low = mean(R_CWD_Mghayr_3_low),R_CWD_Mghayr_3_high = mean(R_CWD_Mghayr_3_high))
 
 ####Rsh 
 R_sh_3yr <-  R_sh%>%
   group_by(severity, rep, year)%>%
-  summarize(Rh_Mghayr_ave = mean(Modeled_Rh_Mg_ha_y_mean), Modeled_Rh_Mg_ha_y_BBL_ED = mean(Modeled_Rh_Mg_ha_y_BBL_ED), Modeled_Rh_Mg_ha_y_BBL_Jar = mean(Modeled_Rh_Mg_ha_y_BBL_Jar), Modeled_Rh_Mg_ha_y_subke_ED = mean(Modeled_Rh_Mg_ha_y_subke_ED), Modeled_Rh_Mg_ha_y_subke_Jar = mean(Modeled_Rh_Mg_ha_y_subke_Jar))
+  summarize(Rh_Mghayr_ave = mean(Modeled_Rh_Mg_ha_y_mean), Modeled_Rh_Mg_ha_y_BBL_ED = mean(Modeled_Rh_Mg_ha_y_BBL_ED), Modeled_Rh_Mg_ha_y_BBL_Jar = mean(Modeled_Rh_Mg_ha_y_BBL_Jar), Modeled_Rh_Mg_ha_y_subke_ED = mean(Modeled_Rh_Mg_ha_y_subke_ED), Modeled_Rh_Mg_ha_y_subke_Jar = mean(Modeled_Rh_Mg_ha_y_subke_Jar),
+            Modeled_Rh_Mg_ha_y_BBL_ED_low = mean(Modeled_Rh_Mg_ha_y_BBL_ED_low), Modeled_Rh_Mg_ha_y_BBL_Jar_low = mean(Modeled_Rh_Mg_ha_y_BBL_Jar_low), Modeled_Rh_Mg_ha_y_subke_ED_low = mean(Modeled_Rh_Mg_ha_y_subke_ED_low), Modeled_Rh_Mg_ha_y_subke_Jar_low = mean(Modeled_Rh_Mg_ha_y_subke_Jar_low),
+            Modeled_Rh_Mg_ha_y_BBL_ED_high = mean(Modeled_Rh_Mg_ha_y_BBL_ED_high), Modeled_Rh_Mg_ha_y_BBL_Jar_high = mean(Modeled_Rh_Mg_ha_y_BBL_Jar_high), Modeled_Rh_Mg_ha_y_subke_ED_high = mean(Modeled_Rh_Mg_ha_y_subke_ED_high), Modeled_Rh_Mg_ha_y_subke_Jar_high = mean(Modeled_Rh_Mg_ha_y_subke_Jar_high))
 
 ########################### Big NPP Figures_Severity  ##############################
 
@@ -537,79 +539,105 @@ NEP_dataframe <- NEP_dataframe%>%
 library(tidyr)
 library(plotrix)
 
-######NEP Uncertainty 
-NEP_dataframe_uncertainty_summary_1 <- NEP_dataframe%>%
-  select(rep, severity, year, NEP_MgChayr_1, NEP_MgChayr_2, NEP_MgChayr_3, NEP_MgChayr_4, NEP_MgChayr_5, NEP_MgChayr_6, NEP_MgChayr_7, NEP_MgChayr_8, NEP_MgChayr_9, NEP_MgChayr_10, NEP_MgChayr_11, NEP_MgChayr_12)%>%
-   pivot_longer(cols=c("NEP_MgChayr_1", "NEP_MgChayr_2", "NEP_MgChayr_3", "NEP_MgChayr_4", "NEP_MgChayr_5","NEP_MgChayr_6", "NEP_MgChayr_7", "NEP_MgChayr_8", "NEP_MgChayr_9", "NEP_MgChayr_10", "NEP_MgChayr_11", "NEP_MgChayr_12"),
-                      names_to='method',
-                      values_to='NEP')%>%
-  group_by(year,severity, method)%>%
-    summarize(NEP = mean(NEP))%>%
-  group_by(year,severity)%>%
-  summarize(NEP_mean = mean(NEP), NEP_se_Model = std.error(NEP))%>%
-  ungroup()
-  
-
-
-NEP_data_uncertainty_sumary_2 <- NEP_dataframe%>%
-  group_by(year, severity)%>%
-  summarize(NEP_MgChayr_grandmean_mean = mean(NEP_MgChayr_grandmean), NEP_se_rep = std.error(NEP_MgChayr_grandmean))
-
-NEP_uncertainty_summary <- merge(NEP_data_uncertainty_sumary_2, NEP_dataframe_uncertainty_summary_1, by = c("severity", "year"))%>%
-  mutate(NEP_uncertainty = sqrt(NEP_se_Model + NEP_se_rep ))
 
 
 ######Rh uncertainty 
-Rh_dataframe_uncertainty_summary_1 <- NEP_dataframe%>%
-  select(rep, severity, year, Modeled_Rh_Mg_ha_y_BBL_ED, Modeled_Rh_Mg_ha_y_BBL_Jar, Modeled_Rh_Mg_ha_y_subke_ED, Modeled_Rh_Mg_ha_y_subke_Jar)%>%
-  pivot_longer(cols=c("Modeled_Rh_Mg_ha_y_BBL_ED", "Modeled_Rh_Mg_ha_y_BBL_Jar","Modeled_Rh_Mg_ha_y_subke_ED", "Modeled_Rh_Mg_ha_y_subke_Jar"),
-               names_to='method',
-               values_to='Rh')%>%
-  group_by(year,severity, method)%>%
-  summarize(Rh = mean(Rh))%>%
+Rh_uncertainty <- NEP_dataframe%>%
   group_by(severity, year)%>%
-  summarize(Rh_mean = mean(Rh), Rh_se_Model = std.error(Rh))%>%
-  ungroup()
+  summarize(Modeled_Rh_Mg_ha_y_BBL_ED_high = mean(Modeled_Rh_Mg_ha_y_BBL_ED_high),
+            Modeled_Rh_Mg_ha_y_BBL_ED_low = mean(Modeled_Rh_Mg_ha_y_BBL_ED_low),
+            Modeled_Rh_Mg_ha_y_subke_ED_high = mean(Modeled_Rh_Mg_ha_y_subke_ED_high),
+            Modeled_Rh_Mg_ha_y_subke_ED_low = mean(Modeled_Rh_Mg_ha_y_subke_ED_low),
+            Modeled_Rh_Mg_ha_y_BBL_Jar_high = mean(Modeled_Rh_Mg_ha_y_BBL_Jar_high),
+            Modeled_Rh_Mg_ha_y_BBL_Jar_low = mean(Modeled_Rh_Mg_ha_y_BBL_Jar_low),
+            Modeled_Rh_Mg_ha_y_subke_Jar_high = mean(Modeled_Rh_Mg_ha_y_subke_Jar_high),
+            Modeled_Rh_Mg_ha_y_subke_Jar_low = mean(Modeled_Rh_Mg_ha_y_subke_Jar_low))
 
+Rh_uncertainty_model <- Rh_uncertainty%>%
+  mutate(Modeled_Rh_Mg_ha_y_BBL_ED_se_model = (Modeled_Rh_Mg_ha_y_BBL_ED_high - Modeled_Rh_Mg_ha_y_BBL_ED_low)/3.92)%>%
+  mutate(Modeled_Rh_Mg_ha_y_subke_ED_se_model = (Modeled_Rh_Mg_ha_y_subke_ED_high - Modeled_Rh_Mg_ha_y_subke_ED_low)/3.92)%>%
+  mutate(Modeled_Rh_Mg_ha_y_BBL_Jar_se_model = (Modeled_Rh_Mg_ha_y_BBL_Jar_high - Modeled_Rh_Mg_ha_y_BBL_Jar_low)/3.92)%>%
+  mutate(Modeled_Rh_Mg_ha_y_subke_Jar_se_model = (Modeled_Rh_Mg_ha_y_subke_Jar_high - Modeled_Rh_Mg_ha_y_subke_Jar_low)/3.92)%>%
+  select(severity, year, Modeled_Rh_Mg_ha_y_BBL_ED_se_model,Modeled_Rh_Mg_ha_y_subke_ED_se_model,Modeled_Rh_Mg_ha_y_BBL_Jar_se_model,Modeled_Rh_Mg_ha_y_subke_Jar_se_model)
 
+Rh_uncertainty_rep <- NEP_dataframe%>%
+  group_by(year, severity)%>%
+  summarize(Modeled_Rh_Mg_ha_y_BBL_ED_se_rep = std.error(Modeled_Rh_Mg_ha_y_BBL_ED),
+            Modeled_Rh_Mg_ha_y_subke_ED_se_rep = std.error(Modeled_Rh_Mg_ha_y_subke_ED),
+            Modeled_Rh_Mg_ha_y_BBL_Jar_se_rep = std.error(Modeled_Rh_Mg_ha_y_BBL_Jar), 
+            Modeled_Rh_Mg_ha_y_subke_Jar_se_rep = std.error(Modeled_Rh_Mg_ha_y_subke_Jar))
 
-Rh_data_uncertainty_sumary_2 <- NEP_dataframe%>%
-  group_by(severity, year)%>%
-  summarize(Rh_Mghayr_ave_mean = mean(Rh_Mghayr_ave), Rh_se_rep = std.error(Rh_Mghayr_ave))
-
-Rh_uncertainty_summary <- merge(Rh_data_uncertainty_sumary_2, Rh_dataframe_uncertainty_summary_1, by = c("severity", "year"))%>%
-  mutate(Rh_uncertainty = sqrt(Rh_se_Model + Rh_se_rep ))
-
-Rh_total_average <- Rh_uncertainty_summary%>%
-  summarize(Rh = mean(Rh_mean), Rh_uncertainty_mean = mean(Rh_uncertainty))
-
+Rh_uncertainty_summary <- merge(Rh_uncertainty_model , Rh_uncertainty_rep, by = c("severity", "year"))%>%
+  mutate(Modeled_Rh_Mg_ha_y_BBL_ED_uncertainty = sqrt(Modeled_Rh_Mg_ha_y_BBL_ED_se_rep + Modeled_Rh_Mg_ha_y_BBL_ED_se_model), 
+         Modeled_Rh_Mg_ha_y_subke_ED_uncertainty = sqrt(Modeled_Rh_Mg_ha_y_subke_ED_se_rep + Modeled_Rh_Mg_ha_y_subke_ED_se_model), 
+         Modeled_Rh_Mg_ha_y_BBL_Jar_uncertainty = sqrt(Modeled_Rh_Mg_ha_y_BBL_Jar_se_rep + Modeled_Rh_Mg_ha_y_BBL_Jar_se_model),
+         Modeled_Rh_Mg_ha_y_subke_Jar_uncertainty = sqrt(Modeled_Rh_Mg_ha_y_subke_Jar_se_rep + Modeled_Rh_Mg_ha_y_subke_Jar_se_model))%>%
+  select(severity,year, Modeled_Rh_Mg_ha_y_BBL_ED_uncertainty,Modeled_Rh_Mg_ha_y_subke_ED_uncertainty,Modeled_Rh_Mg_ha_y_BBL_Jar_uncertainty, Modeled_Rh_Mg_ha_y_subke_Jar_uncertainty )
+  
 
 
 ####CWD uncertainty 
-CWD_dataframe_uncertainty_summary_1 <- NEP_dataframe%>%
-  select(rep, severity, year, R_CWD_Mghayr_1, R_CWD_Mghayr_2, R_CWD_Mghayr_3)%>%
-  pivot_longer(cols=c("R_CWD_Mghayr_1", "R_CWD_Mghayr_2", "R_CWD_Mghayr_3"),
-               names_to='method',
-               values_to='CWD')%>%
-  group_by(year,severity, method)%>%
-  summarize(CWD = mean(CWD))%>%
-  group_by(year,severity)%>%
-  summarize(CWD_mean = mean(CWD), CWD_se_Model = std.error(CWD))%>%
-  ungroup()
+
+CWD_uncertainty <- NEP_dataframe%>%
+  group_by(severity, year)%>%
+  summarize(R_CWD_Mghayr_3_low = mean(R_CWD_Mghayr_3_low),
+            R_CWD_Mghayr_3_high = mean(R_CWD_Mghayr_3_high))
+            
+           
+
+CWD_uncertainty <- CWD_uncertainty %>%
+  mutate(R_CWD_Mghayr_3_se_model = (R_CWD_Mghayr_3_high - R_CWD_Mghayr_3_low)/3.92)%>%
+  select(severity, year, R_CWD_Mghayr_3_se_model)
 
 
 
-CWD_data_uncertainty_sumary_2 <- NEP_dataframe%>%
+CWD_data_uncertainty_sumary <- NEP_dataframe%>%
   group_by(year, severity)%>%
-  summarize(R_CWD_Mghayr_ave_mean = mean(R_CWD_Mghayr_ave), CWD_se_rep = std.error(R_CWD_Mghayr_ave))
+  summarize(CWD_se_1 = std.error(R_CWD_Mghayr_1),
+             CWD_se_2 = std.error(R_CWD_Mghayr_2),
+             CWD_se_rep_3 = std.error(R_CWD_Mghayr_3))
 
-CWD_uncertainty_summary <- merge(CWD_data_uncertainty_sumary_2 , CWD_dataframe_uncertainty_summary_1, by = c("severity", "year"))%>%
-  mutate(CWD_uncertainty = sqrt(CWD_se_Model + CWD_se_rep ))
+CWD_uncertainty_summary <- merge(CWD_data_uncertainty_sumary , CWD_uncertainty, by = c("severity", "year"))%>%
+  mutate(CWD_se_3 = sqrt(R_CWD_Mghayr_3_se_model + CWD_se_rep_3))%>%
+  select(severity, year,CWD_se_1,CWD_se_2,CWD_se_3 )
 
 
+NEP_dataframe_summary_se <- NEP_dataframe%>%
+  group_by(year, severity)%>%
+  summarize(NPP_can_mean = mean(NPP_can), 
+            NPP_can_se = std.error(NPP_can), 
+            NPP_sc_mean = mean(NPP_sc), 
+            NPP_sc_se = std.error(NPP_sc),
+            BNPP_mean = mean(BNPP),
+            BNPP_se = std.error(BNPP),
+            NPP_ll_mean = mean(NPP_ll),
+            NPP_ll_se = std.error(NPP_ll), 
+            NPP_fwd_mean = mean(NPP_fwd), 
+            NPP_fwd_se = std.error(NPP_fwd), 
+            NPP_fr_mean = mean(NPP_fr),
+            NPP_fr_se = std.error(NPP_fr))
 
-Rh_total_average <- Rh_uncertainty_summary%>%
-  summarize(Rh = mean(Rh_mean), Rh_uncertainty_mean = mean(Rh_uncertainty))
+NEP_dataframe_summary_se <- merge(NEP_dataframe_summary_se, CWD_uncertainty_summary, by = c("year", "severity"))
+NEP_dataframe_summary_se<- merge(NEP_dataframe_summary_se, Rh_uncertainty_summary, by = c("year", "severity"))
+ 
+
+NEP_dataframe_summary_se <- NEP_dataframe_summary_se%>%
+  mutate(NEP_MgChayr_1_se = sqrt(NPP_can_se + NPP_sc_se + BNPP_se + NPP_ll_se + NPP_fwd_se + NPP_fr_se + Modeled_Rh_Mg_ha_y_BBL_Jar_uncertainty + CWD_se_1))%>%
+
+
+  mutate(NEP_MgChayr_2_se = sqrt(NPP_can_se + NPP_sc_se + BNPP_se +NPP_ll_se + NPP_fwd_se + NPP_fr_se + Modeled_Rh_Mg_ha_y_subke_Jar_uncertainty +CWD_se_1))%>%
+  mutate(NEP_MgChayr_3_se = sqrt(NPP_can_se + NPP_sc_se + BNPP_se +NPP_ll_se + NPP_fwd_se + NPP_fr_se + Modeled_Rh_Mg_ha_y_BBL_ED_uncertainty +CWD_se_1))%>%
+  mutate(NEP_MgChayr_4_se = sqrt(NPP_can_se + NPP_sc_se + BNPP_se +NPP_ll_se + NPP_fwd_se + NPP_fr_se + Modeled_Rh_Mg_ha_y_subke_ED_uncertainty +CWD_se_1))%>%
+ mutate(NEP_MgChayr_5_se = sqrt(NPP_can_se + NPP_sc_se + BNPP_se +NPP_ll_se + NPP_fwd_se + NPP_fr_se + Modeled_Rh_Mg_ha_y_BBL_Jar_uncertainty +CWD_se_2))%>%
+ mutate(NEP_MgChayr_6_se = sqrt(NPP_can_se + NPP_sc_se + BNPP_se +NPP_ll_se + NPP_fwd_se + NPP_fr_se + Modeled_Rh_Mg_ha_y_subke_Jar_uncertainty +CWD_se_2))%>%
+ mutate(NEP_MgChayr_7_se = sqrt(NPP_can_se + NPP_sc_se + BNPP_se +NPP_ll_se + NPP_fwd_se + NPP_fr_se + Modeled_Rh_Mg_ha_y_BBL_ED_uncertainty +CWD_se_2))%>%
+ mutate(NEP_MgChayr_8_se = sqrt(NPP_can_se + NPP_sc_se + BNPP_se +NPP_ll_se + NPP_fwd_se + NPP_fr_se + Modeled_Rh_Mg_ha_y_subke_ED_uncertainty +CWD_se_2))%>%
+mutate(NEP_MgChayr_9_se = sqrt(NPP_can_se + NPP_sc_se + BNPP_se +NPP_ll_se + NPP_fwd_se + NPP_fr_se + Modeled_Rh_Mg_ha_y_BBL_Jar_uncertainty +CWD_se_3))%>%
+mutate(NEP_MgChayr_10_se = sqrt(NPP_can_se + NPP_sc_se + BNPP_se +NPP_ll_se + NPP_fwd_se + NPP_fr_se + Modeled_Rh_Mg_ha_y_subke_Jar_uncertainty +CWD_se_3))%>%
+mutate(NEP_MgChayr_11_se = sqrt(NPP_can_se + NPP_sc_se + BNPP_se +NPP_ll_se + NPP_fwd_se + NPP_fr_se + Modeled_Rh_Mg_ha_y_BBL_ED_uncertainty +CWD_se_3))%>%
+mutate(NEP_MgChayr_12_se = sqrt(NPP_can_se + NPP_sc_se + BNPP_se +NPP_ll_se + NPP_fwd_se + NPP_fr_se + Modeled_Rh_Mg_ha_y_subke_ED_uncertainty +CWD_se_3))
+  
+  
 
 
 ##########Plot and Analysis NEP #############
@@ -863,9 +891,7 @@ NEP_dataframe_summary <- NEP_dataframe%>%
             NPP_fwd_mean = mean(NPP_fwd), 
             NPP_fwd_se = std.error(NPP_fwd), 
             NPP_fr_mean = mean(NPP_fr),
-            NPP_fr_se = std.error(NPP_fr),
-            NPP_total_mean = mean(NPP_total), 
-            NPP_se_total = std.error(NPP_total))
+            NPP_fr_se = std.error(NPP_fr))
 
 NEP_dataframe_summary <- merge(NEP_dataframe_summary, CWD_uncertainty_summary, by = c("year", "severity"))
 NEP_dataframe_summary <- merge(NEP_dataframe_summary, Rh_uncertainty_summary, by = c("year", "severity"))
@@ -898,9 +924,6 @@ NEP_dataframe_summary$NPP_ll_se <- parenthesize(NEP_dataframe_summary$NPP_ll_se)
 NEP_dataframe_summary$NPP_fwd_se <- parenthesize(NEP_dataframe_summary$NPP_fwd_se)
 NEP_dataframe_summary$NPP_fr_se <- parenthesize(NEP_dataframe_summary$NPP_fr_se)
 NEP_dataframe_summary$BNPP_se <- parenthesize(NEP_dataframe_summary$BNPP_se)
-NEP_dataframe_summary$Rh_uncertainty <- parenthesize(NEP_dataframe_summary$Rh_uncertainty)
-NEP_dataframe_summary$CWD_uncertainty <- parenthesize(NEP_dataframe_summary$CWD_uncertainty)
-NEP_dataframe_summary$NEP_uncertainty <- parenthesize(NEP_dataframe_summary$NEP_uncertainty)
 
 ########Make NEP Table 
 library(gt)
@@ -915,18 +938,12 @@ NEP_table <- NEP_dataframe_summary%>%
   cols_merge_uncert(col_val = NPP_ll_mean, col_uncert = NPP_ll_se,sep = "\n")%>%
   cols_merge_uncert(col_val = NPP_fwd_mean, col_uncert = NPP_fwd_se,sep = "\n")%>%
   cols_merge_uncert(col_val = NPP_fr_mean, col_uncert = NPP_fr_se,sep = "\n")%>%
-  cols_merge_uncert(col_val = CWD_mean, col_uncert = CWD_uncertainty,sep = "\n")%>%
-  cols_merge_uncert(col_val = Rh_mean, col_uncert = Rh_uncertainty,sep = "\n")%>%
-  cols_merge_uncert(col_val = NEP_mean, col_uncert = NEP_uncertainty,sep = "\n")%>%
   cols_label(severity = "Severity (%)", NPP_can_mean = html("canopy ANPP<sub>w<sub>"),
              NPP_sc_mean = html("subcanopy ANPP<sub>w<sub>"), 
              BNPP_mean = html("BNPP<sub>w<sub>"),
              NPP_ll_mean = html("NPP<sub>ll<sub>"),
              NPP_fwd_mean = html("NPP<sub>fwd<sub>"),
-             NPP_fr_mean = html("NPP<sub>fr<sub>"),
-             CWD_mean = html("R<sub>cwd,ave<sub>"),
-             Rh_mean = html("R<sub>sh,ave<sub>"),
-             NEP_mean = ("NEP"))%>%
+             NPP_fr_mean = html("NPP<sub>fr<sub>"))%>%
   cols_width(everything () ~ px(83))%>%
   tab_header(title = md(" "))%>%
   tab_source_note(source_note = "")
@@ -935,7 +952,7 @@ NEP_table
 
 library(webshot2)
 
-gtsave(NEP_table, "NEP Table.png", expand = 5, zoom = 2)
+gtsave(NEP_table, "NPP_Table.png", expand = 5, zoom = 2)
 
 
 
@@ -974,5 +991,6 @@ NEP_dataframe_summary_NEP <- NEP_dataframe%>%
             NEP_11_mean = mean(NEP_MgChayr_11), NEP_11_se = std.error(NEP_MgChayr_11),
             NEP_12_mean = mean(NEP_MgChayr_12), NEP_12_se = std.error(NEP_MgChayr_12))%>%
   filter(year == "2019")
+
 
 
